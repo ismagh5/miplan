@@ -264,12 +264,12 @@ canvas{display:block;max-width:100%;}
     </div>
     <div class="card-body">
       <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:12px;color:var(--m)">94,5 kg → 82–84 kg</span>
+        <span style="font-size:12px;color:var(--m)">92 kg → 82–84 kg</span>
         <span style="font-size:12px;color:var(--m)" id="home-progress-pct">0%</span>
       </div>
       <div class="progress-wrap"><div class="progress-bar pb-green" id="home-progress-bar" style="width:0%"></div></div>
       <div style="display:flex;justify-content:space-between;margin-top:6px">
-        <span style="font-size:11px;color:var(--m)">Inicio: 94,5 kg</span>
+        <span style="font-size:11px;color:var(--m)">Inicio: 92 kg</span>
         <span style="font-size:11px;color:var(--m)">Meta: 83 kg</span>
       </div>
     </div>
@@ -847,11 +847,11 @@ function updateHome() {
   if(dateEl) dateEl.textContent = days[today.getDay()] + ', ' + today.getDate() + ' de ' + months[today.getMonth()];
 
   // Weight
-  const weights = loadData('weights', [{date:'2026-06-02', val:94.5}]);
+  const weights = loadData('weights', [{date:'2026-06-01', val:92.0}]);
   const lastW = weights[weights.length-1];
   const current = lastW ? lastW.val : 94.5;
   const target = 83;
-  const start = 94.5;
+  const start = 92.0;
   const lost = start - current;
   const toGo = current - target;
   document.getElementById('home-weight').textContent = current.toFixed(1) + ' kg';
@@ -1205,7 +1205,7 @@ function addWeight() {
   const date = document.getElementById('weight-date').value;
   const val = parseFloat(document.getElementById('weight-val-input').value);
   if(!date || isNaN(val)) { alert('Introduce la fecha y el peso'); return; }
-  const weights = loadData('weights', [{date:'2026-06-02', val:94.5}]);
+  const weights = loadData('weights', [{date:'2026-06-01', val:92.0}]);
   const existing = weights.findIndex(w => w.date === date);
   if(existing >= 0) weights[existing].val = val;
   else weights.push({date, val});
@@ -1216,10 +1216,10 @@ function addWeight() {
 }
 
 function updateWeightPage() {
-  const weights = loadData('weights', [{date:'2026-06-02', val:94.5}]);
+  const weights = loadData('weights', [{date:'2026-06-01', val:92.0}]);
   const last = weights[weights.length-1];
   const current = last ? last.val : 94.5;
-  const lost = 94.5 - current;
+  const lost = 92.0 - current;
   const toGo = current - 83;
 
   document.getElementById('w-current').textContent = current.toFixed(1) + ' kg';
@@ -1227,7 +1227,7 @@ function updateWeightPage() {
   document.getElementById('w-to-go').textContent = toGo.toFixed(1) + ' kg';
   document.getElementById('home-weight').textContent = current.toFixed(1) + ' kg';
   document.getElementById('home-to-go').textContent = toGo.toFixed(1) + ' kg';
-  const pct = Math.min(100, Math.round((lost / (94.5 - 83)) * 100));
+  const pct = Math.min(100, Math.round((lost / (92.0 - 83)) * 100));
   document.getElementById('home-progress-pct').textContent = pct + '%';
   document.getElementById('home-progress-bar').style.width = pct + '%';
 
@@ -1340,7 +1340,7 @@ function initApp() {
     if(runDateEl) runDateEl.value = today;
 
     const weights = loadData('weights', null);
-    if(!weights) saveData('weights', [{date:'2026-06-02', val:94.5}]);
+    if(!weights) saveData('weights', [{date:'2026-06-01', val:92.0}]);
 
     updateHome();
     loadRunWeeks();
