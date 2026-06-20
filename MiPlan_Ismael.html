@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi Plan">
+<title>Mi Plan — Ismael</title>
+<style>
+:root{
+  --bg:#0f1117;--s:#181c27;--s2:#1e2333;--b:#2a2f42;
+  --a:#4f8ef7;--g:#3dd68c;--o:#f97316;--p:#a78bfa;--r:#ef4444;--c:#06b6d4;
+  --t:#e8eaf0;--m:#8b91a8;
+  --safe-b:env(safe-area-inset-bottom,20px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;font-size:14px;line-height:1.5;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(70px + var(--safe-b));}
+.page.active{display:block;}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(24,28,39,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b);display:flex;padding-bottom:var(--safe-b);z-index:1000;}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;cursor:pointer;border:none;background:none;color:var(--m);font-size:10px;font-weight:500;transition:color 0.2s;}
+.nb.active{color:var(--a);}
+.nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.nb.active svg{stroke:var(--a);}
+.ph{padding:calc(var(--safe-t) + 16px) 16px 12px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:1px solid var(--b);}
+.pt{font-size:20px;font-weight:700;color:var(--t);}
+.ps{font-size:12px;color:var(--m);margin-top:2px;}
+.card{background:var(--s);border:1px solid var(--b);border-radius:16px;margin:10px 16px;overflow:hidden;}
+.ch{padding:14px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px;}
+.ci{font-size:18px;}
+.ct{font-size:14px;font-weight:600;color:var(--t);flex:1;}
+.cbadge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;}
+.bb{background:rgba(79,142,247,0.15);color:var(--a);}
+.bg{background:rgba(61,214,140,0.15);color:var(--g);}
+.bo{background:rgba(249,115,22,0.15);color:var(--o);}
+.br{background:rgba(239,68,68,0.15);color:var(--r);}
+.bc{background:rgba(6,182,212,0.15);color:var(--c);}
+.cb{padding:14px 16px;}
+.sr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:10px 16px;}
+.sb{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:16px 12px;text-align:center;}
+.sv{font-size:28px;font-weight:700;}
+.sl{font-size:10px;color:var(--m);margin-top:4px;text-transform:uppercase;letter-spacing:0.5px;}
+.pw{background:var(--s2);border-radius:8px;height:8px;overflow:hidden;margin:6px 0;}
+.pb{height:100%;border-radius:8px;transition:width 0.5s ease;}
+.pba{background:linear-gradient(90deg,var(--a),#60a5fa);}
+.pbg{background:linear-gradient(90deg,var(--g),#22c55e);}
+.pbo{background:linear-gradient(90deg,var(--o),#fb923c);}
+.pbp{background:linear-gradient(90deg,var(--p),#8b5cf6);}
+.pbc{background:linear-gradient(90deg,var(--c),#0ea5e9);}
+.if{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;color:var(--t);font-size:15px;outline:none;-webkit-appearance:none;font-family:inherit;}
+.if:focus{border-color:var(--a);}
+select.if{cursor:pointer;}
+.il{font-size:12px;color:var(--m);margin-bottom:6px;display:block;font-weight:500;}
+.ig{margin-bottom:12px;}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.15s;}
+.btn:active{opacity:0.75;}
+.btp{background:linear-gradient(135deg,var(--a),#6366f1);color:white;}
+.btg{background:linear-gradient(135deg,var(--g),#22c55e);color:#0a1a0f;}
+.bto{background:linear-gradient(135deg,var(--o),#fb923c);color:white;}
+.bth{background:var(--s2);border:1px solid var(--b);color:var(--m);}
+.btn-sm{padding:8px 14px;font-size:13px;width:auto;border-radius:8px;}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.li{padding:12px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:12px;}
+.li:last-child{border-bottom:none;}
+.li:active{background:var(--s2);}
+.lic{flex:1;}
+.lit{font-size:14px;font-weight:500;color:var(--t);}
+.lis{font-size:12px;color:var(--m);margin-top:2px;}
+.lir{font-size:13px;font-weight:600;color:var(--a);text-align:right;flex-shrink:0;}
+.tr{display:flex;gap:6px;padding:12px 16px 0;overflow-x:auto;scrollbar-width:none;}
+.tr::-webkit-scrollbar{display:none;}
+.tb{padding:7px 14px;border-radius:8px;border:1px solid var(--b);background:var(--s2);color:var(--m);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;}
+.tb.active{background:var(--a);border-color:var(--a);color:white;}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:2000;align-items:flex-end;}
+.mo.open{display:flex;}
+.md{background:var(--s);border-radius:20px 20px 0 0;padding:20px 16px;padding-bottom:calc(20px + var(--safe-b));width:100%;max-height:90vh;overflow-y:auto;position:relative;}
+.mdt{font-size:17px;font-weight:700;margin-bottom:16px;color:var(--t);}
+.mdc{position:absolute;top:20px;right:16px;color:var(--m);font-size:22px;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;}
+.sb2{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;color:var(--t);font-size:15px;outline:none;margin-bottom:10px;font-family:inherit;}
+.sb2::placeholder{color:var(--m);}
+.sr2{max-height:220px;overflow-y:auto;border:1px solid var(--b);border-radius:10px;margin-bottom:10px;}
+.sri{padding:12px 14px;border-bottom:1px solid var(--b);cursor:pointer;}
+.sri:last-child{border-bottom:none;}
+.sri:active{background:var(--s2);}
+.srn{font-size:14px;font-weight:500;color:var(--t);}
+.srm{font-size:11px;color:var(--m);margin-top:2px;}
+.al{padding:11px 14px;border-radius:10px;font-size:13px;margin:8px 0;display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
+.ali{font-size:15px;flex-shrink:0;}
+.alg{background:rgba(61,214,140,0.1);border:1px solid rgba(61,214,140,0.2);}
+.alo{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);}
+.alb{background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.2);}
+.alr{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);}
+.alc2{background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);}
+.sl2{font-size:11px;font-weight:600;color:var(--m);text-transform:uppercase;letter-spacing:1px;padding:12px 16px 6px;}
+.note{background:rgba(79,142,247,0.06);border-left:3px solid var(--a);border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--m);margin:6px 0;line-height:1.5;}
+.note strong{color:var(--t);}
+.exb{background:var(--s2);border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.exbh{padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.exbn{font-size:13px;font-weight:600;color:var(--t);flex:1;}
+.exbm{font-size:10px;color:var(--m);background:var(--b);padding:2px 7px;border-radius:4px;}
+.exba{color:var(--m);font-size:18px;transition:transform 0.2s;flex-shrink:0;}
+.exb.open .exba{transform:rotate(90deg);}
+.exbd{display:none;padding:0 14px 14px;}
+.exb.open .exbd{display:block;}
+.desc-block{background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+.desc-title{font-size:10px;font-weight:600;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.desc-text{font-size:12px;color:var(--m);line-height:1.6;}
+.log-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;}
+.log-input{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:10px;color:var(--t);font-size:15px;text-align:center;outline:none;width:100%;font-family:inherit;}
+.log-input:focus{border-color:var(--a);}
+.log-label{font-size:10px;color:var(--m);text-align:center;margin-top:4px;}
+.fe{background:var(--s2);border-radius:10px;padding:11px 14px;margin-bottom:7px;display:flex;align-items:center;gap:10px;}
+.fei{flex:1;}
+.fen{font-size:13px;font-weight:500;color:var(--t);}
+.fem{font-size:11px;color:var(--m);margin-top:2px;}
+.fek{font-size:15px;font-weight:700;color:var(--o);}
+.fdel{color:var(--r);font-size:18px;cursor:pointer;padding:4px;}
+.mr2{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.mr2:last-child{margin-bottom:0;}
+.ml2{font-size:12px;font-weight:600;min-width:75px;}
+.mv{font-size:13px;font-weight:700;min-width:48px;text-align:right;}
+.mk{font-size:11px;color:var(--m);min-width:55px;}
+.we{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--b);gap:10px;}
+.wd2{font-size:12px;color:var(--m);min-width:65px;}
+.wv{font-size:17px;font-weight:700;color:var(--t);flex:1;}
+.wdf{font-size:13px;font-weight:600;}
+.dd{color:var(--g);}
+.du{color:var(--r);}
+.ds{color:var(--m);}
+.rw{background:var(--s);border:1px solid var(--b);border-radius:14px;margin:8px 16px;overflow:hidden;}
+.rwh{padding:14px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:12px;}
+.rwn{font-size:26px;font-weight:700;min-width:36px;}
+.rwi{flex:1;}
+.rwt{font-size:14px;font-weight:600;color:var(--t);}
+.rws{font-size:12px;color:var(--m);margin-top:2px;}
+.rwb{padding:14px 16px;}
+.rtag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;display:inline-block;margin-right:6px;}
+.rtr{background:rgba(61,214,140,0.15);color:var(--g);}
+.rtw{background:rgba(79,142,247,0.15);color:var(--a);}
+.today-card{background:linear-gradient(135deg,rgba(79,142,247,0.15),rgba(124,92,191,0.15));border:1px solid rgba(79,142,247,0.3);border-radius:16px;margin:10px 16px;padding:16px;}
+.water-display{display:flex;align-items:center;gap:10px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:12px;padding:12px 14px;margin:10px 16px;}
+.water-icon{font-size:24px;}
+.water-info{flex:1;}
+.water-val{font-size:18px;font-weight:700;color:var(--c);}
+.water-sub{font-size:11px;color:var(--m);margin-top:2px;}
+.quote-block{padding:14px 16px 6px;}
+.quote-text{font-size:13px;color:var(--m);font-style:italic;line-height:1.5;}
+.quote-author{font-size:11px;color:var(--a);margin-top:4px;font-weight:600;}
+.temp-badge{font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(245,158,11,0.15);color:var(--o);}
+.plan-day-card{background:var(--s2);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+.plan-day-title{font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px;}
+.plan-day-sub{font-size:12px;color:var(--m);line-height:1.5;}
+.meal-target{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--b);}
+.meal-target:last-child{border-bottom:none;}
+.mt-name{font-size:13px;font-weight:500;color:var(--t);}
+.mt-sub{font-size:11px;color:var(--m);margin-top:2px;}
+.mt-kcal{font-size:14px;font-weight:700;color:var(--o);text-align:right;}
+.mt-macros{font-size:10px;color:var(--m);text-align:right;margin-top:2px;}
+.empty{text-align:center;padding:36px 20px;color:var(--m);}
+.empty-icon{font-size:44px;margin-bottom:10px;}
+.empty-text{font-size:13px;line-height:1.6;}
+.divider{height:1px;background:var(--b);margin:6px 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.action-row{display:flex;gap:8px;padding:10px 16px;}
+@media(min-width:768px){body,. bnav{max-width:430px;margin-left:auto;margin-right:auto;}}
+</style>
+</head>
+<body>
+<!-- NAV -->
+<nav class="bnav">
+  <button class="nb active" onclick="nav('home')" id="nb-home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio
+  </button>
+  <button class="nb" onclick="nav('gym')" id="nb-gym">
+    <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Gym
+  </button>
+  <button class="nb" onclick="nav('run')" id="nb-run">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M10 9l-3 7h3l1 5 3-5h3l-3-7z"/></svg>Running
+  </button>
+  <button class="nb" onclick="nav('food')" id="nb-food">
+    <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20M21 15V2"/><path d="M18 2v4a4 4 0 004 4"/></svg>Comida
+  </button>
+  <button class="nb" onclick="nav('weight')" id="nb-weight">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Peso
+  </button>
+</nav>
+
+<!-- ===== HOME ===== -->
+<div class="page active" id="pg-home">
+  <div class="ph">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div class="pt" id="h-date">Cargando...</div>
+        <div class="quote-text" id="h-quote" style="margin-top:6px;font-style:italic;font-size:12px;color:var(--m)"></div>
+        <div class="quote-author" id="h-quote-author"></div>
+      </div>
+      <div id="h-temp" class="temp-badge" style="margin-top:4px">...</div>
+    </div>
+  </div>
+
+  <div class="sr">
+    <div class="sb">
+      <div class="sv" id="h-weight" style="color:var(--a)">—</div>
+      <div class="sl">Peso actual</div>
+    </div>
+    <div class="sb">
+      <div class="sv" id="h-days" style="color:var(--g)">—</div>
+      <div class="sl">Días restantes</div>
+    </div>
+  </div>
+
+  <div style="padding:0 16px 4px">
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:4px">
+      <span>Progreso</span><span id="h-pct">0%</span>
+    </div>
+    <div class="pw"><div class="pb pbg" id="h-pbar" style="width:0%"></div></div>
+  </div>
+
+  <div class="water-display">
+    <div class="water-icon">💧</div>
+    <div class="water-info">
+      <div class="water-val" id="h-water">2,5 L</div>
+      <div class="water-sub" id="h-water-sub">Calculando según temperatura...</div>
+    </div>
+  </div>
+
+  <div class="today-card" id="h-gym-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:600;color:var(--a)">💪 Gym hoy</div>
+      <span class="cbadge bb" id="h-gym-badge">—</span>
+    </div>
+    <div id="h-gym-detail" style="font-size:13px;color:var(--m);margin-bottom:12px"></div>
+    <button class="btn btg btn-sm" onclick="nav('gym')">Ver sesión →</button>
+  </div>
+
+  <div class="today-card" id="h-run-card" style="background:linear-gradient(135deg,rgba(61,214,140,0.12),rgba(6,182,212,0.12));border-color:rgba(61,214,140,0.3)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:600;color:var(--g)">🏃 Running hoy</div>
+      <span class="cbadge bg" id="h-run-badge">—</span>
+    </div>
+    <div id="h-run-detail" style="font-size:13px;color:var(--m);margin-bottom:12px"></div>
+    <button class="btn btg btn-sm" onclick="nav('run')">Ver plan →</button>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="ci">🍽️</span><span class="ct">Calorías hoy</span><span class="cbadge bo" id="h-kcal-badge">0 / 2.000</span></div>
+    <div class="cb">
+      <div class="pw"><div class="pb pbo" id="h-kcal-bar" style="width:0%"></div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;text-align:center">
+        <div><div style="font-size:15px;font-weight:700;color:var(--a)" id="h-prot">0g</div><div style="font-size:10px;color:var(--m)">Proteína</div></div>
+        <div><div style="font-size:15px;font-weight:700;color:var(--o)" id="h-carb">0g</div><div style="font-size:10px;color:var(--m)">Carbos</div></div>
+        <div><div style="font-size:15px;font-weight:700;color:var(--p)" id="h-fat">0g</div><div style="font-size:10px;color:var(--m)">Grasa</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GYM ===== -->
+<div class="page" id="pg-gym">
+  <div class="ph"><div class="pt">💪 Entrenamiento</div></div>
+  <div class="tr">
+    <button class="tb active" onclick="gymTab('session')">Hoy</button>
+    <button class="tb" onclick="gymTab('plan')">Plan</button>
+    <button class="tb" onclick="gymTab('history')">Historial</button>
+  </div>
+  <div id="gt-session"><div id="gym-session-content"></div></div>
+  <div id="gt-plan" style="display:none">
+    <div class="tr" style="padding-top:10px">
+      <button class="tb active" onclick="planDay('lunes')">Lun</button>
+      <button class="tb" onclick="planDay('martes')">Mar</button>
+      <button class="tb" onclick="planDay('miercoles')">Mié</button>
+      <button class="tb" onclick="planDay('jueves')">Jue</button>
+      <button class="tb" onclick="planDay('viernes')">Vie</button>
+      <button class="tb" onclick="planDay('sabado')">Sáb</button>
+    </div>
+    <div id="gym-plan-content" style="padding:12px 16px"></div>
+  </div>
+  <div id="gt-history" style="display:none">
+    <div id="gym-history-content" style="padding:12px 16px"></div>
+  </div>
+</div>
+
+<!-- ===== RUNNING ===== -->
+<div class="page" id="pg-run">
+  <div class="ph"><div class="pt">🏃 Running</div><div class="ps">Plan 7 semanas · Empieza 22 junio</div></div>
+  <div class="tr">
+    <button class="tb active" onclick="runTab('today')">Hoy</button>
+    <button class="tb" onclick="runTab('plan')">Plan completo</button>
+    <button class="tb" onclick="runTab('log')">Registrar</button>
+    <button class="tb" onclick="runTab('history')">Historial</button>
+  </div>
+  <div id="rt-today"><div id="run-today-content"></div></div>
+  <div id="rt-plan" style="display:none"><div id="run-plan-content"></div></div>
+  <div id="rt-log" style="display:none">
+    <div style="padding:12px 16px">
+      <div class="ig"><label class="il">Fecha</label><input type="date" class="if" id="run-date"></div>
+      <div class="ig"><label class="il">Semana del plan</label>
+        <select class="if" id="run-week">
+          <option value="1">Semana 1 — 30s trote / 90s caminata</option>
+          <option value="2">Semana 2 — 45s trote / 90s caminata</option>
+          <option value="3">Semana 3 — 1min trote / 1min caminata</option>
+          <option value="4">Semana 4 — 2min trote / 1min caminata</option>
+          <option value="5">Semana 5 — 3min trote / 1min caminata</option>
+          <option value="6">Semana 6 — 5min trote / 1min caminata</option>
+          <option value="7">Semana 7 — Carrera continua</option>
+        </select>
+      </div>
+      <div class="ig"><label class="il">Duración total (min)</label><input type="number" class="if" id="run-dur" placeholder="30"></div>
+      <div class="ig"><label class="il">¿Cómo te has sentido?</label>
+        <select class="if" id="run-feel">
+          <option value="bien">😊 Bien — completada</option>
+          <option value="regular">😐 Regular — ha costado</option>
+          <option value="mal">😓 Mal — no pude terminar</option>
+        </select>
+      </div>
+      <div class="ig"><label class="il">Notas (opcional)</label><input type="text" class="if" id="run-notes" placeholder="Ej: mucho calor, buen ritmo..."></div>
+      <button class="btn btg" onclick="saveRun()">💾 Guardar sesión</button>
+    </div>
+  </div>
+  <div id="rt-history" style="display:none"><div id="run-history-content" style="padding:12px 16px"></div></div>
+</div>
+
+<!-- ===== FOOD ===== -->
+<div class="page" id="pg-food">
+  <div class="ph"><div class="pt">🍽️ Alimentación</div><div class="ps" id="food-subtitle">2.000 kcal · 163g proteína</div></div>
+  <div class="tr">
+    <button class="tb active" onclick="foodTab('today')">Hoy</button>
+    <button class="tb" onclick="foodTab('plan')">Plan</button>
+    <button class="tb" onclick="foodTab('history')">Historial</button>
+  </div>
+  <div id="ft-today">
+    <div class="card" style="margin-top:10px">
+      <div class="ch"><span class="ci">📊</span><span class="ct">Resumen del día</span></div>
+      <div class="cb">
+        <div class="mr2"><span class="ml2" style="color:var(--o)">Calorías</span><div class="pw" style="flex:1"><div class="pb pbo" id="f-kcal-bar" style="width:0%"></div></div><span class="mv" id="f-kcal" style="color:var(--o)">0</span><span class="mk" id="f-kcal-max">/2.000</span></div>
+        <div class="mr2"><span class="ml2" style="color:var(--a)">Proteína</span><div class="pw" style="flex:1"><div class="pb pba" id="f-prot-bar" style="width:0%"></div></div><span class="mv" id="f-prot" style="color:var(--a)">0g</span><span class="mk" id="f-prot-max">/163g</span></div>
+        <div class="mr2"><span class="ml2" style="color:var(--o)">Carbos</span><div class="pw" style="flex:1"><div class="pb pbo" id="f-carb-bar" style="width:0%"></div></div><span class="mv" id="f-carb" style="color:var(--o)">0g</span><span class="mk">/200g</span></div>
+        <div class="mr2"><span class="ml2" style="color:var(--p)">Grasa</span><div class="pw" style="flex:1"><div class="pb pbp" id="f-fat-bar" style="width:0%"></div></div><span class="mv" id="f-fat" style="color:var(--p)">0g</span><span class="mk">/61g</span></div>
+        <div id="f-alert" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div id="f-meals"></div>
+    <div style="padding:0 16px 10px;display:flex;gap:8px">
+      <button class="btn btp" style="flex:1" onclick="openFood('food')">+ Alimento</button>
+      <button class="btn bth btn-sm" onclick="openFood('drink')">🍺 Bebida</button>
+    </div>
+  </div>
+  <div id="ft-plan" style="display:none"><div id="food-plan-content" style="padding:10px 16px"></div></div>
+  <div id="ft-history" style="display:none"><div id="food-history-content" style="padding:12px 16px"></div></div>
+</div>
+
+<!-- ===== WEIGHT ===== -->
+<div class="page" id="pg-weight">
+  <div class="ph"><div class="pt">⚖️ Peso</div><div class="ps">Objetivo: 82–84 kg · 15 agosto</div></div>
+  <div class="card">
+    <div class="ch"><span class="ci">➕</span><span class="ct">Registrar peso</span></div>
+    <div class="cb">
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <div style="flex:1"><label class="il">Fecha</label><input type="date" class="if" id="w-date"></div>
+        <div style="flex:1"><label class="il">Peso (kg)</label><input type="number" class="if" id="w-val" placeholder="90.0" step="0.1"></div>
+        <button class="btn btg btn-sm" onclick="addWeight()" style="margin-bottom:0;flex-shrink:0">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="sr">
+    <div class="sb"><div class="sv" id="w-cur" style="color:var(--a)">—</div><div class="sl">Actual (kg)</div></div>
+    <div class="sb"><div class="sv" id="w-lost" style="color:var(--g)">—</div><div class="sl">Perdido (kg)</div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ci">📈</span><span class="ct">Evolución</span></div>
+    <div style="padding:8px"><canvas id="w-chart" height="180"></canvas></div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch"><span class="ci">📋</span><span class="ct">Registros</span></div>
+    <div id="w-list"></div>
+  </div>
+</div>
+
+<!-- FOOD MODAL -->
+<div class="mo" id="food-modal">
+  <div class="md">
+    <div class="mdt" id="food-modal-title">Añadir alimento</div>
+    <span class="mdc" onclick="closeFood()">✕</span>
+    <div class="ig"><label class="il">Toma</label>
+      <select class="if" id="food-meal">
+        <option value="pre-gym">💪 Pre-gym</option>
+        <option value="post-gym">🥣 Post-gym</option>
+        <option value="comida">🍽️ Comida</option>
+        <option value="merienda">🥙 Merienda</option>
+        <option value="cena">🌙 Cena</option>
+        <option value="otro">🍴 Otro</option>
+      </select>
+    </div>
+    <div id="food-modal-body"></div>
+  </div>
+</div>
+
+<!-- ADD EXERCISE MODAL -->
+<div class="mo" id="ex-modal">
+  <div class="md">
+    <div class="mdt">Añadir ejercicio</div>
+    <span class="mdc" onclick="closeExModal()">✕</span>
+    <div class="ig"><label class="il">Día</label>
+      <select class="if" id="ex-day">
+        <option value="lunes">Lunes</option><option value="martes">Martes</option>
+        <option value="miercoles">Miércoles</option><option value="jueves">Jueves</option>
+        <option value="viernes">Viernes</option><option value="sabado">Sábado</option>
+      </select>
+    </div>
+    <div class="ig"><label class="il">Nombre del ejercicio</label><input type="text" class="if" id="ex-name" placeholder="Ej: Curl de bíceps"></div>
+    <div class="ig"><label class="il">Músculo principal</label><input type="text" class="if" id="ex-muscle" placeholder="Ej: Bíceps"></div>
+    <div class="grid2">
+      <div class="ig"><label class="il">Series</label><input type="number" class="if" id="ex-sets" value="3"></div>
+      <div class="ig"><label class="il">Reps</label><input type="number" class="if" id="ex-reps" value="12"></div>
+      <div class="ig"><label class="il">Peso (kg)</label><input type="number" class="if" id="ex-weight" value="0" step="0.5"></div>
+      <div class="ig"><label class="il">Notas (opcional)</label><input type="text" class="if" id="ex-notes" placeholder="Técnica..."></div>
+    </div>
+    <button class="btn btg" onclick="saveNewEx()">Añadir ejercicio</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// QUOTES
+// ============================================================
+const QUOTES = [
+  {text:"I'll keep running cause a winner don't quit on themselves.", author:"Kanye West"},
+  {text:"Difficult takes a day, impossible takes a week.", author:"Jay-Z"},
+  {text:"The only thing that can stop me is me.", author:"Post Malone"},
+  {text:"Work hard in silence, let success make the noise.", author:"Drake"},
+  {text:"I'm not afraid to take a stand.", author:"Eminem"},
+  {text:"I got a lot to prove. No, I got a lot to lose.", author:"Post Malone"},
+  {text:"We all self-conscious. I'm just the first to admit it.", author:"Kanye West"},
+  {text:"Everybody dies but not everybody lives.", author:"Drake"},
+  {text:"Life is a marathon, not a sprint.", author:"J. Cole"},
+  {text:"Success is the best revenge.", author:"Jay-Z"},
+  {text:"Remind yourself that nobody built like you. You design yourself.", author:"Jay-Z"},
+  {text:"You can't be afraid of the things that scare you. That's what makes you brave.", author:"Kendrick Lamar"},
+  {text:"The body achieves what the mind believes.", author:"Drake"},
+  {text:"Hustle until your haters ask if you're hiring.", author:"Kanye West"},
+  {text:"Pain is temporary. Glory is forever.", author:"J. Cole"},
+  {text:"Every day above ground is a great day.", author:"Post Malone"},
+  {text:"I don't do things for the response. I do things for the result.", author:"Jay-Z"},
+  {text:"Nothing worth having comes easy.", author:"Eminem"},
+  {text:"Be the hardest worker in the room.", author:"Drake"},
+  {text:"Stay focused and never stop chasing your dreams.", author:"Kendrick Lamar"},
+  {text:"Don't aspire to make a living. Aspire to make a difference.", author:"Kanye West"},
+  {text:"The most powerful weapon is a made-up mind.", author:"J. Cole"},
+  {text:"Success is not owned. It's rented — and the rent is due every day.", author:"Jay-Z"},
+  {text:"I am not the next Usain Bolt or Michael Jordan. I am the first me.", author:"Drake"},
+  {text:"You gotta believe in yourself.", author:"Post Malone"},
+  {text:"Fear is an illusion.", author:"Kanye West"},
+  {text:"Put in the work and the results will come.", author:"Eminem"},
+  {text:"Every loss is a lesson. Never lose. Either win or learn.", author:"Jay-Z"},
+  {text:"Burn slow and bright. Not fast and dim.", author:"J. Cole"},
+  {text:"The journey matters more than the destination.", author:"Kendrick Lamar"},
+];
+
+// ============================================================
+// GYM DATA
+// ============================================================
+const GYM_BASE = {
+  lunes: {
+    name:"Espalda + Bíceps", emoji:"🏋️",
+    warmup:{
+      title:"Calentamiento",
+      steps:[
+        {name:"Movilidad con goma elástica", dur:"2 minutos",
+         pos:"De pie, sujeta la goma con ambas manos a la anchura de los hombros.",
+         exec:"Realiza círculos de hombro hacia delante y hacia atrás (10 cada dirección). Después retracciones escapulares: lleva los omóplatos hacia atrás y hacia abajo como si quisieras aplastar un lápiz entre ellos. 10 repeticiones lentas."},
+        {name:"Jalón al pecho (calentamiento)", dur:"1×16 reps · 15 kg",
+         pos:"Sentado en la máquina de jalón, agarre prono (palmas hacia delante) a la anchura de los hombros. Espalda ligeramente inclinada hacia atrás.",
+         exec:"Tira de la barra hacia el pecho alto, llevando los codos hacia abajo y hacia atrás. En cada repetición siente cómo el dorsal se activa. Ritmo lento — 2 segundos bajada, 2 segundos subida. No es el momento de esfuerzo, es activación."},
+      ]
+    },
+    exercises:[
+      {name:"Jalón al pecho (polea alta)", muscle:"Dorsal · Redondo mayor", sets:3, reps:16, weight:25},
+      {name:"Remo en polea baja", muscle:"Dorsal · Romboides · Trapecio medio", sets:3, reps:16, weight:25},
+      {name:"Deltoides posterior (máquina)", muscle:"Deltoides post · Trapecio sup", sets:3, reps:16, weight:20},
+      {name:"Elevaciones laterales (máquina)", muscle:"Deltoides medial", sets:3, reps:16, weight:20},
+      {name:"Curl bíceps polea (cuerda)", muscle:"Bíceps · Braquial", sets:3, reps:16, weight:5},
+      {name:"Curl bíceps polea (barra recta)", muscle:"Bíceps largo y corto", sets:3, reps:16, weight:12.5},
+      {name:"Encogimientos trapecio mancuerna", muscle:"Trapecio superior", sets:3, reps:16, weight:10},
+    ],
+    cardio:"10-15 min remo / bici / caminata a ritmo moderado",
+    mobility:[
+      {name:"Distracción de hombro con banda", dur:"45 seg/lado",
+       pos:"Ata una banda a un punto fijo bajo. Pasa la banda alrededor de la muñeca derecha. Aléjate hasta notar tensión.",
+       exec:"Inclínate hacia delante dejando el brazo completamente relajado. La banda tira del hombro hacia abajo creando espacio articular. No hagas nada — solo relájate. Puedes hacer pequeños círculos suaves con el brazo."},
+      {name:"Estiramiento dorsal en cuadrupedia diagonal", dur:"45 seg/lado",
+       pos:"A cuatro patas. Extiende el brazo derecho en diagonal hacia las 11h sobre el suelo.",
+       exec:"Siéntate lentamente hacia los talones manteniendo el brazo extendido. El pecho baja hacia el suelo. Mantén 45 segundos respirando profundo. En cada espiración el dorsal se estira más."},
+      {name:"Estiramiento de bíceps en pared", dur:"30 seg/lado",
+       pos:"De pie frente a la pared. Extiende el brazo derecho y apoya la palma con el pulgar apuntando hacia abajo.",
+       exec:"Sin doblar el codo, gira el cuerpo hacia la izquierda alejándote de la pared. El estiramiento recorre el bíceps desde el codo hasta el hombro. Mantén 30 segundos."},
+      {name:"Estiramiento de trapecio lateral", dur:"30 seg/lado",
+       pos:"Sentado o de pie con la espalda recta. Brazo derecho relajado a lo largo del cuerpo.",
+       exec:"Lleva la oreja izquierda hacia el hombro izquierdo — no el hombro hacia la oreja. Coloca la mano izquierda suavemente en la sien derecha y aplica presión mínima. Mantén 30 segundos."},
+    ],
+    mobGeneral: true,
+    running: true, kcal:520
+  },
+  martes: {
+    name:"Pecho + Tríceps", emoji:"🏋️",
+    warmup:{
+      title:"Calentamiento",
+      steps:[
+        {name:"Movilidad articular de hombro", dur:"2 minutos",
+         pos:"De pie con los brazos a los lados.",
+         exec:"Círculos de hombro hacia delante 10 veces y hacia atrás 10 veces. Después aperturas de pecho: extiende los brazos a los lados a la altura del hombro y ábrelos y ciérralos como si abrazaras un árbol. 10 repeticiones. Termina con rotaciones de muñeca 10 en cada sentido."},
+        {name:"Press de banca sin peso", dur:"1×16 reps",
+         pos:"Tumbado en el banco, espalda ligeramente arqueada, pies en el suelo. Agarre a la anchura de los hombros más un puño. Codos a 45° del cuerpo, nunca a 90°.",
+         exec:"Baja la barra lentamente hacia el pecho alto (no el cuello). Toca suavemente y empuja. En cada repetición siente cómo el pectoral se activa. Concéntrate en la conexión mente-músculo, no en el peso."},
+      ]
+    },
+    exercises:[
+      {name:"Press de banca con barra", muscle:"Pectoral · Tríceps · Deltoides ant", sets:3, reps:"16/12/10", weight:5},
+      {name:"Press pecho en máquina", muscle:"Pectoral mayor", sets:3, reps:16, weight:30},
+      {name:"Aperturas en máquina", muscle:"Pectoral · Deltoides anterior", sets:3, reps:16, weight:10},
+      {name:"Cruce de poleas", muscle:"Pectoral — contracción final", sets:3, reps:16, weight:7.5},
+      {name:"Extensión tríceps polea (V)", muscle:"Tríceps — 3 cabezas", sets:3, reps:16, weight:10},
+      {name:"Extensión tríceps polea (individual)", muscle:"Tríceps — cabeza larga", sets:3, reps:16, weight:5},
+      {name:"Extensión tríceps polea (barra recta)", muscle:"Tríceps — cabeza lateral", sets:3, reps:16, weight:10},
+    ],
+    cardio:"10-15 min remo / bici / caminata",
+    mobility:[
+      {name:"Apertura de pecho en foam roller", dur:"60 segundos",
+       pos:"Coloca el foam roller horizontalmente. Túmbate hacia atrás con el roller a la altura de los omóplatos. Rodillas flexionadas, pies en el suelo. Brazos en T.",
+       exec:"Deja caer el peso del cuerpo. El pecho se abre hacia el techo, los hombros caen hacia el suelo. Inspira profundo — en cada inspiración el pecho se abre más. Puedes moverte ligeramente arriba y abajo."},
+      {name:"Estiramiento de pectoral en marco de puerta", dur:"45 seg/lado",
+       pos:"En el marco de una puerta. Sube el brazo derecho a 90°. Apoya el antebrazo en el marco.",
+       exec:"Da un paso adelante y gira el cuerpo hacia la izquierda hasta notar el estiramiento en el pectoral derecho. No llevas el cuerpo hacia delante — lo giras. Prueba diferentes alturas del brazo para diferentes partes del pecho."},
+      {name:"Estiramiento de tríceps sobre cabeza", dur:"30 seg/lado",
+       pos:"De pie o sentado. Levanta el brazo derecho y dóblalo por el codo con la mano cayendo entre los omóplatos.",
+       exec:"La mano izquierda agarra el codo derecho y empuja suavemente hacia atrás y hacia la cabeza. El cuello permanece recto. Mantén 30 segundos."},
+      {name:"Rotación interna/externa de hombro con banda", dur:"10 rep/lado",
+       pos:"De pie con el codo derecho pegado al costado flexionado a 90°. Sujeta una banda de tensión suave.",
+       exec:"Rotación externa: lleva la mano hacia afuera manteniendo el codo pegado al cuerpo. Rotación interna: lleva la mano hacia el abdomen. 10 repeticiones en cada dirección, lentamente."},
+    ],
+    mobGeneral: true,
+    running: false, kcal:420
+  },
+  miercoles: {
+    name:"Piernas", emoji:"🏋️",
+    warmup:{
+      title:"Calentamiento",
+      steps:[
+        {name:"Movilidad articular tren inferior", dur:"2 minutos",
+         pos:"De pie con las manos en la cintura.",
+         exec:"Círculos de cadera grandes — 10 en cada sentido. Rotaciones de rodilla: manos sobre las rodillas, gira suavemente en círculos. Elevaciones de rodilla al pecho caminando por el sitio — 10 cada pierna. Termina con balanceos de pierna hacia delante y atrás."},
+        {name:"Sentadilla sin peso", dur:"1×16 reps",
+         pos:"Pies a la anchura de los hombros o ligeramente más abiertos. Puntas de los pies ligeramente hacia afuera. Brazos extendidos al frente.",
+         exec:"Baja lentamente en 3 segundos manteniendo el pecho arriba y la espalda recta. Las rodillas siguen la dirección de los pies — nunca hacia dentro. Los talones en el suelo todo el tiempo. Baja hasta que los muslos estén paralelos al suelo. Sube en 1 segundo."},
+      ]
+    },
+    exercises:[
+      {name:"Sentadilla goblet (mancuerna)", muscle:"Cuádriceps · Glúteo · Core", sets:3, reps:16, weight:6},
+      {name:"Prensa de piernas", muscle:"Cuádriceps · Glúteo · Isquiotibiales", sets:3, reps:16, weight:10},
+      {name:"Elevación de gemelos en prensa", muscle:"Gemelo · Sóleo", sets:3, reps:16, weight:10},
+      {name:"Extensión de cuádriceps (máquina)", muscle:"Cuádriceps", sets:3, reps:16, weight:30},
+      {name:"Curl femoral (máquina)", muscle:"Isquiotibiales", sets:3, reps:16, weight:25},
+      {name:"Abductores — apertura", muscle:"Abductores · Glúteo medio", sets:3, reps:16, weight:30},
+      {name:"Aductores — cierre", muscle:"Aductores", sets:3, reps:16, weight:35},
+    ],
+    cardio:"10-15 min bici o caminata (no sobrecargar más las piernas)",
+    mobility:[
+      {name:"Estocada baja con apertura de cadera (Lizard)", dur:"45 seg/lado",
+       pos:"Desde de pie, da un gran paso adelante con el pie derecho. Baja la rodilla izquierda al suelo. El pie derecho plano en el suelo.",
+       exec:"Lleva la cadera hacia delante y abajo. Coloca ambas manos en el suelo a los lados del pie derecho. Para profundizar, gira el torso hacia la derecha abriendo el brazo al techo. Mantén 45 segundos respirando profundo."},
+      {name:"Estiramiento de isquiotibiales tumbado con banda", dur:"45 seg/lado",
+       pos:"Túmbate boca arriba. Pasa una banda o toalla alrededor del pie derecho.",
+       exec:"Mantén la pierna izquierda apoyada en el suelo. Tira de la banda llevando la pierna derecha hacia el pecho con la rodilla lo más extendida posible. Lleva hasta donde notes tensión pero sin dolor. Mantén 45 segundos."},
+      {name:"Estiramiento de gemelo en pared", dur:"30 seg × 2 posiciones/lado",
+       pos:"De pie frente a la pared, manos apoyadas. Pie trasero a 80-90 cm de la pared.",
+       exec:"Posición 1 (gemelo): rodilla recta, talón en el suelo. Inclínate hacia la pared 30 segundos. Posición 2 (sóleo): dobla ligeramente la rodilla trasera manteniendo el talón en el suelo 30 segundos. El sóleo se estira más profundo y más abajo."},
+      {name:"Mariposa — Aductores profundos", dur:"60 segundos",
+       pos:"Sentado en el suelo. Junta las plantas de los pies y acércalas al cuerpo. Las rodillas caen a los lados.",
+       exec:"Coloca los codos en los muslos interiores y presiona suavemente hacia abajo. Mantén la espalda recta. Para profundizar, inclínate hacia delante desde las caderas. Mantén 60 segundos."},
+      {name:"Sentadilla profunda asistida", dur:"60 segundos",
+       pos:"De pie frente a un poste o barra fija. Sujétalo con ambas manos. Pies a la anchura de los hombros.",
+       exec:"Baja lentamente usando el agarre como contrapeso hasta la posición más profunda posible — caderas por debajo de las rodillas. Pecho arriba, espalda recta. Mantén 60 segundos respirando profundo."},
+    ],
+    mobGeneral: true,
+    running: false, kcal:400
+  },
+  jueves: {
+    name:"Espalda + Bíceps", emoji:"🏋️",
+    warmup:{
+      title:"Calentamiento",
+      steps:[
+        {name:"Remo en polea baja (calentamiento)", dur:"1×16 reps · 12-15 kg",
+         pos:"Sentado en la máquina de remo. Agarre neutro o prono. Espalda recta, ligeramente inclinado hacia delante.",
+         exec:"Tira del agarre hacia el abdomen llevando los codos hacia atrás. Al final del movimiento junta los omóplatos apretándolos 1 segundo. Controla la vuelta en 2 segundos. El objetivo es activar la espalda, no el peso."},
+      ]
+    },
+    exercises:[
+      {name:"Jalón al pecho (polea alta)", muscle:"Dorsal · Redondo mayor", sets:3, reps:16, weight:25},
+      {name:"Remo en polea baja", muscle:"Dorsal · Romboides", sets:3, reps:16, weight:25},
+      {name:"Deltoides posterior (máquina)", muscle:"Deltoides post · Trapecio", sets:3, reps:16, weight:20},
+      {name:"Elevaciones laterales (máquina)", muscle:"Deltoides medial", sets:3, reps:16, weight:20},
+      {name:"Curl bíceps polea (cuerda)", muscle:"Bíceps · Braquial", sets:3, reps:16, weight:5},
+      {name:"Curl bíceps polea (barra recta)", muscle:"Bíceps", sets:3, reps:16, weight:12.5},
+      {name:"Encogimientos trapecio mancuerna", muscle:"Trapecio superior", sets:3, reps:16, weight:10},
+    ],
+    cardio:"10-15 min remo / bici / caminata",
+    mobility:[
+      {name:"Distracción de hombro con banda", dur:"45 seg/lado",
+       pos:"Ata una banda a un punto fijo bajo. Pasa la banda alrededor de la muñeca.",
+       exec:"Inclínate hacia delante dejando el brazo completamente relajado. La banda tira del hombro hacia abajo. No hagas nada — solo relájate y respira. 45 segundos cada lado."},
+      {name:"Estiramiento dorsal en cuadrupedia diagonal", dur:"45 seg/lado",
+       pos:"A cuatro patas. Extiende el brazo en diagonal a las 11h.",
+       exec:"Siéntate lentamente hacia los talones manteniendo el brazo extendido en el suelo. El pecho baja hacia el suelo. 45 segundos cada lado."},
+      {name:"Estiramiento de bíceps en pared", dur:"30 seg/lado",
+       pos:"De pie. Apoya la palma en la pared con el pulgar hacia abajo.",
+       exec:"Gira el cuerpo alejándote de la pared sin doblar el codo. El estiramiento recorre todo el bíceps. 30 segundos."},
+      {name:"Abrazo — Romboides y trapecio medio", dur:"45 segundos",
+       pos:"Sentado o de pie con la espalda recta.",
+       exec:"Cruza los brazos abrazándote. Lleva los codos hacia delante y arriba. Redondea la espalda separando los omóplatos al máximo. Mantén 45 segundos sintiendo el estiramiento entre los omóplatos."},
+    ],
+    mobGeneral: true,
+    running: true, kcal:520
+  },
+  viernes: {
+    name:"Pecho + Tríceps", emoji:"🏋️",
+    warmup:{
+      title:"Calentamiento",
+      steps:[
+        {name:"Máquina deltoides/espalda posterior", dur:"1×16 reps · 10-12 kg",
+         pos:"Sentado en la máquina. Agarre con los brazos extendidos al frente.",
+         exec:"Lleva los brazos hacia atrás abriendo el pecho, apretando la espalda posterior. Movimiento lento y controlado. El objetivo es activar el hombro posterior y la espalda alta antes del press para proteger el hombro."},
+      ]
+    },
+    exercises:[
+      {name:"Press de banca con barra", muscle:"Pectoral · Tríceps", sets:3, reps:"16/12/10", weight:5},
+      {name:"Press pecho en máquina", muscle:"Pectoral mayor", sets:3, reps:16, weight:30},
+      {name:"Aperturas en máquina", muscle:"Pectoral · Deltoides ant", sets:3, reps:16, weight:10},
+      {name:"Cruce de poleas", muscle:"Pectoral", sets:3, reps:16, weight:7.5},
+      {name:"Extensión tríceps polea (V)", muscle:"Tríceps", sets:3, reps:16, weight:10},
+      {name:"Extensión tríceps polea (individual)", muscle:"Tríceps", sets:3, reps:16, weight:5},
+      {name:"Extensión tríceps polea (barra recta)", muscle:"Tríceps", sets:3, reps:16, weight:10},
+    ],
+    cardio:"10-15 min remo / bici / caminata",
+    mobility:[
+      {name:"Apertura de pecho en suelo (posición T)", dur:"45 seg/lado",
+       pos:"Túmbate boca abajo. Extiende el brazo derecho en T (90° del cuerpo). Cabeza girada hacia la izquierda.",
+       exec:"Usa el pie izquierdo para rotar el cuerpo hacia la derecha hasta sentir el estiramiento en el pectoral. Mantén 45 segundos. Para la posición Y (parte alta del pecho): extiende el brazo a 45° por encima de la cabeza."},
+      {name:"Estiramiento de pectoral en marco de puerta", dur:"45 seg/lado",
+       pos:"En el marco de una puerta. Antebrazo apoyado a 90°.",
+       exec:"Da un paso adelante y gira el cuerpo hasta sentir el pectoral. Prueba diferentes alturas. 45 segundos cada lado."},
+      {name:"Estiramiento de tríceps sobre cabeza", dur:"30 seg/lado",
+       pos:"De pie. Codo derecho detrás de la cabeza con la mano entre los omóplatos.",
+       exec:"Mano izquierda empuja el codo hacia atrás suavemente. Cuello recto. 30 segundos cada lado."},
+      {name:"Cobra pasiva — pectoral inferior", dur:"45 segundos",
+       pos:"Túmbate boca abajo. Manos bajo los hombros.",
+       exec:"Empuja con los brazos elevando el pecho. La cadera permanece en el suelo. Son los brazos los que sostienen el peso, no la espalda. Mantén 45 segundos."},
+    ],
+    mobGeneral: true,
+    running: true, kcal:520
+  },
+  sabado: {
+    name:"Movilidad en casa", emoji:"🧘",
+    warmup:{
+      title:"Activación inicial",
+      steps:[
+        {name:"Respiración diafragmática", dur:"8 respiraciones",
+         pos:"Túmbate boca arriba, rodillas flexionadas, pies en el suelo. Una mano en el pecho, otra en el abdomen.",
+         exec:"Inspira 4 segundos por la nariz — el abdomen sube, el pecho casi no se mueve. Mantén 2 segundos. Espira 6 segundos por la boca vaciando completamente. 8 respiraciones lentas para activar el sistema parasimpático."},
+        {name:"Cat-Cow fluido con pausa", dur:"12 repeticiones",
+         pos:"A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas.",
+         exec:"Inspira bajando el abdomen (vaca) — mantén 2 segundos. Espira redondeando la columna (gato) — mantén 2 segundos. El sábado ve más lento que entre semana. Busca la máxima extensión en vaca y la máxima flexión en gato."},
+      ]
+    },
+    exercises:[
+      {name:"Dead Bug", muscle:"Core profundo", sets:3, reps:"8/lado", weight:0},
+      {name:"Bird Dog", muscle:"Core · Glúteo · Equilibrio", sets:3, reps:"10/lado", weight:0},
+      {name:"Plancha frontal", muscle:"Core completo", sets:3, reps:"20-40 seg", weight:0},
+      {name:"Plancha lateral", muscle:"Oblicuos · Glúteo medio", sets:3, reps:"15-30 seg/lado", weight:0},
+      {name:"Hollow Hold", muscle:"Recto abdominal", sets:3, reps:"15-25 seg", weight:0},
+      {name:"Puente de glúteo con pausa", muscle:"Glúteo · Isquiotibiales", sets:3, reps:12, weight:0},
+    ],
+    cardio:"Estiramientos profundos — ver movilidad post",
+    mobility:[
+      {name:"Rotación de columna tumbado (Supine Twist)", dur:"45 seg/lado",
+       pos:"Túmbate boca arriba. Rodillas juntas flexionadas. Brazos en cruz.",
+       exec:"Deja caer las rodillas juntas hacia la derecha. Gira la cabeza hacia la izquierda. Mantén 45 segundos — en cada espiración las rodillas caen más. Descomprime la columna lumbar tras la semana."},
+      {name:"Paloma profunda con extensión lateral", dur:"60 seg/lado",
+       pos:"Pierna delantera doblada en 90°, pierna trasera extendida. Caderas al suelo.",
+       exec:"Mantén 60 segundos base. Luego añade: lleva el brazo del mismo lado hacia el techo y en arco al lado contrario. Estira también la banda iliotibial. 20 segundos con extensión."},
+      {name:"Isquiotibiales con banda — versión larga", dur:"60 seg/lado",
+       pos:"Tumbado boca arriba con banda alrededor del pie.",
+       exec:"Eleva la pierna con rodilla extendida. El sábado mantén 60 segundos. Al final flexiona y extiende el pie 10 veces para el gemelo. La pierna de abajo permanece apoyada."},
+      {name:"Psoas en estocada con brazo elevado", dur:"50 seg/lado",
+       pos:"Rodilla izquierda en el suelo. Pie derecho adelantado a 90°. Caderas empujando hacia delante.",
+       exec:"Eleva el brazo izquierdo verticalmente y llévalo ligeramente hacia la derecha. Esto intensifica el estiramiento del psoas al estirar también el lateral. Mantén 50 segundos."},
+      {name:"Child's Pose — cierre de sesión", dur:"90 segundos",
+       pos:"A cuatro patas. Siéntate hacia los talones y extiende los brazos al frente.",
+       exec:"Frente hacia el suelo. Brazos extendidos o relajados a los lados. Mantén 90 segundos respirando profundo. En cada espiración el cuerpo se hunde más. Cierra la sesión del sábado con calma."},
+    ],
+    mobGeneral: false,
+    running: false, kcal:150
+  }
+};
+
+const MOB_GENERAL = [
+  {name:"Respiración diafragmática", dur:"6 respiraciones",
+   pos:"Túmbate boca arriba, rodillas flexionadas, pies en el suelo. Una mano en el pecho, otra en el abdomen.",
+   exec:"Inspira 4 segundos por la nariz hinchando solo el abdomen — la mano del pecho no se mueve. Mantén 1 segundo. Espira 6 segundos por la boca vaciando completamente. El abdomen sube y baja, el pecho casi no."},
+  {name:"Rotación torácica en cuadrupedia", dur:"8 rep/lado",
+   pos:"A cuatro patas: muñecas bajo hombros, rodillas bajo caderas. Mano derecha detrás de la cabeza.",
+   exec:"Sin mover la cadera, rota el torso llevando el codo derecho hacia el techo. Sigue con la mirada. Mantén 1 segundo arriba. Baja con control. El movimiento ocurre solo en la columna torácica — las caderas no giran."},
+  {name:"Cat-Cow (Gato-Vaca)", dur:"10 repeticiones",
+   pos:"A cuatro patas. Columna neutra.",
+   exec:"Inspira bajando el abdomen al suelo (vaca) — cabeza y coxis arriba. Espira redondeando toda la columna hacia el techo (gato) — cabeza y coxis abajo. Alterna de forma fluida coordinando con la respiración. Sin prisa."},
+  {name:"Estiramiento de cadera en paloma", dur:"45 seg/lado",
+   pos:"Desde cuadrupedia, lleva la rodilla derecha hacia la muñeca derecha y el pie derecho hacia la muñeca izquierda. Pierna trasera completamente extendida.",
+   exec:"Apoya los antebrazos en el suelo y deja caer el peso del cuerpo. Si la cadera no llega al suelo pon una toalla. Mantén 45 segundos respirando profundo. En cada espiración la cadera cae un poco más."},
+];
+
+const RUN_WEEKS = [
+  {num:1, title:"Intervalos 30s trote / 90s caminata", sub:"Las 3 sesiones son idénticas",
+   days:["Lunes 22 jun","Jueves 25 jun","Viernes 26 jun"],
+   warmup:[
+     {name:"Caminata suave de activación", dur:"3 minutos",
+      pos:"De pie, postura natural.",
+      exec:"Camina a paso normal sin prisas. Mueve los brazos de forma natural. El objetivo es elevar ligeramente la temperatura corporal antes de los intervalos."},
+     {name:"Elevaciones de rodilla caminando", dur:"20 pasos",
+      pos:"De pie, manos en la cintura.",
+      exec:"En cada paso lleva la rodilla hasta la altura de la cadera. Mantén el torso recto. Activa los flexores de cadera y el core."},
+     {name:"Talones al glúteo caminando", dur:"20 pasos",
+      pos:"De pie, caminando hacia delante.",
+      exec:"En cada paso intenta tocar el glúteo con el talón. Mantén el torso recto y los muslos paralelos. Activa los isquiotibiales."},
+     {name:"Círculos de tobillo", dur:"10 rep/lado",
+      pos:"De pie apoyado en algo si necesitas equilibrio. Pie derecho elevado.",
+      exec:"Gira el tobillo en círculos completos — 10 hacia un lado, 10 hacia el otro. Repite con el izquierdo. Calienta la articulación que más impacto recibe al correr."},
+     {name:"Caminata a paso rápido", dur:"2 minutos",
+      pos:"De pie, postura erguida.",
+      exec:"Acelera el paso hasta que el corazón empiece a latir más rápido. Brazos activos. Esta es la transición al bloque de trabajo."},
+   ],
+   work:"8 × [ 30 seg trote suave + 90 seg caminata ]",
+   workDetail:"Pon un cronómetro de intervalos. El trote es casi caminar rápido — si puedes hablar, vas bien. Si no puedes hablar, baja el ritmo. 8 repeticiones sin saltarte ninguna caminata.",
+   cooldown:[
+     {name:"Caminata de recuperación", dur:"2 minutos",
+      pos:"Caminando.",
+      exec:"Baja el ritmo progresivamente hasta caminar muy despacio. Deja que la respiración vuelva a la normalidad antes de estirarte."},
+     {name:"Estiramiento de cuádriceps de pie", dur:"30 seg/lado",
+      pos:"De pie. Dobla la rodilla derecha llevando el talón al glúteo. Sujeta el pie con la mano derecha. Apóyate en algo si necesitas.",
+      exec:"Mantén las rodillas juntas. El muslo derecho paralelo al izquierdo. Nota el estiramiento en la parte delantera del muslo. 30 segundos."},
+     {name:"Estiramiento de isquiotibiales en escalón", dur:"30 seg/lado",
+      pos:"Apoya el pie derecho en un bordillo o escalón con la rodilla casi recta.",
+      exec:"Inclínate hacia delante desde las caderas (no redondeando la espalda) hasta notar el estiramiento en la parte posterior del muslo. Mantén 30 segundos."},
+     {name:"Estiramiento de gemelo en pared", dur:"30 seg/lado",
+      pos:"Manos apoyadas en la pared. Pie trasero a 80-90 cm.",
+      exec:"Rodilla recta, talón en el suelo. Inclínate hacia la pared. 30 segundos gemelo. Luego dobla ligeramente la rodilla — 30 segundos sóleo (más profundo y más abajo)."},
+     {name:"Estiramiento de psoas en estocada", dur:"30 seg/lado",
+      pos:"Rodilla trasera en el suelo (pon algo debajo si molesta). Pie delantero a 90°.",
+      exec:"Empuja la cadera hacia delante hasta notar el estiramiento en la ingle de la pierna trasera. Torso erguido. 30 segundos."},
+   ],
+   tip:"El objetivo de la semana 1 es que el cuerpo se acostumbre a salir. Si terminas sin estar agotado, lo has hecho bien.",
+   startDate:"2026-06-22"},
+  {num:2, title:"Intervalos 45s trote / 90s caminata", sub:"Las 3 sesiones son idénticas", days:["Lun","Jue","Vie"], warmup:null, work:"8 × [ 45 seg trote + 90 seg caminata ]", workDetail:"Mismo formato que la semana 1 pero 15 segundos más de trote. Mismo ritmo conversacional.", cooldown:null, tip:"Si la semana 1 fue dura, repítela. No hay prisa.", startDate:"2026-06-29"},
+  {num:3, title:"Intervalos 1 min / 1 min", sub:"Ratio 1:1 — ya corres el 50%", days:["Lun","Jue","Vie"], warmup:null, work:"10 × [ 1 min trote + 1 min caminata ]", workDetail:"Los intervalos de 1 minuto ya son manejables. Ritmo conversacional siempre.", cooldown:null, tip:"Test del habla: di una frase de 5 palabras mientras corres. Si no puedes, baja el ritmo.", startDate:"2026-07-06"},
+  {num:4, title:"Intervalos 2 min / 1 min", sub:"Ya corres el doble de lo que caminas", days:["Lun","Jue","Vie"], warmup:null, work:"7 × [ 2 min trote + 1 min caminata ]", workDetail:"Los bloques de 2 minutos se sienten bien si has seguido el plan. Mismo ritmo.", cooldown:null, tip:"Nota el progreso desde la semana 1. El cuerpo se ha adaptado.", startDate:"2026-07-13"},
+  {num:5, title:"Intervalos 3 min / 1 min", sub:"El running empieza a sentirse de verdad", days:["Lun","Jue","Vie"], warmup:null, work:"6 × [ 3 min trote + 1 min caminata ]", workDetail:"Bloques de 3 minutos. Ritmo cómodo y constante.", cooldown:null, tip:"Si el calor es intenso en Palencia, sal después de las 20:30.", startDate:"2026-07-20"},
+  {num:6, title:"Intervalos 5 min / 1 min", sub:"Casi sin pausas — ya eres corredor", days:["Lun","Jue","Vie"], warmup:null, work:"4 × [ 5 min trote + 1 min caminata ]", workDetail:"Las pausas son casi anecdóticas. El cuerpo ya tiene base.", cooldown:null, tip:"Si puedes hablar con normalidad mientras corres, el ritmo es correcto.", startDate:"2026-07-27"},
+  {num:7, title:"Carrera continua 10-15 min", sub:"El objetivo final — sin parar", days:["Lun","Jue","Vie"], warmup:null, work:"Lun: 10 min · Jue: 12 min · Vie: 15 min continuos", workDetail:"Ritmo muy suave. Si necesitas 30 seg de caminata, tómalos. No es derrota.", cooldown:null, tip:"Disfruta el viernes — llevas 7 semanas de trabajo. Mereces este momento.", startDate:"2026-08-03"},
+];
+
+const FOOD_DB = [
+  {n:"Pechuga de pollo plancha", p:{k:107,p:22,c:0,f:2}},
+  {n:"Muslo de pollo al horno", p:{k:152,p:20,c:0,f:8}},
+  {n:"Alitas de pollo al horno", p:{k:185,p:19,c:0,f:12}},
+  {n:"Pechuga de pavo plancha", p:{k:98,p:22,c:0,f:1}},
+  {n:"Salmón fresco plancha", p:{k:195,p:20,c:0,f:13}},
+  {n:"Dorada al horno", p:{k:95,p:18,c:0,f:2.5}},
+  {n:"Lubina al horno", p:{k:97,p:17,c:0,f:3}},
+  {n:"Bacalao al horno", p:{k:77,p:18,c:0,f:0.5}},
+  {n:"Merluza al horno", p:{k:81,p:18,c:0,f:1}},
+  {n:"Atún al natural (lata)", p:{k:98,p:22,c:0,f:1}},
+  {n:"Anchoas en aceite", p:{k:230,p:20,c:0,f:17}},
+  {n:"Caballa en conserva", p:{k:142,p:18,c:0,f:8}},
+  {n:"Sardinas en tomate", p:{k:137,p:17,c:2.5,f:7}},
+  {n:"Mejillones en escabeche", p:{k:117,p:15,c:5,f:5}},
+  {n:"Gambas peladas vapor", p:{k:65,p:14,c:0,f:1}},
+  {n:"Pulpo cocido", p:{k:73,p:15,c:1,f:1}},
+  {n:"Filete de ternera", p:{k:127,p:21,c:0,f:5}},
+  {n:"Carne picada ternera", p:{k:170,p:20,c:0,f:10}},
+  {n:"Lomo de cerdo", p:{k:127,p:21,c:0,f:4}},
+  {n:"Solomillo de cerdo", p:{k:117,p:21,c:0,f:3}},
+  {n:"Costillas de cerdo", p:{k:208,p:18,c:0,f:15}},
+  {n:"Jamón ibérico", p:{k:243,p:23,c:0,f:17}},
+  {n:"Jamón cocido", p:{k:117,p:22,c:1,f:2.5}},
+  {n:"Pavo en lonchas", p:{k:117,p:23,c:1,f:2}},
+  {n:"Huevos enteros", p:{k:148,p:13,c:1,f:10}},
+  {n:"Claras de huevo", p:{k:48,p:11,c:0,f:0}},
+  {n:"Yogur griego natural", p:{k:80,p:9,c:4,f:4}},
+  {n:"Queso fresco Burgos", p:{k:103,p:8,c:2,f:7}},
+  {n:"Queso manchego", p:{k:363,p:23,c:0,f:30}},
+  {n:"Mozzarella fresca", p:{k:280,p:23,c:2,f:20}},
+  {n:"Arroz blanco cocido", p:{k:108,p:2,c:25,f:0}},
+  {n:"Arroz integral cocido", p:{k:111,p:2.5,c:23,f:1}},
+  {n:"Pasta blanca cocida", p:{k:123,p:4,c:25,f:0.7}},
+  {n:"Pasta integral cocida", p:{k:120,p:5,c:23,f:1}},
+  {n:"Fideos soba cocidos", p:{k:99,p:5,c:21,f:0.1}},
+  {n:"Fideos udon cocidos", p:{k:96,p:3,c:21,f:0.5}},
+  {n:"Fideos de arroz cocidos", p:{k:109,p:2,c:25,f:0}},
+  {n:"Patata hervida", p:{k:76,p:2,c:17,f:0}},
+  {n:"Boniato asado", p:{k:90,p:2,c:21,f:0}},
+  {n:"Pan integral molde", p:{k:247,p:9,c:41,f:4}},
+  {n:"Pan de centeno", p:{k:259,p:8,c:48,f:3}},
+  {n:"Avena en copos", p:{k:367,p:13,c:63,f:7}},
+  {n:"Tortitas de arroz", p:{k:388,p:9,c:81,f:3}},
+  {n:"Plátano", p:{k:87,p:1,c:21,f:0}},
+  {n:"Mango", p:{k:64,p:0.5,c:15,f:0}},
+  {n:"Naranja", p:{k:44,p:1,c:10,f:0}},
+  {n:"Fresas", p:{k:30,p:0.5,c:7,f:0}},
+  {n:"Sandía", p:{k:30,p:0.5,c:7.5,f:0}},
+  {n:"Manzana", p:{k:48,p:0,c:12,f:0}},
+  {n:"Melocotón", p:{k:40,p:1,c:9,f:0}},
+  {n:"Cerezas", p:{k:50,p:1,c:12,f:0}},
+  {n:"Arándanos", p:{k:43,p:0.5,c:10,f:0}},
+  {n:"Uvas negras", p:{k:69,p:0.5,c:17,f:0}},
+  {n:"Piña", p:{k:52,p:0.5,c:13,f:0}},
+  {n:"Kiwi", p:{k:51,p:1,c:11,f:0}},
+  {n:"Aguacate", p:{k:143,p:1.5,c:4,f:14}},
+  {n:"Aceite de oliva virgen extra", p:{k:900,p:0,c:0,f:100}},
+  {n:"Nueces", p:{k:655,p:15,c:10,f:65}},
+  {n:"Almendras", p:{k:600,p:20,c:10,f:60}},
+  {n:"Crema de cacahuete 100%", p:{k:627,p:27,c:13,f:53}},
+  {n:"Tahini (pasta sésamo)", p:{k:595,p:17,c:21,f:54}},
+  {n:"Lechuga romana", p:{k:15,p:1,c:2,f:0}},
+  {n:"Espinacas", p:{k:23,p:3,c:2,f:0}},
+  {n:"Tomate", p:{k:18,p:1,c:4,f:0}},
+  {n:"Pepino", p:{k:12,p:0.5,c:2,f:0}},
+  {n:"Champiñones", p:{k:25,p:3,c:2,f:0.5}},
+  {n:"Brócoli", p:{k:34,p:3,c:5,f:0}},
+  {n:"Judías verdes", p:{k:24,p:2,c:4,f:0}},
+  {n:"Zanahoria", p:{k:41,p:1,c:10,f:0}},
+  {n:"Kimchi", p:{k:25,p:2,c:3,f:0}},
+  {n:"Edamame", p:{k:125,p:12,c:8,f:5}},
+  {n:"Batido Whey+Colágeno (30g)", p:{k:121,p:25,c:3,f:1}},
+];
+
+const DRINKS_DB = [
+  {n:"Cerveza (5°) 330ml", k:150, note:"13g alcohol"},
+  {n:"Cerveza sin alcohol 0,0° 330ml", k:60, note:"0g alcohol"},
+  {n:"Verdejo (copa 150ml)", k:115, note:"14g alcohol"},
+  {n:"Verdejo (2 copas 300ml)", k:230, note:"28g alcohol"},
+  {n:"Gin Seagram's + tónica 330ml", k:210, note:"17g alcohol"},
+  {n:"Gin Seagram's + tónica zero", k:160, note:"17g alcohol"},
+  {n:"Limón con Gin Seagram's", k:175, note:"17g alcohol"},
+  {n:"Whisky solo (40ml)", k:100, note:"13g alcohol"},
+  {n:"Vino tinto (copa 150ml)", k:120, note:"14g alcohol"},
+];
+
+// ============================================================
+// STORAGE
+// ============================================================
+function ld(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function sd(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function today(){return new Date().toISOString().split('T')[0];}
+
+// ============================================================
+// NAV
+// ============================================================
+function nav(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('pg-'+id).classList.add('active');
+  document.getElementById('nb-'+id).classList.add('active');
+  if(id==='home') renderHome();
+  if(id==='gym') renderGymSession();
+  if(id==='run') renderRunToday();
+  if(id==='food') renderFoodToday();
+  if(id==='weight') renderWeight();
+}
+
+// ============================================================
+// HOME
+// ============================================================
+function getTargetKcal(){var w=getCurrentWeight();return 2000;}
+function getTargetProt(){var w=getCurrentWeight();return Math.round(w*1.8);}
+
+function getCurrentWeight(){
+  var ws=ld('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
+  return ws.length?ws[ws.length-1].val:90.6;
+}
+
+function renderHome(){
+  var now=new Date();
+  var days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('h-date').textContent=days[now.getDay()]+', '+now.getDate()+' de '+months[now.getMonth()]+' '+now.getFullYear();
+
+  // Quote
+  var q=QUOTES[now.getDate()%QUOTES.length];
+  document.getElementById('h-quote').textContent='"'+q.text+'"';
+  document.getElementById('h-quote-author').textContent='— '+q.author;
+
+  // Weight & days
+  var w=getCurrentWeight();
+  var target=83;
+  var start=92.4;
+  var lost=start-w;
+  var aug15=new Date('2026-08-15');
+  var dLeft=Math.max(0,Math.ceil((aug15-now)/86400000));
+  document.getElementById('h-weight').textContent=w.toFixed(1)+' kg';
+  document.getElementById('h-days').textContent=dLeft;
+  var pct=Math.min(100,Math.round((lost/(start-target))*100));
+  document.getElementById('h-pct').textContent=pct+'%';
+  document.getElementById('h-pbar').style.width=pct+'%';
+
+  // Water + temp
+  fetchWeather();
+
+  // Gym today
+  var dow=now.getDay();
+  var dayMap={1:'lunes',2:'martes',3:'miercoles',4:'jueves',5:'viernes',6:'sabado',0:null};
+  var dk=dayMap[dow];
+  var plan=dk?GYM_BASE[dk]:null;
+  if(plan){
+    document.getElementById('h-gym-badge').textContent=plan.name;
+    document.getElementById('h-gym-detail').innerHTML=
+      '<div style="margin-bottom:6px">'+plan.exercises.slice(0,3).map(function(e){
+        return '<div style="padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'+e.name+' <span style="color:var(--m);font-size:11px">'+e.sets+'×'+e.reps+'</span></div>';
+      }).join('')+'</div>'+
+      '<div style="font-size:11px;color:var(--m)">+'+( plan.exercises.length-3)+' ejercicios más · 🚴 '+plan.cardio+'</div>';
+  } else {
+    document.getElementById('h-gym-badge').textContent='Descanso';
+    document.getElementById('h-gym-detail').textContent='Hoy descansas. Intenta caminar 10.000 pasos.';
+  }
+
+  // Running today
+  var isRunDay=(dow===1||dow===4||dow===5);
+  var runWeekNum=getCurrentRunWeek();
+  if(isRunDay && runWeekNum>0){
+    var rw=RUN_WEEKS[runWeekNum-1];
+    document.getElementById('h-run-badge').textContent='Semana '+runWeekNum;
+    document.getElementById('h-run-detail').innerHTML=
+      '<div style="margin-bottom:4px">'+rw.work+'</div>'+
+      '<div style="font-size:11px;color:var(--m)">Sal a correr esta tarde · '+rw.tip+'</div>';
+  } else if(isRunDay && runWeekNum===0){
+    document.getElementById('h-run-badge').textContent='Empieza el 22 jun';
+    document.getElementById('h-run-detail').textContent='El plan de running empieza el 22 de junio.';
+  } else {
+    var nextRun=getNextRunDay(now);
+    document.getElementById('h-run-badge').textContent='No toca hoy';
+    document.getElementById('h-run-detail').textContent='Próxima sesión: '+nextRun;
+  }
+
+  // Food today
+  renderHomeMacros();
+}
+
+function getNextRunDay(now){
+  var d=new Date(now);
+  for(var i=1;i<=7;i++){
+    d.setDate(d.getDate()+1);
+    var dow=d.getDay();
+    if(dow===1||dow===4||dow===5){
+      var days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+      return days[dow]+' '+d.getDate()+' '+'ene feb mar abr may jun jul ago sep oct nov dic'.split(' ')[d.getMonth()];
+    }
+  }
+  return 'próximamente';
+}
+
+function getCurrentRunWeek(){
+  var start=new Date('2026-06-22');
+  var now=new Date();
+  if(now<start) return 0;
+  var diff=Math.floor((now-start)/86400000);
+  var w=Math.floor(diff/7)+1;
+  return Math.min(w,7);
+}
+
+function renderHomeMacros(){
+  var log=ld('food_'+today(),[]);
+  var t=log.reduce(function(a,f){return{k:a.k+f.k,p:a.p+f.p,c:a.c+f.c,f:a.f+f.f};},{k:0,p:0,c:0,f:0});
+  var maxK=getTargetKcal();
+  document.getElementById('h-kcal-badge').textContent=Math.round(t.k)+' / '+maxK+' kcal';
+  document.getElementById('h-kcal-bar').style.width=Math.min(100,(t.k/maxK)*100)+'%';
+  document.getElementById('h-prot').textContent=Math.round(t.p)+'g';
+  document.getElementById('h-carb').textContent=Math.round(t.c)+'g';
+  document.getElementById('h-fat').textContent=Math.round(t.f)+'g';
+}
+
+function fetchWeather(){
+  var lat,lon;
+  document.getElementById('h-temp').textContent='...';
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(pos){
+      lat=pos.coords.latitude; lon=pos.coords.longitude;
+      getTemp(lat,lon);
+    },function(){getTemp(42.3387,-4.6019);});
+  } else {getTemp(42.3387,-4.6019);}
+}
+
+function getTemp(lat,lon){
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m&timezone=auto')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var temp=Math.round(d.current.temperature_2m);
+    document.getElementById('h-temp').textContent=temp+'°C';
+    var water=2.5;
+    if(temp>=25&&temp<30) water=3.0;
+    else if(temp>=30&&temp<35) water=3.5;
+    else if(temp>=35) water=4.0;
+    // Check if running day
+    var dow=new Date().getDay();
+    if(dow===1||dow===4||dow===5) water+=0.5;
+    document.getElementById('h-water').textContent=water.toFixed(1).replace('.',',')+' L';
+    var sub='Día normal';
+    if(temp>=35) sub='Ola de calor — hidrátate mucho';
+    else if(temp>=30) sub='Calor alto — bebe más';
+    else if(temp>=25) sub='Calor moderado';
+    if(dow===1||dow===4||dow===5) sub+=' · +0,5L por running';
+    document.getElementById('h-water-sub').textContent=sub;
+  }).catch(function(){
+    document.getElementById('h-temp').textContent='—';
+    document.getElementById('h-water').textContent='2,5 L';
+    document.getElementById('h-water-sub').textContent='Carrión de los Condes · sin datos de temperatura';
+  });
+}
+
+// ============================================================
+// GYM
+// ============================================================
+function gymTab(t){
+  ['session','plan','history'].forEach(function(x){
+    document.getElementById('gt-'+x).style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('#pg-gym .tr .tb').forEach(function(b,i){
+    b.classList.toggle('active',['session','plan','history'][i]===t);
+  });
+  if(t==='plan') planDay('lunes');
+  if(t==='history') renderGymHistory();
+}
+
+function getGymDayData(dk){
+  var custom=ld('gym_custom_'+dk,null);
+  if(custom) return custom;
+  return GYM_BASE[dk]||null;
+}
+
+function renderGymSession(){
+  var dow=new Date().getDay();
+  var dayMap={1:'lunes',2:'martes',3:'miercoles',4:'jueves',5:'viernes',6:'sabado'};
+  var dk=dayMap[dow];
+  var el=document.getElementById('gym-session-content');
+  if(!dk){
+    el.innerHTML='<div class="empty"><div class="empty-icon">😴</div><div class="empty-text">Hoy es domingo — día de descanso.<br>Disfruta la recuperación.</div></div>';
+    return;
+  }
+  renderGymDay(dk, el, true);
+}
+
+function renderGymDay(dk, container, isSession){
+  var plan=getGymDayData(dk);
+  if(!plan){container.innerHTML='<div class="empty"><div class="empty-text">Sin datos para este día.</div></div>';return;}
+  var html='<div style="padding:10px 16px">';
+  // Header
+  html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+  html+='<div><div style="font-size:16px;font-weight:700;color:var(--t)">'+plan.emoji+' '+plan.name+'</div></div>';
+  html+='<div style="display:flex;gap:8px">';
+  html+='<button class="btn bth btn-sm" onclick="openExModal(\''+dk+'\')">+ Ejercicio</button>';
+  html+='</div></div>';
+  // Warmup
+  if(plan.warmup){
+    html+='<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
+    html+='<div style="font-size:11px;font-weight:600;color:var(--o);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⚡ '+plan.warmup.title+'</div>';
+    plan.warmup.steps.forEach(function(s){
+      html+='<div class="exb" style="margin-bottom:6px"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
+      html+='<span class="exbn">'+s.name+'</span><span class="exbm">'+s.dur+'</span><span class="exba">›</span></div>';
+      html+='<div class="exbd"><div class="desc-block"><div class="desc-title">📍 Posición inicial</div><div class="desc-text">'+s.pos+'</div></div>';
+      html+='<div class="desc-block"><div class="desc-title">▶️ Ejecución</div><div class="desc-text">'+s.exec+'</div></div></div></div>';
+    });
+    html+='</div>';
+  }
+  // Exercises
+  html+='<div style="font-size:11px;font-weight:600;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">💪 Ejercicios</div>';
+  plan.exercises.forEach(function(ex,i){
+    var savedLog=ld('gym_log_'+dk+'_'+today()+'_'+i,null);
+    html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
+    html+='<span class="exbn">'+ex.name+'</span><span class="exbm">'+ex.muscle+'</span>';
+    html+=(ex.weight>0?'<span style="font-size:12px;font-weight:600;color:var(--o);margin-right:6px">'+ex.weight+'kg</span>':'');
+    html+='<span class="exba">›</span></div>';
+    html+='<div class="exbd">';
+    html+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">';
+    html+='<div><div class="log-label">Series</div><input type="number" class="log-input" id="log-s-'+i+'" value="'+(savedLog?savedLog.sets:ex.sets)+'" placeholder="'+ex.sets+'"></div>';
+    html+='<div><div class="log-label">Reps</div><input type="number" class="log-input" id="log-r-'+i+'" value="'+(savedLog?savedLog.reps:(typeof ex.reps==='number'?ex.reps:ex.reps))+'" placeholder="'+(typeof ex.reps==='number'?ex.reps:'16')+'"></div>';
+    html+='<div><div class="log-label">Peso (kg)</div><input type="number" class="log-input" id="log-w-'+i+'" value="'+(savedLog?savedLog.weight:ex.weight)+'" placeholder="'+ex.weight+'" step="0.5"></div>';
+    html+='</div>';
+    html+='<button class="btn btg btn-sm" onclick="saveExLog(\''+dk+'\','+i+',\''+ex.name+'\')">Guardar</button>';
+    if(ex.notes) html+='<div style="margin-top:8px;font-size:11px;color:var(--m)">📝 '+ex.notes+'</div>';
+    // Delete custom
+    if(ex._custom) html+='<button class="btn bth btn-sm" style="margin-top:6px" onclick="deleteCustomEx(\''+dk+'\','+i+')">🗑 Eliminar</button>';
+    html+='</div></div>';
+  });
+  // Cardio
+  html+='<div class="al alc2" style="margin:10px 0"><span class="ali">🚴</span><span>'+plan.cardio+'</span></div>';
+  // Mobility
+  if(plan.mobility&&plan.mobility.length){
+    html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px">🧘 Movilidad post-entreno</div>';
+    plan.mobility.forEach(function(m){
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
+      html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span><span class="exba">›</span></div>';
+      html+='<div class="exbd"><div class="desc-block"><div class="desc-title">📍 Posición inicial</div><div class="desc-text">'+m.pos+'</div></div>';
+      html+='<div class="desc-block"><div class="desc-title">▶️ Ejecución</div><div class="desc-text">'+m.exec+'</div></div></div></div>';
+    });
+  }
+  if(plan.mobGeneral){
+    html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px">🌿 Movilidad general (todos los días)</div>';
+    MOB_GENERAL.forEach(function(m){
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
+      html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span><span class="exba">›</span></div>';
+      html+='<div class="exbd"><div class="desc-block"><div class="desc-title">📍 Posición inicial</div><div class="desc-text">'+m.pos+'</div></div>';
+      html+='<div class="desc-block"><div class="desc-title">▶️ Ejecución</div><div class="desc-text">'+m.exec+'</div></div></div></div>';
+    });
+  }
+  if(isSession){
+    html+='<div style="margin-top:12px"><button class="btn btg" onclick="saveFullSession(\''+dk+'\')">💾 Guardar sesión completa</button></div>';
+  }
+  html+='</div>';
+  container.innerHTML=html;
+}
+
+function saveExLog(dk,i,name){
+  var s=document.getElementById('log-s-'+i).value;
+  var r=document.getElementById('log-r-'+i).value;
+  var w=document.getElementById('log-w-'+i).value;
+  sd('gym_log_'+dk+'_'+today()+'_'+i,{sets:s,reps:r,weight:w,name:name});
+  // Visual feedback
+  var btn=event.target;
+  var orig=btn.textContent;
+  btn.textContent='✅ Guardado';
+  setTimeout(function(){btn.textContent=orig;},1500);
+}
+
+function saveFullSession(dk){
+  var plan=getGymDayData(dk);
+  var session={date:today(),day:dk,name:plan.name,exercises:[]};
+  plan.exercises.forEach(function(ex,i){
+    var log=ld('gym_log_'+dk+'_'+today()+'_'+i,null);
+    session.exercises.push({name:ex.name,sets:log?log.sets:ex.sets,reps:log?log.reps:ex.reps,weight:log?log.weight:ex.weight});
+  });
+  var hist=ld('gym_hist',[]);
+  hist.unshift(session);
+  sd('gym_hist',hist.slice(0,60));
+  alert('✅ Sesión guardada correctamente');
+}
+
+function planDay(dk){
+  document.querySelectorAll('#gt-plan .tr .tb').forEach(function(b,i){
+    b.classList.toggle('active',['lunes','martes','miercoles','jueves','viernes','sabado'][i]===dk);
+  });
+  renderGymDay(dk,document.getElementById('gym-plan-content'),false);
+}
+
+function renderGymHistory(){
+  var hist=ld('gym_hist',[]);
+  var el=document.getElementById('gym-history-content');
+  if(!hist.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Aún no hay sesiones guardadas</div></div>';return;}
+  el.innerHTML=hist.slice(0,30).map(function(s){
+    return '<div class="card" style="margin:0 0 10px"><div class="ch"><span class="ci">🏋️</span><span class="ct">'+s.name+'</span><span class="cbadge bb">'+s.date+'</span></div>'+
+    '<div class="cb">'+s.exercises.map(function(e){return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--b);font-size:13px"><span>'+e.name+'</span><span style="color:var(--o);font-weight:600">'+e.sets+'×'+e.reps+' · '+e.weight+'kg</span></div>';}).join('')+'</div></div>';
+  }).join('');
+}
+
+// Add/delete custom exercises
+function openExModal(dk){
+  document.getElementById('ex-day').value=dk;
+  document.getElementById('ex-modal').classList.add('open');
+}
+function closeExModal(){document.getElementById('ex-modal').classList.remove('open');}
+
+function saveNewEx(){
+  var dk=document.getElementById('ex-day').value;
+  var name=document.getElementById('ex-name').value.trim();
+  var muscle=document.getElementById('ex-muscle').value.trim();
+  var sets=parseInt(document.getElementById('ex-sets').value)||3;
+  var reps=parseInt(document.getElementById('ex-reps').value)||12;
+  var weight=parseFloat(document.getElementById('ex-weight').value)||0;
+  var notes=document.getElementById('ex-notes').value.trim();
+  if(!name){alert('Introduce el nombre del ejercicio');return;}
+  var plan=getGymDayData(dk)||JSON.parse(JSON.stringify(GYM_BASE[dk]||{exercises:[],warmup:null,mobility:[],mobGeneral:false,name:dk,emoji:'🏋️',cardio:'',running:false,kcal:0}));
+  plan.exercises.push({name:name,muscle:muscle||'General',sets:sets,reps:reps,weight:weight,notes:notes,_custom:true});
+  sd('gym_custom_'+dk,plan);
+  closeExModal();
+  renderGymSession();
+  document.getElementById('ex-name').value='';
+  document.getElementById('ex-muscle').value='';
+  document.getElementById('ex-notes').value='';
+}
+
+function deleteCustomEx(dk,i){
+  if(!confirm('¿Eliminar este ejercicio?')) return;
+  var plan=getGymDayData(dk);
+  plan.exercises.splice(i,1);
+  sd('gym_custom_'+dk,plan);
+  renderGymSession();
+}
+
+// ============================================================
+// RUNNING
+// ============================================================
+function runTab(t){
+  ['today','plan','log','history'].forEach(function(x){
+    document.getElementById('rt-'+x).style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('#pg-run .tr .tb').forEach(function(b,i){
+    b.classList.toggle('active',['today','plan','log','history'][i]===t);
+  });
+  if(t==='plan') renderRunPlan();
+  if(t==='history') renderRunHistory();
+}
+
+function renderRunToday(){
+  var el=document.getElementById('run-today-content');
+  var now=new Date();
+  var dow=now.getDay();
+  var isRunDay=(dow===1||dow===4||dow===5);
+  var wn=getCurrentRunWeek();
+  var start=new Date('2026-06-22');
+
+  if(now<start){
+    el.innerHTML='<div class="al alb" style="margin:12px 16px"><span class="ali">📅</span><span>El running empieza el <strong>22 de junio</strong>. ¡Ya falta poco!</span></div>';
+    return;
+  }
+  if(!isRunDay){
+    var next=getNextRunDay(now);
+    el.innerHTML='<div style="padding:12px 16px"><div class="al alb"><span class="ali">😴</span><span>Hoy no toca running. Próxima sesión: <strong>'+next+'</strong></span></div></div>';
+    return;
+  }
+
+  var rw=RUN_WEEKS[wn-1];
+  var html='<div style="padding:12px 16px">';
+  html+='<div class="al alg"><span class="ali">🏃</span><span><strong>Semana '+wn+' · '+rw.title+'</strong></span></div>';
+
+  // Warmup with descriptions
+  if(rw.warmup&&rw.warmup.length){
+    html+='<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:12px;margin:10px 0">';
+    html+='<div style="font-size:11px;font-weight:600;color:var(--o);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⚡ Calentamiento (10 min)</div>';
+    rw.warmup.forEach(function(s){
+      html+='<div class="exb" style="margin-bottom:6px"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
+      html+='<span class="exbn">'+s.name+'</span><span class="exbm">'+s.dur+'</span><span class="exba">›</span></div>';
+      html+='<div class="exbd"><div class="desc-block"><div class="desc-title">📍 Posición inicial</div><div class="desc-text">'+s.pos+'</div></div>';
+      html+='<div class="desc-block"><div class="desc-title">▶️ Ejecución</div><div class="desc-text">'+s.exec+'</div></div></div></div>';
+    });
+    html+='</div>';
+  }else{
+    html+='<div class="note"><strong>Calentamiento:</strong> Camina 5 min a paso ligero antes de empezar los intervalos.</div>';
+  }
+
+  // Work
+  html+='<div style="background:rgba(61,214,140,0.1);border:1px solid rgba(61,214,140,0.25);border-radius:12px;padding:14px;margin:10px 0">';
+  html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🏃 Bloque de trabajo</div>';
+  html+='<div style="font-size:18px;font-weight:700;color:var(--t);margin-bottom:6px">'+rw.work+'</div>';
+  html+='<div style="font-size:13px;color:var(--m)">'+rw.workDetail+'</div>';
+  html+='</div>';
+
+  // Cooldown
+  if(rw.cooldown&&rw.cooldown.length){
+    html+='<div style="background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.2);border-radius:12px;padding:12px;margin:10px 0">';
+    html+='<div style="font-size:11px;font-weight:600;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🧘 Vuelta a la calma</div>';
+    rw.cooldown.forEach(function(s){
+      html+='<div class="exb" style="margin-bottom:6px"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
+      html+='<span class="exbn">'+s.name+'</span><span class="exbm">'+s.dur+'</span><span class="exba">›</span></div>';
+      html+='<div class="exbd"><div class="desc-block"><div class="desc-title">📍 Posición inicial</div><div class="desc-text">'+s.pos+'</div></div>';
+      html+='<div class="desc-block"><div class="desc-title">▶️ Ejecución</div><div class="desc-text">'+s.exec+'</div></div></div></div>';
+    });
+    html+='</div>';
+  }else{
+    html+='<div class="note"><strong>Vuelta a la calma:</strong> Camina 2-3 min y estira cuádriceps, isquiotibiales y gemelos 30 seg cada uno.</div>';
+  }
+
+  html+='<div class="al alo"><span class="ali">💡</span><span style="font-style:italic">'+rw.tip+'</span></div>';
+  html+='<button class="btn btg" style="margin-top:10px" onclick="runTab(\'log\')">📝 Registrar esta sesión →</button>';
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function renderRunPlan(){
+  var wn=getCurrentRunWeek();
+  document.getElementById('run-plan-content').innerHTML=RUN_WEEKS.map(function(rw){
+    var isActive=rw.num===wn;
+    var isDone=rw.num<wn;
+    return '<div class="rw" style="'+(isActive?'border-color:var(--g)':'')+'">'+
+      '<div class="rwh"><div class="rwn" style="color:'+(isDone?'var(--g)':isActive?'var(--g)':'var(--m)')+'">'+
+      (isDone?'✓':rw.num)+'</div>'+
+      '<div class="rwi"><div class="rwt">'+rw.title+'</div><div class="rws">'+rw.sub+
+      (isActive?' · <span style="color:var(--g)">🟢 Esta semana</span>':'')+
+      '</div></div></div>'+
+      '<div class="rwb">'+
+      '<div style="background:var(--s2);border-radius:8px;padding:10px 12px;margin-bottom:8px">'+
+      '<div style="font-size:14px;font-weight:600;color:var(--t)">'+rw.work+'</div></div>'+
+      '<div style="font-size:12px;color:var(--m);font-style:italic">💡 '+rw.tip+'</div>'+
+      '</div></div>';
+  }).join('');
+}
+
+function saveRun(){
+  var date=document.getElementById('run-date').value;
+  var week=document.getElementById('run-week').value;
+  var dur=document.getElementById('run-dur').value;
+  var feel=document.getElementById('run-feel').value;
+  var notes=document.getElementById('run-notes').value;
+  if(!date||!dur){alert('Introduce la fecha y la duración');return;}
+  var hist=ld('run_hist',[]);
+  hist.unshift({date:date,week:parseInt(week),duration:parseInt(dur),feeling:feel,notes:notes});
+  sd('run_hist',hist.slice(0,50));
+  alert('✅ Sesión guardada');
+  document.getElementById('run-dur').value='';
+  document.getElementById('run-notes').value='';
+  runTab('history');
+}
+
+function renderRunHistory(){
+  var hist=ld('run_hist',[]);
+  var el=document.getElementById('run-history-content');
+  var fe={bien:'😊',regular:'😐',mal:'😓'};
+  if(!hist.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏃</div><div class="empty-text">Aún no hay sesiones.<br>El running empieza el 22 de junio.</div></div>';return;}
+  el.innerHTML=hist.map(function(r){
+    return '<div class="card" style="margin:0 0 8px"><div class="ch">'+
+      '<span class="ci">'+(fe[r.feeling]||'🏃')+'</span>'+
+      '<span class="ct">Semana '+r.week+' · '+r.duration+' min</span>'+
+      '<span class="cbadge bb">'+r.date+'</span></div>'+
+      (r.notes?'<div class="cb" style="font-size:12px;color:var(--m)">'+r.notes+'</div>':'')+
+      '</div>';
+  }).join('');
+}
+
+// ============================================================
+// FOOD
+// ============================================================
+function getFoodLog(){return ld('food_'+today(),[]);}
+function saveFoodLog(log){sd('food_'+today(),log);}
+
+function getDayType(){
+  var dow=new Date().getDay();
+  if(dow===0||dow===6) return 'finde';
+  return 'semana';
+}
+
+function getMealTargets(){
+  var dt=getDayType();
+  var w=getCurrentWeight();
+  var prot=Math.round(w*1.8);
+  if(dt==='semana'){
+    return [
+      {id:'pre-gym',icon:'💪',name:'Pre-gym',kcal:320,p:26,c:28,f:1},
+      {id:'post-gym',icon:'🥣',name:'Post-gym',kcal:530,p:25,c:49,f:20},
+      {id:'comida',icon:'🍽️',name:'Comida',kcal:550,p:50,c:55,f:12},
+      {id:'merienda',icon:'🥙',name:'Merienda',kcal:200,p:12,c:25,f:4},
+      {id:'cena',icon:'🌙',name:'Cena',kcal:280,p:38,c:10,f:10},
+    ];
+  } else {
+    return [
+      {id:'desayuno',icon:'🌅',name:'Desayuno',kcal:400,p:25,c:45,f:10},
+      {id:'comida',icon:'🍽️',name:'Comida',kcal:650,p:55,c:65,f:15},
+      {id:'merienda',icon:'🥙',name:'Merienda',kcal:250,p:15,c:28,f:6},
+      {id:'cena',icon:'🌙',name:'Cena',kcal:350,p:40,c:15,f:12},
+    ];
+  }
+}
+
+function renderFoodToday(){
+  var log=getFoodLog();
+  var t=log.reduce(function(a,f){return{k:a.k+f.k,p:a.p+f.p,c:a.c+f.c,f:a.f+f.f};},{k:0,p:0,c:0,f:0});
+  var maxK=getTargetKcal(); var maxP=getTargetProt();
+
+  document.getElementById('food-subtitle').textContent=maxK+' kcal · '+maxP+'g proteína';
+  document.getElementById('f-kcal-max').textContent='/'+maxK;
+  document.getElementById('f-prot-max').textContent='/'+maxP+'g';
+
+  var kPct=Math.min(100,(t.k/maxK)*100);
+  document.getElementById('f-kcal-bar').style.width=kPct+'%';
+  document.getElementById('f-kcal').textContent=Math.round(t.k);
+  document.getElementById('f-prot-bar').style.width=Math.min(100,(t.p/maxP)*100)+'%';
+  document.getElementById('f-prot').textContent=Math.round(t.p)+'g';
+  document.getElementById('f-carb-bar').style.width=Math.min(100,(t.c/200)*100)+'%';
+  document.getElementById('f-carb').textContent=Math.round(t.c)+'g';
+  document.getElementById('f-fat-bar').style.width=Math.min(100,(t.f/61)*100)+'%';
+  document.getElementById('f-fat').textContent=Math.round(t.f)+'g';
+
+  var rem=maxK-t.k;
+  document.getElementById('f-alert').innerHTML=rem>0?
+    '<div class="al alg"><span class="ali">✅</span><span>Quedan <strong>'+Math.round(rem)+' kcal</strong> y <strong>'+Math.round(maxP-t.p)+'g prot</strong></span></div>':
+    '<div class="al alo"><span class="ali">⚠️</span><span>Superado en <strong>'+Math.round(-rem)+' kcal</strong></span></div>';
+
+  // Meals
+  var meals=getMealTargets();
+  var html='';
+  meals.forEach(function(m){
+    var entries=log.filter(function(f){return f.meal===m.id;});
+    var mt=entries.reduce(function(a,f){return{k:a.k+f.k,p:a.p+f.p};},{k:0,p:0});
+    html+='<div class="sl2">'+m.icon+' '+m.name;
+    if(entries.length) html+=' · <span style="color:var(--o);font-weight:600">'+Math.round(mt.k)+' kcal</span> · <span style="color:var(--a)">P:'+Math.round(mt.p)+'g</span>';
+    html+=' <span style="color:var(--m);font-weight:400">(obj: '+m.kcal+' kcal)</span></div>';
+    html+='<div style="padding:0 16px">';
+    entries.forEach(function(f){
+      html+='<div class="fe"><div class="fei"><div class="fen">'+f.name+(f.g?' ('+f.g+'g)':'')+'</div>'+
+        '<div class="fem">P:'+f.p.toFixed(1)+'g · C:'+f.c.toFixed(1)+'g · G:'+f.f.toFixed(1)+'g</div></div>'+
+        '<div class="fek">'+Math.round(f.k)+'</div>'+
+        '<div class="fdel" data-id="'+f.id+'" onclick="deleteFoodItem(this)">🗑</div></div>';
+    });
+    html+='</div>';
+  });
+  // Other
+  var other=log.filter(function(f){return !meals.find(function(m){return m.id===f.meal;});});
+  if(other.length){
+    html+='<div class="sl2">🍴 Otros</div><div style="padding:0 16px">';
+    other.forEach(function(f){
+      html+='<div class="fe"><div class="fei"><div class="fen">'+f.name+'</div></div>'+
+        '<div class="fek">'+Math.round(f.k)+'</div>'+
+        '<div class="fdel" data-id="'+f.id+'" onclick="deleteFoodItem(this)">🗑</div></div>';
+    });
+    html+='</div>';
+  }
+  document.getElementById('f-meals').innerHTML=html;
+  renderHomeMacros();
+}
+
+function deleteFoodItem(el){
+  var id=el.dataset.id;
+  saveFoodLog(getFoodLog().filter(function(f){return f.id!==id;}));
+  renderFoodToday();
+}
+
+function foodTab(t){
+  ['today','plan','history'].forEach(function(x){
+    document.getElementById('ft-'+x).style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('#pg-food .tr .tb').forEach(function(b,i){
+    b.classList.toggle('active',['today','plan','history'][i]===t);
+  });
+  if(t==='plan') renderFoodPlan();
+  if(t==='history') renderFoodHistory();
+}
+
+function renderFoodPlan(){
+  var dt=getDayType();
+  var meals=getMealTargets();
+  var html='<div class="al alb"><span class="ali">📅</span><span>'+
+    (dt==='semana'?'<strong>Semana (L-V)</strong> — con batido pre-gym':'<strong>Fin de semana</strong> — sin batido pre-gym')+
+    '</span></div>';
+  html+='<div class="card"><div class="cb">';
+  meals.forEach(function(m){
+    html+='<div class="meal-target"><div><div class="mt-name">'+m.icon+' '+m.name+'</div><div class="mt-sub">P:'+m.p+'g · C:'+m.c+'g · G:'+m.f+'g</div></div>'+
+      '<div><div class="mt-kcal">'+m.kcal+' kcal</div></div></div>';
+  });
+  html+='</div></div>';
+  document.getElementById('food-plan-content').innerHTML=html;
+}
+
+function renderFoodHistory(){
+  var keys=[];
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i);
+    if(k&&k.startsWith('food_')) keys.push(k);
+  }
+  keys.sort().reverse();
+  var el=document.getElementById('food-history-content');
+  if(!keys.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Sin historial aún</div></div>';return;}
+  el.innerHTML=keys.slice(0,14).map(function(k){
+    var log=ld(k,[]);
+    var date=k.replace('food_','');
+    var t=log.reduce(function(a,f){return{k:a.k+f.k,p:a.p+f.p};},{k:0,p:0});
+    var pct=Math.round((t.k/getTargetKcal())*100);
+    return '<div class="li"><div class="lic"><div class="lit">'+date+'</div><div class="lis">'+log.length+' alimentos · P:'+Math.round(t.p)+'g</div></div>'+
+      '<div class="lir">'+Math.round(t.k)+' kcal<div style="font-size:10px;color:var(--m)">'+pct+'%</div></div></div>';
+  }).join('');
+}
+
+// FOOD MODAL
+var foodModalMode='food';
+
+function openFood(mode){
+  foodModalMode=mode;
+  document.getElementById('food-modal').classList.add('open');
+  document.getElementById('food-modal-title').textContent=mode==='drink'?'Añadir bebida':'Añadir alimento';
+  renderFoodModalBody(mode);
+}
+function closeFood(){document.getElementById('food-modal').classList.remove('open');}
+
+function renderFoodModalBody(mode){
+  var html='<div class="ig"><label class="il">Toma</label><select class="if" id="food-meal">';
+  if(mode==='drink'){
+    html+='<option value="otro">🍺 Bebida alcohólica</option>';
+  } else {
+    html+='<option value="pre-gym">💪 Pre-gym</option><option value="post-gym">🥣 Post-gym</option>'+
+      '<option value="comida">🍽️ Comida</option><option value="merienda">🥙 Merienda</option>'+
+      '<option value="cena">🌙 Cena</option><option value="otro">🍴 Otro</option>';
+  }
+  html+='</select></div>';
+
+  if(mode==='drink'){
+    html+='<div class="ig"><label class="il">Bebida</label><select class="if" id="drink-sel" onchange="updateDrinkPreview()">';
+    DRINKS_DB.forEach(function(d,i){html+='<option value="'+i+'">'+d.n+'</option>';});
+    html+='</select></div>';
+    html+='<div id="drink-preview" class="al alb" style="margin-bottom:12px"><span class="ali">🍺</span><span>'+DRINKS_DB[0].k+' kcal · '+DRINKS_DB[0].note+'</span></div>';
+    html+='<div class="ig"><label class="il">Cantidad</label><select class="if" id="drink-qty">'+
+      '<option value="1">1 unidad</option><option value="2">2 unidades</option><option value="3">3 unidades</option></select></div>';
+    html+='<button class="btn btg" onclick="addDrink()">Añadir bebida</button>';
+  } else {
+    html+='<div class="ig"><input type="search" class="sb2" id="food-search" placeholder="Buscar alimento..." oninput="searchFoodAPI()"></div>';
+    html+='<div id="food-results" class="sr2" style="display:none"></div>';
+    html+='<div id="food-selected" style="display:none;margin-bottom:10px"></div>';
+    html+='<div id="food-grams-row" style="display:none"><div class="ig"><label class="il">Gramos</label><input type="number" class="if" id="food-grams" placeholder="100" oninput="updateFoodPreview()"></div></div>';
+    html+='<div id="food-preview-box" style="display:none" class="al alg"><span class="ali">✅</span><span id="food-preview-text"></span></div>';
+    html+='<button class="btn btg" id="food-add-btn" style="display:none" onclick="addFoodEntry()">Añadir</button>';
+    html+='<div class="divider" style="margin:12px 0"></div>';
+    html+='<div style="font-size:12px;color:var(--m);margin-bottom:8px">✏️ Introducir manualmente</div>';
+    html+='<div class="grid2">';
+    html+='<div class="ig"><label class="il">Nombre</label><input type="text" class="if" id="m-name" placeholder="Ej: Pollo"></div>';
+    html+='<div class="ig"><label class="il">Gramos</label><input type="number" class="if" id="m-g" placeholder="200"></div>';
+    html+='<div class="ig"><label class="il">kcal</label><input type="number" class="if" id="m-k" placeholder="0"></div>';
+    html+='<div class="ig"><label class="il">Proteína g</label><input type="number" class="if" id="m-p" placeholder="0"></div>';
+    html+='<div class="ig"><label class="il">Carbos g</label><input type="number" class="if" id="m-c" placeholder="0"></div>';
+    html+='<div class="ig"><label class="il">Grasa g</label><input type="number" class="if" id="m-f" placeholder="0"></div>';
+    html+='</div>';
+    html+='<button class="btn bto" onclick="addManual()">Añadir manualmente</button>';
+  }
+  document.getElementById('food-modal-body').innerHTML=html;
+}
+
+function updateDrinkPreview(){
+  var idx=parseInt(document.getElementById('drink-sel').value);
+  var d=DRINKS_DB[idx];
+  document.getElementById('drink-preview').innerHTML='<span class="ali">🍺</span><span><strong>'+d.k+' kcal</strong> · '+d.note+'</span>';
+}
+
+function addDrink(){
+  var idx=parseInt(document.getElementById('drink-sel').value);
+  var qty=parseInt(document.getElementById('drink-qty').value)||1;
+  var d=DRINKS_DB[idx];
+  var entry={id:Date.now().toString(),name:d.n+' ×'+qty,meal:'otro',k:d.k*qty,p:0,c:0,f:0,g:0};
+  var log=getFoodLog(); log.push(entry); saveFoodLog(log);
+  closeFood(); renderFoodToday();
+}
+
+var selectedFoodItem=null;
+
+function searchFoodAPI(){
+  var q=document.getElementById('food-search').value.trim();
+  var results=document.getElementById('food-results');
+  var previewBox=document.getElementById('food-preview-box');
+  var gramsRow=document.getElementById('food-grams-row');
+  var addBtn=document.getElementById('food-add-btn');
+  selectedFoodItem=null;
+  previewBox.style.display='none';
+  gramsRow.style.display='none';
+  addBtn.style.display='none';
+
+  if(q.length<2){results.style.display='none';return;}
+
+  // First search local DB
+  var localMatches=FOOD_DB.filter(function(f){return f.n.toLowerCase().includes(q.toLowerCase());}).slice(0,5);
+
+  results.style.display='block';
+  results.innerHTML='<div style="padding:8px 12px;font-size:11px;color:var(--m)">Buscando...</div>';
+
+  // Then search Open Food Facts
+  fetch('https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&search_simple=1&action=process&json=1&page_size=8&lc=es&cc=es')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var items=[];
+    // Local first
+    localMatches.forEach(function(f){items.push({name:f.n,k:f.p.k,p:f.p.p,c:f.p.c,f:f.p.f,per100:true,source:'local'});});
+    // API results
+    if(data.products){
+      data.products.forEach(function(pr){
+        if(!pr.product_name||!pr.nutriments) return;
+        var n=pr.nutriments;
+        var k=n['energy-kcal_100g']||n['energy_100g']?Math.round((n['energy-kcal_100g']||n['energy_100g']/4.184)):0;
+        if(!k) return;
+        items.push({
+          name:pr.product_name+(pr.brands?' · '+pr.brands.split(',')[0]:''),
+          k:k, p:Math.round((n.proteins_100g||0)*10)/10,
+          c:Math.round((n.carbohydrates_100g||0)*10)/10,
+          f:Math.round((n.fat_100g||0)*10)/10,
+          per100:true, source:'api'
+        });
+      });
+    }
+    if(!items.length){
+      results.innerHTML='<div style="padding:12px;color:var(--m);font-size:13px">Sin resultados. Introduce manualmente.</div>';
+      return;
+    }
+    results.innerHTML=items.slice(0,10).map(function(item,i){
+      return '<div class="sri" data-idx="'+i+'" onclick="selectFoodResult(this,'+i+')" data-food="'+encodeURIComponent(JSON.stringify(item))+'">'+
+        '<div class="srn">'+item.name+'</div>'+
+        '<div class="srm">Por 100g: '+item.k+' kcal · P:'+item.p+'g · C:'+item.c+'g · G:'+item.f+'g'+(item.source==='local'?' ⭐':'')+'</div>'+
+        '</div>';
+    }).join('');
+  }).catch(function(){
+    // Fallback to local only
+    if(localMatches.length){
+      results.innerHTML=localMatches.map(function(f,i){
+        var item={name:f.n,k:f.p.k,p:f.p.p,c:f.p.c,f:f.p.f,per100:true,source:'local'};
+        return '<div class="sri" onclick="selectFoodResult(this,'+i+')" data-food="'+encodeURIComponent(JSON.stringify(item))+'">'+
+          '<div class="srn">'+f.n+'</div>'+
+          '<div class="srm">Por 100g: '+f.p.k+' kcal · P:'+f.p.p+'g · C:'+f.p.c+'g · G:'+f.p.f+'g ⭐</div></div>';
+      }).join('');
+    } else {
+      results.innerHTML='<div style="padding:12px;color:var(--m);font-size:13px">Sin conexión. Introduce manualmente.</div>';
+    }
+  });
+}
+
+function selectFoodResult(el,idx){
+  var item=JSON.parse(decodeURIComponent(el.dataset.food));
+  selectedFoodItem=item;
+  document.getElementById('food-selected').style.display='block';
+  document.getElementById('food-selected').innerHTML='<div class="al alb"><span class="ali">✅</span><span><strong>'+item.name+'</strong></span></div>';
+  document.getElementById('food-grams-row').style.display='block';
+  document.getElementById('food-grams').value='100';
+  document.getElementById('food-results').style.display='none';
+  updateFoodPreview();
+  document.getElementById('food-add-btn').style.display='block';
+}
+
+function updateFoodPreview(){
+  if(!selectedFoodItem) return;
+  var g=parseFloat(document.getElementById('food-grams').value)||100;
+  var f=g/100;
+  var k=Math.round(selectedFoodItem.k*f);
+  var p=(selectedFoodItem.p*f).toFixed(1);
+  var c=(selectedFoodItem.c*f).toFixed(1);
+  var fat=(selectedFoodItem.f*f).toFixed(1);
+  document.getElementById('food-preview-text').textContent=g+'g → '+k+' kcal · P:'+p+'g · C:'+c+'g · G:'+fat+'g';
+  document.getElementById('food-preview-box').style.display='flex';
+}
+
+function addFoodEntry(){
+  if(!selectedFoodItem) return;
+  var g=parseFloat(document.getElementById('food-grams').value)||100;
+  var f=g/100;
+  var meal=document.getElementById('food-meal').value;
+  var entry={
+    id:Date.now().toString(),
+    name:selectedFoodItem.name,
+    g:g, meal:meal,
+    k:selectedFoodItem.k*f,
+    p:selectedFoodItem.p*f,
+    c:selectedFoodItem.c*f,
+    f:selectedFoodItem.f*f
+  };
+  var log=getFoodLog(); log.push(entry); saveFoodLog(log);
+  closeFood(); renderFoodToday();
+}
+
+function addManual(){
+  var name=document.getElementById('m-name').value.trim();
+  var g=parseFloat(document.getElementById('m-g').value)||0;
+  var k=parseFloat(document.getElementById('m-k').value)||0;
+  var p=parseFloat(document.getElementById('m-p').value)||0;
+  var c=parseFloat(document.getElementById('m-c').value)||0;
+  var fat=parseFloat(document.getElementById('m-f').value)||0;
+  if(!name){alert('Introduce el nombre');return;}
+  var meal=document.getElementById('food-meal').value;
+  var entry={id:Date.now().toString(),name:name,g:g,meal:meal,k:k,p:p,c:c,f:fat};
+  var log=getFoodLog(); log.push(entry); saveFoodLog(log);
+  closeFood(); renderFoodToday();
+}
+
+// ============================================================
+// WEIGHT
+// ============================================================
+function addWeight(){
+  var date=document.getElementById('w-date').value;
+  var val=parseFloat(document.getElementById('w-val').value);
+  if(!date||isNaN(val)){alert('Introduce fecha y peso');return;}
+  var ws=ld('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
+  var idx=ws.findIndex(function(w){return w.date===date;});
+  if(idx>=0) ws[idx].val=val; else ws.push({date:date,val:val});
+  ws.sort(function(a,b){return a.date.localeCompare(b.date);});
+  sd('weights',ws);
+  // Recalculate macros if Monday
+  var d=new Date(date);
+  if(d.getDay()===1){
+    var newProt=Math.round(val*1.8);
+    showMacroUpdate(val,newProt);
+  }
+  document.getElementById('w-val').value='';
+  renderWeight();
+  renderHomeMacros();
+}
+
+function showMacroUpdate(weight,prot){
+  setTimeout(function(){
+    alert('🔄 Macros actualizados para '+weight+' kg:\n\n• Proteína: '+prot+'g/día ('+weight+' × 1,8)\n• Calorías: 2.000 kcal\n\nObjetivos actualizados automáticamente.');
+  },200);
+}
+
+function renderWeight(){
+  var ws=ld('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
+  var last=ws[ws.length-1];
+  var cur=last?last.val:90.6;
+  var lost=92.4-cur;
+  document.getElementById('w-cur').textContent=cur.toFixed(1)+' kg';
+  document.getElementById('w-lost').textContent=(lost>0?'-':'+')+(Math.abs(lost)).toFixed(1)+' kg';
+  document.getElementById('h-weight').textContent=cur.toFixed(1)+' kg';
+  var pct=Math.min(100,Math.round((lost/(92.4-83))*100));
+  document.getElementById('h-pct').textContent=pct+'%';
+  document.getElementById('h-pbar').style.width=pct+'%';
+  drawChart(ws);
+  renderWeightList(ws);
+}
+
+function drawChart(ws){
+  var canvas=document.getElementById('w-chart');
+  var ctx=canvas.getContext('2d');
+  var W=canvas.parentElement.offsetWidth-16; var H=180;
+  canvas.width=W; canvas.height=H;
+  ctx.clearRect(0,0,W,H);
+  if(ws.length<1) return;
+  var target={date:'2026-08-15',val:83};
+  var all=[].concat(ws).concat([target]);
+  var vals=all.map(function(w){return w.val;});
+  var minV=Math.min.apply(null,vals)-1;
+  var maxV=Math.max.apply(null,vals)+1;
+  var pad={l:38,r:16,t:10,b:28};
+  var cW=W-pad.l-pad.r; var cH=H-pad.t-pad.b;
+  var dates=all.map(function(w){return new Date(w.date).getTime();});
+  var minD=Math.min.apply(null,dates); var maxD=Math.max.apply(null,dates);
+  function xS(d){return pad.l+((new Date(d).getTime()-minD)/(maxD-minD))*cW;}
+  function yS(v){return pad.t+((maxV-v)/(maxV-minV))*cH;}
+  // Grid
+  ctx.strokeStyle='#2a2f42'; ctx.lineWidth=1;
+  for(var i=0;i<=4;i++){
+    var y=pad.t+(cH/4)*i;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    var v=maxV-((maxV-minV)/4)*i;
+    ctx.fillStyle='#8b91a8';ctx.font='10px -apple-system';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(1),pad.l-3,y+4);
+  }
+  // Target zone
+  ctx.fillStyle='rgba(61,214,140,0.06)';
+  ctx.fillRect(pad.l,yS(84),cW,yS(82)-yS(84));
+  // Target line
+  ctx.strokeStyle='rgba(61,214,140,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,yS(83));ctx.lineTo(W-pad.r,yS(83));ctx.stroke();
+  ctx.setLineDash([]);
+  // Weight line
+  if(ws.length>1){
+    ctx.strokeStyle='#4f8ef7';ctx.lineWidth=2.5;
+    ctx.beginPath();
+    ws.forEach(function(w,i){
+      var x=xS(w.date);var y=yS(w.val);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+  // Points
+  ws.forEach(function(w){
+    ctx.fillStyle='#4f8ef7';
+    ctx.beginPath();ctx.arc(xS(w.date),yS(w.val),4,0,Math.PI*2);ctx.fill();
+  });
+  // Target point
+  ctx.fillStyle='#3dd68c';
+  ctx.beginPath();ctx.arc(xS('2026-08-15'),yS(83),4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#3dd68c';ctx.font='10px -apple-system';ctx.textAlign='left';
+  ctx.fillText('83kg',xS('2026-08-15')+6,yS(83)+4);
+}
+
+function renderWeightList(ws){
+  var el=document.getElementById('w-list');
+  if(ws.length<=1){el.innerHTML='<div class="empty"><div class="empty-icon">⚖️</div><div class="empty-text">Añade más registros</div></div>';return;}
+  var rev=[].concat(ws).reverse();
+  el.innerHTML=rev.map(function(w,i){
+    var prev=rev[i+1];
+    var diff=prev?(w.val-prev.val):0;
+    var cls=diff<0?'dd':diff>0?'du':'ds';
+    var diffTxt=diff!==0?(diff>0?'+':'')+diff.toFixed(1)+' kg':'—';
+    return '<div class="we">'+
+      '<div class="wd2">'+w.date+'</div>'+
+      '<div class="wv">'+w.val.toFixed(1)+' kg</div>'+
+      '<div class="wdf '+cls+'">'+diffTxt+'</div>'+
+      (w.date!=='2026-06-01'?'<div class="fdel" data-date="'+w.date+'" onclick="deleteWeight(this)">🗑</div>':'')+
+      '</div>';
+  }).join('');
+}
+
+function deleteWeight(el){
+  var date=el.dataset.date;
+  var ws=ld('weights',[]).filter(function(w){return w.date!==date;});
+  sd('weights',ws);
+  renderWeight();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  var t=today();
+  document.getElementById('w-date').value=t;
+  document.getElementById('run-date').value=t;
+  var ws=ld('weights',null);
+  if(!ws) sd('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
+  renderHome();
+  document.getElementById('food-modal').addEventListener('click',function(e){if(e.target===this)closeFood();});
+  document.getElementById('ex-modal').addEventListener('click',function(e){if(e.target===this)closeExModal();});
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',init);
+}else{
+  init();
+}
+
+</script>
+</body>
+</html>
