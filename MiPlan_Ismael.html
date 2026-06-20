@@ -610,6 +610,7 @@ canvas{display:block;max-width:100%;}
   </div>
 </div>
 <script>
+
 // ============================================================
 // DATA
 // ============================================================
@@ -842,7 +843,8 @@ function updateHome() {
   const today = new Date();
   const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  document.getElementById('home-date').textContent = days[today.getDay()] + ', ' + today.getDate() + ' de ' + months[today.getMonth()];
+  const dateEl = document.getElementById('home-date');
+  if(dateEl) dateEl.textContent = days[today.getDay()] + ', ' + today.getDate() + ' de ' + months[today.getMonth()];
 
   // Weight
   const weights = loadData('weights', [{date:'2026-06-02', val:94.5}]);
@@ -1088,7 +1090,7 @@ function updateFoodToday() {
     mealsHTML += '<div class="section-label">' + mealNames[meal] + ' · ' + Math.round(mTotal.kcal) + ' kcal · P:' + Math.round(mTotal.prot) + 'g</div>';
     mealsHTML += '<div style="padding:0 16px">';
     entries.forEach((f,i) => {
-      mealsHTML += '<div class="food-entry"><div class="food-entry-info"><div class="food-entry-name">' + f.name + (f.grams?' ('+f.grams+'g)':'') + '</div><div class="food-entry-macros">P:' + f.prot.toFixed(1) + 'g · C:' + f.carb.toFixed(1) + 'g · G:' + f.fat.toFixed(1) + 'g</div></div><div class="food-entry-kcal">' + Math.round(f.kcal) + '</div><div class="food-delete" onclick="deleteFoodEntry('' + f.id + '')">🗑</div></div>';
+      mealsHTML += '<div class="food-entry"><div class="food-entry-info"><div class="food-entry-name">'+f.name+(f.grams?' ('+f.grams+'g)':'')+'</div><div class="food-entry-macros">P:'+f.prot.toFixed(1)+'g · C:'+f.carb.toFixed(1)+'g · G:'+f.fat.toFixed(1)+'g</div></div><div class="food-entry-kcal">'+Math.round(f.kcal)+'</div><div class="food-delete" data-id="'+f.id+'" onclick="deleteFoodBtn(this)">🗑</div></div>';
     });
     mealsHTML += '</div>';
   });
@@ -1147,12 +1149,7 @@ function searchFood() {
   if(q.length < 2) { results.innerHTML = ''; return; }
   const matches = FOOD_DB.filter(f => f.name.toLowerCase().includes(q)).slice(0,8);
   if(!matches.length) { results.innerHTML = '<div style="padding:12px;color:var(--m);font-size:13px">No encontrado. Usa "Introducir manualmente".</div>'; return; }
-  results.innerHTML = matches.map(f =>
-    '<div class="search-result" onclick="selectFood('' + f.name + '')">' +
-    '<div class="search-result-name">' + f.name + '</div>' +
-    '<div class="search-result-macros">Por 100g: ' + f.per100.kcal + ' kcal · P:' + f.per100.prot + 'g · C:' + f.per100.carb + 'g · G:' + f.per100.fat + 'g</div>' +
-    '</div>'
-  ).join('');
+  results.innerHTML = matches.map(function(f,idx2) { return '<div class="search-result" data-fi="'+idx2+'" onclick="selectFoodIdx(this)"><div class="search-result-name">'+f.name+'</div><div class="search-result-macros">Por 100g: '+f.per100.kcal+' kcal · P:'+f.per100.prot+'g · C:'+f.per100.carb+'g · G:'+f.per100.fat+'g</div></div>'; }).join('');
 }
 
 function selectFood(name) {
@@ -1247,7 +1244,7 @@ function updateWeightPage() {
       const diff = prev ? (w.val - prev.val) : 0;
       const diffClass = diff < 0 ? 'diff-down' : diff > 0 ? 'diff-up' : 'diff-same';
       const diffText = diff !== 0 ? (diff > 0 ? '+' : '') + diff.toFixed(1) + ' kg' : '—';
-      return '<div class="weight-entry"><div class="weight-date">' + w.date + '</div><div class="weight-val">' + w.val.toFixed(1) + ' kg</div><div class="weight-diff ' + diffClass + '">' + diffText + '</div><div class="food-delete" onclick="deleteWeight('' + w.date + '')">🗑</div></div>';
+      return '<div class="weight-entry"><div class="weight-date">'+w.date+'</div><div class="weight-val">'+w.val.toFixed(1)+' kg</div><div class="weight-diff '+diffClass+'">'+diffText+'</div><div class="food-delete" data-date="'+w.date+'" onclick="deleteWeightBtn(this)">🗑</div></div>';
     }).join('');
   }
 }
@@ -1333,25 +1330,83 @@ function drawWeightChart(weights) {
 // ============================================================
 // INIT
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-  // Set dates
-  const today = getToday();
-  document.getElementById('weight-date').value = today;
-  document.getElementById('run-date').value = today;
+// Run immediately and also on DOMContentLoaded
+function initApp() {
+  try {
+    const today = getToday();
+    const dateEl = document.getElementById('weight-date');
+    const runDateEl = document.getElementById('run-date');
+    if(dateEl) dateEl.value = today;
+    if(runDateEl) runDateEl.value = today;
 
-  // Init with starting weight
-  const weights = loadData('weights', null);
-  if(!weights) saveData('weights', [{date:'2026-06-02', val:94.5}]);
+    const weights = loadData('weights', null);
+    if(!weights) saveData('weights', [{date:'2026-06-02', val:94.5}]);
 
-  updateHome();
-  loadRunWeeks();
-  showPlanDay('lunes','plan');
+    updateHome();
+    loadRunWeeks();
+    showPlanDay('lunes','plan');
 
-  // Close modal on overlay click
-  document.getElementById('add-food-modal').addEventListener('click', function(e) {
-    if(e.target === this) closeAddFood();
-  });
+    const modal = document.getElementById('add-food-modal');
+    if(modal) modal.addEventListener('click', function(e) {
+      if(e.target === this) closeAddFood();
+    });
+  } catch(e) { console.error('Init error:', e); }
+}
+
+if(document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+window.addEventListener('load', function() {
+  setTimeout(initApp, 100);
 });
+
+function selectFoodIdx(el) {
+  var matches = document.querySelectorAll('.search-result');
+  var idx = parseInt(el.dataset.fi);
+  var allMatched = [];
+  var q = document.getElementById('food-search').value.toLowerCase();
+  FOOD_DB.forEach(function(f) { if(f.name.toLowerCase().includes(q)) allMatched.push(f); });
+  var food = allMatched[idx];
+  if(!food) return;
+  var grams = prompt('¿Cuántos gramos de ' + food.name + '?', '100');
+  if(!grams || isNaN(grams)) return;
+  var g = parseFloat(grams);
+  var factor = g / 100;
+  var entry = {
+    id: Date.now().toString(),
+    name: food.name,
+    grams: g,
+    meal: document.getElementById('modal-meal').value,
+    kcal: food.per100.kcal * factor,
+    prot: food.per100.prot * factor,
+    carb: food.per100.carb * factor,
+    fat: food.per100.fat * factor,
+  };
+  var log = getTodayFoodLog();
+  log.push(entry);
+  saveTodayFoodLog(log);
+  updateFoodToday();
+  closeAddFood();
+}
+
+function deleteFoodBtn(el) {
+  var id = el.dataset.id;
+  var log = getTodayFoodLog().filter(function(f) { return f.id !== id; });
+  saveTodayFoodLog(log);
+  updateFoodToday();
+}
+
+function deleteWeightBtn(el) {
+  var date = el.dataset.date;
+  if(date === '2026-06-02') { alert('No puedes borrar el peso inicial'); return; }
+  var weights = loadData('weights', []).filter(function(w) { return w.date !== date; });
+  saveData('weights', weights);
+  updateWeightPage();
+}
+
 </script>
+
 </body>
 </html>
