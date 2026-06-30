@@ -902,6 +902,29 @@ const SEASONAL_FRUITS={
 function ld(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
 function sd(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function getAutoMeal(){
+  var h=new Date().getHours();
+  if(h<12) return 'pre-gym';
+  if(h<14) return 'desayuno';
+  if(h<18) return 'comida';
+  if(h<21) return 'merienda';
+  return 'cena';
+}
+function buildMealOpts(){
+  var auto=getAutoMeal();
+  var meals=[
+    {v:'pre-gym',l:'💪 Pre-gym'},
+    {v:'desayuno',l:'🌅 Desayuno'},
+    {v:'comida',l:'🍽️ Comida'},
+    {v:'merienda',l:'🥙 Merienda'},
+    {v:'cena',l:'🌙 Cena'},
+    {v:'otro',l:'🍴 Otro'},
+  ];
+  return meals.map(function(m){
+    return '<option value="'+m.v+'"'+(m.v===auto?' selected':'')+'>'+m.l+'</option>';
+  }).join('');
+}
+
 function getLogDate(){return ld('active_log_date',null)||today();}
 function getFoodLogDate(){return ld('active_food_log_date',null)||today();}
 function toggleFoodLogDate(){
@@ -1987,8 +2010,7 @@ function renderFoodModalBody(mode){
 
   // FOOD MODE — Open Food Facts search
   if(mode==='food'){
-    var mealOpts='<option value="pre-gym">💪 Pre-gym</option><option value="desayuno">🌅 Desayuno</option><option value="comida">🍽️ Comida</option><option value="merienda">🥙 Merienda</option><option value="cena">🌙 Cena</option><option value="otro">🍴 Otro</option>';
-    var h='<div class="ig"><label class="il">Toma</label><select class="if" id="food-meal">'+mealOpts+'</select></div>';
+    var h='<div class="ig"><label class="il">Toma</label><select class="if" id="food-meal">'+buildMealOpts()+'</select></div>';
     h+='<div class="ig"><label class="il">Buscar producto</label>';
     h+='<input type="search" class="if" id="food-search" placeholder="Ej: Gyozas Vici, Yogur griego..." oninput="searchFoodAPI()" autocomplete="off"></div>';
     h+='<div id="food-results" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--b);border-radius:10px;margin-bottom:10px"></div>';
@@ -2004,22 +2026,19 @@ function renderFoodModalBody(mode){
 
   // RECIPE MODE
   if(mode==='recipe'){
-    var mealOpts='<option value="pre-gym">💪 Pre-gym</option><option value="desayuno">🌅 Desayuno</option><option value="comida">🍽️ Comida</option><option value="merienda">🥙 Merienda</option><option value="cena">🌙 Cena</option><option value="otro">🍴 Otro</option>';
-    var catOpts='<option value="carnes">🥩 Carnes</option><option value="pescados">🐟 Pescados</option><option value="arroces">🍚 Arroces</option><option value="pastas">🍝 Pastas</option><option value="asiaticos">🥢 Asiáticos</option><option value="otros">🍳 Otros</option><option value="batidos">🥤 Batidos</option>';
-    var h='<div class="ig"><label class="il">Toma</label><select class="if" id="food-meal">'+mealOpts+'</select></div>';
-    // Unified search bar — searches recipes + Open Food Facts
-    h+='<div class="ig"><input type="search" class="sb2" id="recipe-search" placeholder="🔍 Buscar plato o producto (ej: Gyozas Vici, poke...)" oninput="unifiedSearch()" autocomplete="off" style="margin-bottom:0"></div>';
-    // Mode toggle
+    var catOpts='<option value="">🔍 Todas las categorías</option><option value="carnes">🥩 Carnes</option><option value="pescados">🐟 Pescados</option><option value="arroces">🍚 Arroces</option><option value="pastas">🍝 Pastas</option><option value="asiaticos">🥢 Asiáticos</option><option value="otros">🍳 Otros</option><option value="batidos">🥤 Batidos</option><option value="postres">🍮 Postres</option>';
+    var h='<div class="ig"><label class="il">Toma</label><select class="if" id="food-meal">'+buildMealOpts()+'</select></div>';
     h+='<div style="display:flex;gap:6px;margin:6px 0 8px">';
     h+='<button class="tb active" id="rm-tab-recipe" onclick="switchRecipeMode(\'recipe\')">🍽️ Mis platos</button>';
     h+='<button class="tb" id="rm-tab-api" onclick="switchRecipeMode(\'api\')">🛒 Producto</button>';
     h+='</div>';
-    // Recipe panel
     h+='<div id="rm-recipe-panel">';
-    h+='<div class="ig"><label class="il">Categoría</label><select class="if" id="recipe-cat" onchange="renderRecipeList()">'+catOpts+'</select></div>';
-    h+='<div id="recipe-list" style="max-height:240px;overflow-y:auto;border:1px solid var(--b);border-radius:10px;margin-top:4px"></div>';
+    h+='<div style="display:flex;gap:6px;margin-bottom:6px">';
+    h+='<input type="search" class="sb2" id="recipe-search" placeholder="🔍 Buscar plato..." oninput="filterRecipes()" autocomplete="off" style="flex:1;margin-bottom:0">';
+    h+='<select class="if" id="recipe-cat" onchange="filterRecipes()" style="width:auto;min-width:90px;font-size:12px;padding:6px 8px">'+catOpts+'</select>';
     h+='</div>';
-    // API panel
+    h+='<div id="recipe-list" style="max-height:260px;overflow-y:auto;border:1px solid var(--b);border-radius:10px"></div>';
+    h+='</div>';
     h+='<div id="rm-api-panel" style="display:none">';
     h+='<div id="food-results" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);border-radius:10px;margin-bottom:8px"><div style="padding:12px;font-size:13px;color:var(--m);text-align:center">Escribe para buscar en Open Food Facts</div></div>';
     h+='<div id="food-selected" style="display:none;margin-bottom:8px"></div>';
@@ -2672,27 +2691,28 @@ function addPostGym(){
 }
 
 function filterRecipes(){
-  var q=document.getElementById('recipe-search').value.toLowerCase().trim();
-  if(!q){renderRecipeList();return;}
-  // Search ALL recipes
+  var q=(document.getElementById('recipe-search')||{value:''}).value.toLowerCase().trim();
+  var cat=(document.getElementById('recipe-cat')||{value:''}).value;
+  // If no search term and no category, show renderRecipeList default
+  if(!q&&!cat){renderRecipeList();return;}
   var allRecipes=[];
-  var catMap={carnes:'🥩',pescados:'🐟',arroces:'🍚',pastas:'🍝',asiaticos:'🥢',otros:'🍳'};
-  Object.keys(RECIPES).forEach(function(cat){
-    if(cat==='batidos') return;
-    RECIPES[cat].forEach(function(r){
-      if(r.toLowerCase().includes(q)) allRecipes.push({name:r,cat:cat,emoji:catMap[cat]||'🍽️'});
+  var catMap={carnes:'🥩',pescados:'🐟',arroces:'🍚',pastas:'🍝',asiaticos:'🥢',otros:'🍳',batidos:'🥤',postres:'🍮'};
+  var cats=cat?[cat]:Object.keys(RECIPES);
+  cats.forEach(function(c){
+    (RECIPES[c]||[]).forEach(function(r){
+      if(!q||r.toLowerCase().includes(q)) allRecipes.push({name:r,cat:c,emoji:catMap[c]||'🍽️'});
     });
   });
   if(!allRecipes.length){
     document.getElementById('recipe-list').innerHTML='<div style="padding:12px;color:var(--m);font-size:13px">Sin resultados para "'+q+'"</div>';
     return;
   }
-  document.getElementById('recipe-list').innerHTML=allRecipes.map(function(item){
+  document.getElementById('recipe-list').innerHTML=allRecipes.slice(0,50).map(function(item){
     var ri=getRecipeImpact(item.name);
     var emojiChar=ri.imp==="good"?"✅":ri.imp==="bad"?"❌":"⚠️";
     var safeR=item.name.replace(/"/g,"&quot;");
     var safeWhy=ri.why.replace(/"/g,"&quot;");
-    return "<div class='sri' style='flex-wrap:wrap'><div style='display:flex;align-items:center;gap:8px;flex:1;cursor:pointer' onclick='addRecipeEntry(this)' data-name='"+safeR+"' data-imp='"+ri.imp+"' data-why='"+safeWhy+"'><div style='font-size:16px'>"+emojiChar+"</div><div><div class='srn'>"+item.emoji+" "+item.name+"</div><div class='srm'>"+ri.why+"</div></div></div>"+(RECIPE_DETAILS[item.name]?"<div style='padding:2px 8px;font-size:11px;color:var(--a);cursor:pointer;border:1px solid var(--a);border-radius:6px;margin:4px 0 4px auto' onclick='event.stopPropagation();openRecipeDetail(decodeURIComponent(&quot;"+encodeURIComponent(item.name)+"&quot;))'>Ver receta</div>":""  )+"</div>";
+    return "<div class='sri' style='flex-wrap:wrap'><div style='display:flex;align-items:center;gap:8px;flex:1;cursor:pointer' onclick='addRecipeEntry(this)' data-name='"+safeR+"' data-imp='"+ri.imp+"' data-why='"+safeWhy+"'><div style='font-size:16px'>"+emojiChar+"</div><div><div class='srn'>"+item.emoji+" "+item.name+"</div><div class='srm'>"+ri.why+"</div></div></div>"+(RECIPE_DETAILS[item.name]?"<div style='padding:2px 8px;font-size:11px;color:var(--a);cursor:pointer;border:1px solid var(--a);border-radius:6px;margin:4px 0 4px auto' onclick='event.stopPropagation();openRecipeDetail(decodeURIComponent(&quot;"+encodeURIComponent(item.name)+"&quot;))'>Ver receta</div>":"")+"</div>";
   }).join('');
 }
 
@@ -2727,11 +2747,9 @@ function getRecipeImpact(name){
 }
 
 function renderRecipeList(){
-  var cat=document.getElementById("recipe-cat").value;
-  // Clear search when changing category
-  var searchEl=document.getElementById('recipe-search');
-  if(searchEl) searchEl.value='';
-  var recipes=RECIPES[cat]||[];
+  var cat=document.getElementById("recipe-cat")?document.getElementById("recipe-cat").value:'';
+  var recipes=cat?RECIPES[cat]||[]:Object.values(RECIPES).flat();
+  var catMap={carnes:'🥩',pescados:'🐟',arroces:'🍚',pastas:'🍝',asiaticos:'🥢',otros:'🍳',batidos:'🥤',postres:'🍮'};
   var recipeImpact={
     "Salmon plancha":{imp:"good",why:"Omega-3 que baja trigliceridos activamente."},
     "Dorada al horno":{imp:"good",why:"Pescado magro. Bueno para LDL."},
@@ -2768,22 +2786,72 @@ function renderRecipeList(){
   document.getElementById("recipe-list").innerHTML=html;
 }
 
+var _pendingRecipe=null;
 function addRecipeEntry(el){
   var name=el.dataset.name;
   var ri=getRecipeImpact(name);
   var impact=el.dataset.imp||ri.imp;
   var why=el.dataset.why||ri.why;
   var meal=document.getElementById("food-meal").value;
-  var kcalMap={'pre-gym':320,desayuno:530,comida:500,cena:280,merienda:200,otro:300};
-  var macroMap={'pre-gym':{p:26,c:28,f:1},desayuno:{p:25,c:38,f:20},comida:{p:45,c:40,f:12},cena:{p:38,c:8,f:10},merienda:{p:12,c:25,f:4},otro:{p:30,c:30,f:10}};
-  var kcal=kcalMap[meal]||400;
-  var m=macroMap[meal]||macroMap.otro;
   if(impact==="bad"){
     if(!confirm("❌ "+name+"\n\n"+why+"\n\n¿Añadirlo de todas formas?")) return;
   }
-  var entry={id:Date.now().toString(),name:name,g:0,meal:meal,k:kcal,p:m.p,c:m.c,f:m.f,impact:impact,impactMsg:why,isRecipe:true};
-  if(impact!=="good") sd("food_last_bad_"+name,today());
+  _pendingRecipe={name:name,impact:impact,why:why,meal:meal};
+  showPortionSelector(name,meal);
+}
+
+function showPortionSelector(name,meal){
+  var detail=RECIPE_DETAILS&&RECIPE_DETAILS[name];
+  var portion=detail&&detail.portion?detail.portion:250;
+  var kcalMap={'pre-gym':320,desayuno:530,comida:500,cena:280,merienda:200,otro:300};
+  var macroMap={'pre-gym':{p:26,c:28,f:1},desayuno:{p:25,c:38,f:20},comida:{p:45,c:40,f:12},cena:{p:38,c:8,f:10},merienda:{p:12,c:25,f:4},otro:{p:30,c:30,f:10}};
+  var baseKcal=kcalMap[meal]||400;
+  var baseMacro=macroMap[meal]||macroMap.otro;
+  var raciones=[0.25,0.5,1,1.5,2];
+  var labels=['¼ ración','½ ración','1 ración','1½ ración','2 raciones'];
+  var body=document.getElementById('food-modal-body');
+  var html='<div style="margin-bottom:12px"><div style="font-size:14px;font-weight:700;color:var(--t);margin-bottom:4px">'+name+'</div>';
+  html+='<div style="font-size:11px;color:var(--m)">Ración estándar: '+portion+'g</div></div>';
+  html+='<div style="display:flex;flex-direction:column;gap:8px">';
+  raciones.forEach(function(r,i){
+    var g=Math.round(portion*r);
+    var k=Math.round(baseKcal*r);
+    var p=(baseMacro.p*r).toFixed(0);
+    var c=(baseMacro.c*r).toFixed(0);
+    var f2=(baseMacro.f*r).toFixed(0);
+    var isDefault=r===1;
+    html+='<div onclick="confirmRecipePortion('+r+')" style="padding:12px 14px;border-radius:12px;border:2px solid '+(isDefault?'var(--g)':'var(--b)')+';background:'+(isDefault?'rgba(61,214,140,0.08)':'var(--s)')+';cursor:pointer;display:flex;justify-content:space-between;align-items:center">';
+    html+='<div><div style="font-size:14px;font-weight:700;color:var(--t)">'+labels[i]+'</div>';
+    html+='<div style="font-size:11px;color:var(--m)">'+g+'g · P:'+p+'g · C:'+c+'g · G:'+f2+'g</div></div>';
+    html+='<div style="font-size:16px;font-weight:800;color:var(--o)">'+k+' kcal</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  body.innerHTML=html;
+  document.getElementById('food-modal-title').textContent='¿Cuánto has tomado?';
+}
+
+function confirmRecipePortion(r){
+  if(!_pendingRecipe) return;
+  var name=_pendingRecipe.name;
+  var meal=_pendingRecipe.meal;
+  var impact=_pendingRecipe.impact;
+  var why=_pendingRecipe.why;
+  var detail=RECIPE_DETAILS&&RECIPE_DETAILS[name];
+  var portion=detail&&detail.portion?detail.portion:250;
+  var kcalMap={'pre-gym':320,desayuno:530,comida:500,cena:280,merienda:200,otro:300};
+  var macroMap={'pre-gym':{p:26,c:28,f:1},desayuno:{p:25,c:38,f:20},comida:{p:45,c:40,f:12},cena:{p:38,c:8,f:10},merienda:{p:12,c:25,f:4},otro:{p:30,c:30,f:10}};
+  var baseKcal=kcalMap[meal]||400;
+  var baseMacro=macroMap[meal]||macroMap.otro;
+  var g=Math.round(portion*r);
+  var k=Math.round(baseKcal*r);
+  var p=parseFloat((baseMacro.p*r).toFixed(1));
+  var c=parseFloat((baseMacro.c*r).toFixed(1));
+  var f2=parseFloat((baseMacro.f*r).toFixed(1));
+  var entry={id:Date.now().toString(),name:name+(r!==1?' ('+Math.round(r*100)+'%)':''),g:g,meal:meal,k:k,p:p,c:c,f:f2,impact:impact,impactMsg:why,isRecipe:true};
+  if(impact!=='good') sd('food_last_bad_'+name,today());
   var log=getFoodLog();log.push(entry);saveFoodLog(log);
+  _pendingRecipe=null;
   closeFood();renderFoodToday();
 }
 function switchRecipeMode(mode){
