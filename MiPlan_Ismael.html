@@ -236,7 +236,7 @@ select.if{cursor:pointer;}
         <div id="h-quote-author" style="font-size:11px;color:var(--a);margin-top:2px;font-weight:600"></div>
       </div>
       <div style="text-align:right;margin-top:2px">
-        <div id="h-temp" style="background:rgba(245,158,11,0.15);color:var(--y);font-size:13px;font-weight:600;padding:5px 10px;border-radius:8px;white-space:nowrap">...</div>
+        <div id="h-temp" style="color:var(--y);font-size:13px;font-weight:600;white-space:nowrap">...</div>
         <div id="h-temp-sub" style="font-size:10px;color:var(--m);margin-top:3px"></div>
       </div>
     </div>
@@ -362,6 +362,7 @@ select.if{cursor:pointer;}
   <div class="tr">
     <button class="tb active" onclick="foodTab('today')">Hoy</button>
     <button class="tb" onclick="foodTab('plan')">Plan</button>
+    <button class="tb" onclick="foodTab('history')">Historial</button>
   </div>
 
   <div id="ft-today">
@@ -396,6 +397,7 @@ select.if{cursor:pointer;}
   </div>
 
   <div id="ft-plan" style="display:none"><div id="food-plan-content" style="padding:10px 16px"></div></div>
+  <div id="ft-history" style="display:none"><div id="food-history-content" style="padding:10px 16px"></div></div>
 </div>
 
 <!-- WEIGHT -->
@@ -904,11 +906,11 @@ function sd(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function getAutoMeal(){
   var h=new Date().getHours();
-  if(h<12) return 'pre-gym';
-  if(h<14) return 'desayuno';
-  if(h<18) return 'comida';
-  if(h<21) return 'merienda';
-  return 'cena';
+  if(h>=9&&h<12) return 'pre-gym';
+  if(h>=12&&h<14) return 'desayuno';
+  if(h>=14&&h<18) return 'comida';
+  if(h>=18&&h<21) return 'merienda';
+  return 'cena'; // 21:00-09:00
 }
 function buildMealOpts(){
   var auto=getAutoMeal();
@@ -1928,13 +1930,53 @@ function deleteFoodItem(el){
 }
 
 function foodTab(t){
-  ['today','plan'].forEach(function(x){
+  ['today','plan','history'].forEach(function(x){
     document.getElementById('ft-'+x).style.display=x===t?'block':'none';
   });
   document.querySelectorAll('#pg-food .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['today','plan'][i]===t);
+    b.classList.toggle('active',['today','plan','history'][i]===t);
   });
   if(t==='plan') renderFoodPlan();
+  if(t==='history') renderFoodHistory();
+}
+
+function renderFoodHistory(){
+  var el=document.getElementById('food-history-content');
+  // Collect last 14 days
+  var days=[];
+  for(var i=0;i<14;i++){
+    var d=new Date();d.setDate(d.getDate()-i);
+    var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    var log=ld('food_'+ds,[]);
+    if(!log.length) continue;
+    var t=log.reduce(function(a,f){return{k:a.k+f.k,p:a.p+f.p,c:a.c+f.c,f2:a.f2+f.f};},{k:0,p:0,c:0,f2:0});
+    days.push({date:ds,t:t,log:log});
+  }
+  if(!days.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Sin historial aún. Empieza a registrar tus comidas.</div></div>';
+    return;
+  }
+  var maxK=getTargetKcal();var maxP=getTargetProt();
+  el.innerHTML=days.map(function(d){
+    var kPct=Math.min(100,Math.round((d.t.k/maxK)*100));
+    var pPct=Math.min(100,Math.round((d.t.p/maxP)*100));
+    var cPct=Math.min(100,Math.round((d.t.c/200)*100));
+    var fPct=Math.min(100,Math.round((d.t.f2/61)*100));
+    var rem=maxK-d.t.k;
+    var badge,badgeCls;
+    if(d.t.k===0){badge='Sin datos';badgeCls='cbadge bg';}
+    else if(rem>300){badge='Quedan '+Math.round(rem)+' kcal';badgeCls='cbadge bg';}
+    else if(rem>=0){badge='Casi al límite';badgeCls='cbadge by';}
+    else{badge='Superado';badgeCls='cbadge br';}
+    return '<div class="card" style="margin:0 0 10px">'+
+      '<div class="ch"><span class="ci">📊</span><span class="ct">'+fmtDate(d.date)+'</span><span class="'+badgeCls+'">'+badge+'</span></div>'+
+      '<div class="cb">'+
+      '<div class="mr2"><span class="ml2" style="color:var(--o)">Calorías</span><div class="pw" style="flex:1"><div class="pb pbo" style="width:'+kPct+'%"></div></div><span class="mv" style="color:var(--o)">'+Math.round(d.t.k)+'</span><span class="mk">/'+maxK+'</span></div>'+
+      '<div class="mr2"><span class="ml2" style="color:var(--a)">Proteína</span><div class="pw" style="flex:1"><div class="pb pba" style="width:'+pPct+'%"></div></div><span class="mv" style="color:var(--a)">'+Math.round(d.t.p)+'g</span><span class="mk">/'+maxP+'g</span></div>'+
+      '<div class="mr2"><span class="ml2" style="color:var(--o)">Carbos</span><div class="pw" style="flex:1"><div class="pb pbo" style="width:'+cPct+'%"></div></div><span class="mv" style="color:var(--o)">'+Math.round(d.t.c)+'g</span><span class="mk">/200g</span></div>'+
+      '<div class="mr2"><span class="ml2" style="color:var(--p)">Grasa</span><div class="pw" style="flex:1"><div class="pb pbp" style="width:'+fPct+'%"></div></div><span class="mv" style="color:var(--p)">'+Math.round(d.t.f2)+'g</span><span class="mk">/61g</span></div>'+
+      '</div></div>';
+  }).join('');
 }
 
 function renderFoodPlan(){
