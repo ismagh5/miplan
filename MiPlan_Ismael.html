@@ -1059,6 +1059,22 @@ function saveHistEntry(){
   renderGymHistory();
 }
 
+var _datePickerCtx = 'gym';
+function openDatePickerModal(ctx){
+  _datePickerCtx = ctx;
+  var input = document.getElementById('date-picker-input');
+  // Default to yesterday
+  input.value = getYesterdayDate();
+  input.max = today();
+  document.getElementById('date-picker-modal').classList.add('open');
+}
+function applyDatePicker(){
+  var val = document.getElementById('date-picker-input').value;
+  if(!val){ alert('Elige una fecha'); return; }
+  document.getElementById('date-picker-modal').classList.remove('open');
+  toggleLogDate(_datePickerCtx, val);
+}
+
 function exportData(){
   var data={};
   for(var i=0;i<localStorage.length;i++){
@@ -1469,11 +1485,9 @@ function renderGymSession(){
   var el=document.getElementById('gym-session-content');
   var isYesterday=logDate!==today();
   var toggleHtml='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:'+(isYesterday?'rgba(245,158,11,0.1)':'transparent')+';border-radius:10px;margin:0 16px 8px">'+
-    '<span style="font-size:12px;font-weight:600;color:'+(isYesterday?'var(--o)':'var(--m)')+'">'+(isYesterday?'⚠️ Registrando: '+fmtDate(logDate):'📅 Registrando: Hoy')+'</span>'+
-    (isYesterday?'<button class="btn bth btn-sm" onclick="toggleLogDate(\'gym\',null)">Volver a hoy</button>':
-      '<input type="date" id="gym-log-date-picker" max="'+today()+'" style="background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:4px 8px;color:var(--t);font-size:11px" onchange="toggleLogDate(\'gym\',this.value)" onclick="event.stopPropagation()" placeholder="Elegir fecha">'+
-      '<button class="btn bth btn-sm" onclick="toggleLogDate(\'gym\',document.getElementById(\'gym-log-date-picker\')&&document.getElementById(\'gym-log-date-picker\').value||getYesterdayDate())">Elegir día</button>')+
-    '</div>';
+    '<span style="font-size:12px;font-weight:600;color:'+(isYesterday?'var(--o)':'var(--m)')+'">'+
+    (isYesterday?'⚠️ Registrando: '+fmtDate(logDate):'📅 Registrando: Hoy')+'</span>'+
+    (isYesterday?'<button class="btn bth btn-sm" onclick="toggleLogDate(\'gym\',null)">Volver a hoy</button>':'<button class="btn bth btn-sm" onclick="openDatePickerModal(\'gym\')">📅 Elegir día</button>')+'</div>';
   if(!dk){el.innerHTML=toggleHtml+'<div class="empty"><div class="empty-icon">😴</div><div class="empty-text">'+(isYesterday?'Ese día era domingo — descanso.':'Hoy es domingo — día de descanso.')+'</div></div>';return;}
   el.innerHTML=toggleHtml+'<div id="gym-session-inner"></div>';
   renderGymDay(dk,document.getElementById('gym-session-inner'),true);
@@ -1858,12 +1872,13 @@ function autoSaveRun(){
   if(idx>=0) hist[idx]=session; else hist.unshift(session);
   sd('run_hist',hist.slice(0,50));
   var btn=event.target;btn.textContent='✅ Guardado';btn.disabled=true;
+  setTimeout(function(){btn.textContent='💾 Guardar sesión';btn.disabled=false;},3000);
 }
 function renderRunHistory(){
   var hist=ld('run_hist',[]);
   var el=document.getElementById('run-history-content');
   if(!hist.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏃</div><div class="empty-text">Sin sesiones aún. Completa tu primera sesión de running.</div></div>';return;}
-  el.innerHTML=btnHtml+hist.map(function(s,idx){
+  el.innerHTML=hist.map(function(s,idx){
     var feelEmoji=s.feeling==='bien'?'😊':s.feeling==='regular'?'😐':'😓';
     var checks=s.checks||{};
     var doneCount=[checks.warmup,checks.work,checks.cooldown].filter(Boolean).length;
@@ -1936,11 +1951,9 @@ function renderRunToday(){
   var logDateStr=getLogDate();
   var isYesterday=logDateStr!==today();
   var toggleHtml='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:'+(isYesterday?'rgba(245,158,11,0.1)':'transparent')+';border-radius:10px;margin:8px 16px 0">'+
-    '<span style="font-size:12px;font-weight:600;color:'+(isYesterday?'var(--o)':'var(--m)')+'">'+(isYesterday?'⚠️ Registrando: '+fmtDate(logDateStr):'📅 Registrando: Hoy')+'</span>'+
-    (isYesterday?'<button class="btn bth btn-sm" onclick="toggleLogDate(\'run\',null)">Volver a hoy</button>':
-      '<input type="date" id="run-log-date-picker" max="'+today()+'" style="background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:4px 8px;color:var(--t);font-size:11px" onchange="toggleLogDate(\'run\',this.value)" onclick="event.stopPropagation()">'+
-      '<button class="btn bth btn-sm" onclick="toggleLogDate(\'run\',document.getElementById(\'run-log-date-picker\')&&document.getElementById(\'run-log-date-picker\').value||getYesterdayDate())">Elegir día</button>')+
-    '</div>';
+    '<span style="font-size:12px;font-weight:600;color:'+(isYesterday?'var(--o)':'var(--m)')+'">'+
+    (isYesterday?'⚠️ Registrando: '+fmtDate(logDateStr):'📅 Registrando: Hoy')+'</span>'+
+    (isYesterday?'<button class="btn bth btn-sm" onclick="toggleLogDate(\'run\',null)">Volver a hoy</button>':'<button class="btn bth btn-sm" onclick="openDatePickerModal(\'run\')">📅 Elegir día</button>')+'</div>';
   var now=new Date(logDateStr+'T12:00:00');var dow=now.getDay();
   var isRunDay=(dow===2||dow===4||dow===6);
   var nowDate2=new Date(now.getFullYear(),now.getMonth(),now.getDate());
@@ -2975,7 +2988,7 @@ function init(){
   // Deduplicate gym history — keep only the last save per date+day
   var gymHist=ld('gym_hist',[]);
   var gymSeen={};var gymClean=[];
-  gymHist.forEach(function(s){var k=s.date+'_'+s.day;if(!gymSeen[k]){gymSeen[k]=true;gymClean.push(s);}});
+  gymHist.forEach(function(s){var k=s.date+(s.day?'_'+s.day:'');if(!gymSeen[k]){gymSeen[k]=true;gymClean.push(s);}});
   if(gymClean.length!==gymHist.length) sd('gym_hist',gymClean);
 
   // Deduplicate run history — keep only the last save per date
@@ -3001,7 +3014,7 @@ function init(){
   renderHome();
 
   // Modal close on overlay click
-  ['food-modal','pf-modal','ex-modal','rep-modal','recipe-detail-modal','run-detail-modal','hist-modal'].forEach(function(id){
+  ['food-modal','pf-modal','ex-modal','rep-modal','recipe-detail-modal','run-detail-modal','hist-modal','date-picker-modal'].forEach(function(id){
     var el=document.getElementById(id);
     if(el) el.addEventListener('click',function(e){if(e.target===this) this.classList.remove('open');});
   });
@@ -3639,6 +3652,20 @@ function generateShopListFromPlan(){
     <div id="hist-exercises" style="margin:8px 0;max-height:280px;overflow-y:auto"></div>
     <div class="ig"><label class="il">Notas (opcional)</label><input type="text" class="if" id="hist-notes" placeholder="Ej: Semana buena, subí peso en press..."></div>
     <button class="btn btg" style="margin-top:8px" onclick="saveHistEntry()">Guardar sesión</button>
+  </div>
+</div>
+
+
+<!-- DATE PICKER MODAL -->
+<div class="mo" id="date-picker-modal">
+  <div class="md" style="max-width:320px">
+    <div class="mdt">📅 Seleccionar día</div>
+    <span class="mdc" onclick="document.getElementById('date-picker-modal').classList.remove('open')">✕</span>
+    <div style="padding:16px 0 8px">
+      <input type="date" id="date-picker-input"
+        style="width:100%;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;color:var(--t);font-size:16px;box-sizing:border-box">
+    </div>
+    <button class="btn btg" style="margin-top:8px" onclick="applyDatePicker()">Confirmar</button>
   </div>
 </div>
 
