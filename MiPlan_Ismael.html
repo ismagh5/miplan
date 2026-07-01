@@ -1674,37 +1674,33 @@ function openRunDetail(idx){
   html+='<div class="al alg" style="margin-bottom:10px"><span class="ali">🏃</span><span><strong>'+s.work+'</strong></span></div>';
   if(s.workDetail) html+='<div style="font-size:13px;color:var(--m);margin-bottom:10px;line-height:1.6">'+s.workDetail+'</div>';
 
-  // Checks de fases
+  // Checks de fases — expandibles
   html+='<div style="margin-bottom:12px">';
-  [{key:'warmup',label:'⚡ Calentamiento'},{key:'work',label:'🏃 Bloque principal'},{key:'cooldown',label:'🧘 Vuelta a la calma'}].forEach(function(ph){
+  [{key:'warmup',label:'⚡ Calentamiento',detail:s.warmup},{key:'work',label:'🏃 Bloque principal',detail:null},{key:'cooldown',label:'🧘 Vuelta a la calma',detail:s.cooldown}].forEach(function(ph,pi){
     var done=checks[ph.key];
-    html+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--b)">'+
+    html+='<div style="border-bottom:1px solid var(--b)">';
+    html+='<div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'" style="display:flex;align-items:center;gap:8px;padding:10px 0;cursor:pointer">'+
       '<span style="font-size:14px">'+(done?'✅':'⬜')+'</span>'+
-      '<span style="font-size:13px;color:'+(done?'var(--g)':'var(--m)')+'">'+ph.label+'</span></div>';
+      '<span style="font-size:13px;color:'+(done?'var(--g)':'var(--m)')+';flex:1">'+ph.label+'</span>'+
+      '<span style="font-size:12px;color:var(--m)">›</span></div>';
+    // Expandable content
+    html+='<div style="display:none;padding-bottom:10px">';
+    if(ph.key==='work'){
+      html+='<div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:6px">'+(s.work||'')+'</div>';
+      if(s.workDetail) html+='<div style="font-size:12px;color:var(--m);line-height:1.6">'+s.workDetail+'</div>';
+    } else if(ph.detail&&ph.detail.length){
+      ph.detail.forEach(function(step){
+        html+='<div style="padding:8px 0;border-top:1px solid var(--b)">'+
+          '<div style="font-size:13px;font-weight:600;color:var(--t)">'+step.name+'</div>'+
+          '<div style="font-size:11px;color:var(--o);margin:2px 0">⏱️ '+step.dur+'</div>'+
+          '<div style="font-size:12px;color:var(--m);line-height:1.5">'+step.exec+'</div></div>';
+      });
+    } else {
+      html+='<div style="font-size:12px;color:var(--m)">Sin detalle disponible para esta sesión.</div>';
+    }
+    html+='</div></div>';
   });
   html+='</div>';
-
-  // Calentamiento detallado
-  if(s.warmup&&s.warmup.length){
-    html+='<div style="font-size:11px;font-weight:600;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">⚡ Calentamiento</div>';
-    s.warmup.forEach(function(w){
-      html+='<div style="padding:8px 0;border-bottom:1px solid var(--b)">'+
-        '<div style="font-size:13px;font-weight:600;color:var(--t)">'+w.name+'</div>'+
-        '<div style="font-size:11px;color:var(--o);margin:2px 0">⏱️ '+w.dur+'</div>'+
-        '<div style="font-size:12px;color:var(--m)">'+w.exec+'</div></div>';
-    });
-  }
-
-  // Vuelta a la calma detallada
-  if(s.cooldown&&s.cooldown.length){
-    html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">🧘 Vuelta a la calma</div>';
-    s.cooldown.forEach(function(c){
-      html+='<div style="padding:8px 0;border-bottom:1px solid var(--b)">'+
-        '<div style="font-size:13px;font-weight:600;color:var(--t)">'+c.name+'</div>'+
-        '<div style="font-size:11px;color:var(--o);margin:2px 0">⏱️ '+c.dur+'</div>'+
-        '<div style="font-size:12px;color:var(--m)">'+c.exec+'</div></div>';
-    });
-  }
 
   // Tip
   if(s.tip){
