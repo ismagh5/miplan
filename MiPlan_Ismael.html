@@ -814,7 +814,7 @@ const RUN_WEEKS=[
       exec:"Empuja la cadera hacia delante. Nota el estiramiento en la ingle de la pierna trasera. 30 segundos cada lado."},
    ],
    tip:"El objetivo es que el cuerpo se acostumbre a salir. Si terminas sin estar agotado, lo has hecho bien.",
-   startDate:"2026-06-22"},
+   startDate:"2026-06-29"},
   {num:2,title:"45s trote / 90s caminata",sub:"Las 3 sesiones son idénticas",
    work:"8 × [ 45 seg trote + 90 seg caminata ]",
    workDetail:"15 segundos más de trote. Mismo ritmo conversacional.\n\n🏃 TROTE (45 seg): Igual de suave que la semana pasada. Si la semana 1 te costó, este ritmo te parecerá duro — no pasa nada, es normal.\n\n🚶 CAMINATA DE RECUPERACIÓN (90 seg): Paso LENTO. Aprovecha cada segundo para recuperar. No intentes recortar este tiempo.",
@@ -958,27 +958,32 @@ function buildMealOpts(){
 
 function safeConfirm(btn, actionFn, label){
   label = label || '¿Seguro?';
+  var isFdel=btn.classList.contains('fdel');
   if(btn.dataset.confirming==='1'){
-    // Already in confirm state — execute
     clearTimeout(btn._confirmTimer);
     btn.dataset.confirming='0';
     btn.textContent=btn.dataset.origText;
-    btn.style.background='';
-    btn.style.color='';
+    btn.style.background='';btn.style.color='';btn.style.fontSize='';btn.style.padding='';
     actionFn();
     return;
   }
-  // First press — show confirm state
   btn.dataset.origText=btn.textContent;
   btn.dataset.confirming='1';
-  btn.textContent=label+' (pulsa de nuevo)';
-  btn.style.background='rgba(239,68,68,0.15)';
-  btn.style.color='var(--r)';
+  if(isFdel){
+    // Small confirm for delete food items — just change color, no text
+    btn.textContent='✕';
+    btn.style.color='var(--r)';
+    btn.style.background='rgba(239,68,68,0.15)';
+    btn.style.fontSize='14px';
+  } else {
+    btn.textContent=label+' (pulsa de nuevo)';
+    btn.style.background='rgba(239,68,68,0.15)';
+    btn.style.color='var(--r)';
+  }
   btn._confirmTimer=setTimeout(function(){
     btn.dataset.confirming='0';
     btn.textContent=btn.dataset.origText;
-    btn.style.background='';
-    btn.style.color='';
+    btn.style.background='';btn.style.color='';btn.style.fontSize='';btn.style.padding='';
   },4000);
 }
 
@@ -1234,7 +1239,7 @@ function getNextRunDay(now){
 function getRunStartDate(){
   var saved=ld('run_start_date',null);
   if(saved){var p=saved.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-  return new Date(2026,5,22);
+  return new Date(2026,5,29);
 }
 function resetRunPlan(){
   var btn=event.target;
@@ -2009,7 +2014,7 @@ function renderSupplements(){
   var dow=todayDow();
   var isWeekday=(dow>=1&&dow<=5);
   var isWeekend=(dow===0||dow===6);
-  var log=getFoodLog();
+  var log=ld('food_'+today(),[]);
   var hasPreGym=log.some(function(f){return f.meal==='pre-gym';});
   var hasDesayuno=log.some(function(f){return f.meal==='desayuno';});
   // Always fresh for today - never carry over from yesterday
@@ -2141,7 +2146,7 @@ function renderFoodToday(){
 
 function checkFoodAlert(){
   var now=new Date();
-  var startTracking=new Date('2026-06-22');
+  var startTracking=new Date('2026-06-29');
   if(now<startTracking) return;
   var log=getFoodLog();
   var yesterday=getYesterday();
@@ -2878,7 +2883,7 @@ function init(){
 
   // 22:00 alert check
   var now=new Date();
-  var startTracking=new Date('2026-06-22');
+  var startTracking=new Date('2026-06-29');
   if(now>=startTracking&&now.getHours()>=22){
     var log=getFoodLog();
     if(!log.length){
@@ -3225,27 +3230,20 @@ function _loadTwoPhotos(box, fileName, exName){
   if(!box||box.dataset.loaded==='1') return;
   box.dataset.loaded='1';
   if(!fileName) return;
-  var base=IMG_BASE;
-  var url0=base+fileName+'/0.jpg';
-  var url1=base+fileName+'/1.jpg';
-  // Test img0 loads, then show both
-  var test=new Image();
-  test.onload=function(){
-    box.style.display='block';
-    box.innerHTML=
-      '<div class="ex-photos">'+
-        '<div class="ex-photo-wrap">'+
-          '<img src="'+url0+'" alt="'+exName+' — inicio" onerror="this.parentElement.style.display=&quot;none&quot;">'+
-          '<div class="ex-photo-label">Inicio</div>'+
-        '</div>'+
-        '<div class="ex-photo-wrap">'+
-          '<img src="'+url1+'" alt="'+exName+' — fin" onerror="this.parentElement.style.display=&quot;none&quot;">'+
-          '<div class="ex-photo-label">Fin</div>'+
-        '</div>'+
-      '</div>';
-  };
-  test.onerror=function(){/* no image found, stay hidden */};
-  test.src=url0;
+  var url0=IMG_BASE+fileName+'/0.jpg';
+  var url1=IMG_BASE+fileName+'/1.jpg';
+  box.style.display='block';
+  box.innerHTML=
+    '<div class="ex-photos">'+
+      '<div class="ex-photo-wrap">'+
+        '<img src="'+url0+'" alt="Inicio" style="width:100%;height:150px;object-fit:cover;border-radius:10px;background:var(--s2)">'+
+        '<div class="ex-photo-label">Inicio</div>'+
+      '</div>'+
+      '<div class="ex-photo-wrap">'+
+        '<img src="'+url1+'" alt="Fin" style="width:100%;height:150px;object-fit:cover;border-radius:10px;background:var(--s2)">'+
+        '<div class="ex-photo-label">Fin</div>'+
+      '</div>'+
+    '</div>';
 }
 function loadExerciseImage(headerEl,exName,dk,i){
   var box=document.getElementById('eximg-'+dk+'-'+i);
