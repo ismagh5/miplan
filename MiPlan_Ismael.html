@@ -1470,17 +1470,27 @@ function renderGymSession(){
   var isYesterday=logDate!==today();
   var toggleHtml='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:'+(isYesterday?'rgba(245,158,11,0.1)':'transparent')+';border-radius:10px;margin:0 16px 8px">'+
     '<span style="font-size:12px;font-weight:600;color:'+(isYesterday?'var(--o)':'var(--m)')+'">'+(isYesterday?'⚠️ Registrando: '+fmtDate(logDate):'📅 Registrando: Hoy')+'</span>'+
-    '<button class="btn bth btn-sm" onclick="toggleLogDate(\'gym\')">'+(isYesterday?'Volver a hoy':'Registrar día anterior')+'</button>'+
+    (isYesterday?'<button class="btn bth btn-sm" onclick="toggleLogDate(\'gym\',null)">Volver a hoy</button>':
+      '<input type="date" id="gym-log-date-picker" max="'+today()+'" style="background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:4px 8px;color:var(--t);font-size:11px" onchange="toggleLogDate(\'gym\',this.value)" onclick="event.stopPropagation()" placeholder="Elegir fecha">'+
+      '<button class="btn bth btn-sm" onclick="toggleLogDate(\'gym\',document.getElementById(\'gym-log-date-picker\')&&document.getElementById(\'gym-log-date-picker\').value||getYesterdayDate())">Elegir día</button>')+
     '</div>';
   if(!dk){el.innerHTML=toggleHtml+'<div class="empty"><div class="empty-icon">😴</div><div class="empty-text">'+(isYesterday?'Ese día era domingo — descanso.':'Hoy es domingo — día de descanso.')+'</div></div>';return;}
   el.innerHTML=toggleHtml+'<div id="gym-session-inner"></div>';
   renderGymDay(dk,document.getElementById('gym-session-inner'),true);
 }
 
-function toggleLogDate(ctx){
-  var cur=getLogDate();
-  if(cur===today()) setLogDate(getYesterdayDate());
-  else setLogDate(today());
+function toggleLogDate(ctx, specificDate){
+  if(specificDate===null||specificDate===undefined){
+    // null = volver a hoy
+    setLogDate(today());
+  } else if(specificDate){
+    setLogDate(specificDate);
+  } else {
+    // empty string = toggle
+    var cur=getLogDate();
+    if(cur===today()) setLogDate(getYesterdayDate());
+    else setLogDate(today());
+  }
   if(ctx==='gym') renderGymSession();
   if(ctx==='run') renderRunToday();
 }
@@ -1927,7 +1937,9 @@ function renderRunToday(){
   var isYesterday=logDateStr!==today();
   var toggleHtml='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:'+(isYesterday?'rgba(245,158,11,0.1)':'transparent')+';border-radius:10px;margin:8px 16px 0">'+
     '<span style="font-size:12px;font-weight:600;color:'+(isYesterday?'var(--o)':'var(--m)')+'">'+(isYesterday?'⚠️ Registrando: '+fmtDate(logDateStr):'📅 Registrando: Hoy')+'</span>'+
-    '<button class="btn bth btn-sm" onclick="toggleLogDate(\'run\')">'+(isYesterday?'Volver a hoy':'Registrar día anterior')+'</button>'+
+    (isYesterday?'<button class="btn bth btn-sm" onclick="toggleLogDate(\'run\',null)">Volver a hoy</button>':
+      '<input type="date" id="run-log-date-picker" max="'+today()+'" style="background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:4px 8px;color:var(--t);font-size:11px" onchange="toggleLogDate(\'run\',this.value)" onclick="event.stopPropagation()">'+
+      '<button class="btn bth btn-sm" onclick="toggleLogDate(\'run\',document.getElementById(\'run-log-date-picker\')&&document.getElementById(\'run-log-date-picker\').value||getYesterdayDate())">Elegir día</button>')+
     '</div>';
   var now=new Date(logDateStr+'T12:00:00');var dow=now.getDay();
   var isRunDay=(dow===2||dow===4||dow===6);
@@ -1943,9 +1955,13 @@ function renderRunToday(){
   var start=startRunDate2;
   var pfActive=ld('pf_'+getYesterday(),null);
 
-  if(now<start){
+  // Allow registering sessions from up to 7 days before start (in case of date reset)
+  var effectiveStart=new Date(startRunDate2.getTime()-7*86400000);
+  if(now<effectiveStart){
     el.innerHTML=toggleHtml+'<div class="al alb" style="margin:12px 16px"><span class="ali">📅</span><span>El running empieza el <strong>29 de junio</strong>.</span></div>';return;
   }
+  // If date is before official start but within 7 days, treat as week 1
+  if(diffDays<0) wn=1;
   if(pfActive&&isRunDay&&!isYesterday){
     var compSat=shouldCompensateSaturday(dow);
     el.innerHTML=toggleHtml+'<div style="padding:12px 16px"><div class="al alr"><span class="ali">⛔</span><span><strong>Post-fiesta:</strong> No hagas running hoy. Descansa y recupera.'+(compSat?' <strong>Compensa el sábado.</strong>':'')+'</span></div></div>';return;
@@ -1953,9 +1969,7 @@ function renderRunToday(){
   if(!isRunDay){
     el.innerHTML=toggleHtml+'<div style="padding:12px 16px"><div class="al alb"><span class="ali">😴</span><span>'+(isYesterday?'Ese día no tocaba running.':'Hoy no toca running. Próxima sesión: <strong>'+getNextRunDay(new Date())+'</strong>')+'</span></div></div>';return;
   }
-  if(wn===0){
-    el.innerHTML=toggleHtml+'<div style="padding:12px 16px"><div class="al alb"><span class="ali">📅</span><span>El running empieza el 29 de junio.</span></div></div>';return;
-  }
+  if(wn===0) wn=1; // fallback to week 1
 
   var rw=RUN_WEEKS[wn-1];
   var html=toggleHtml+'<div style="padding:12px 16px">';
