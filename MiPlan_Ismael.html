@@ -1620,9 +1620,20 @@ function toggleRunCheck(key){
 function autoSaveRun(){
   var wn=getCurrentRunWeek();
   var rw=RUN_WEEKS[wn-1];
-  var session={date:getLogDate(),week:wn,duration:rw&&rw.totalMin?rw.totalMin:30,feeling:'bien',notes:'',work:rw?rw.work:''};
+  var checks=ld('run_checks_'+getLogDate(),{warmup:false,work:false,cooldown:false});
+  var session={
+    date:getLogDate(),week:wn,
+    duration:rw&&rw.totalMin?rw.totalMin:30,
+    feeling:'bien',notes:'',
+    work:rw?rw.work:'',
+    workDetail:rw?rw.workDetail:'',
+    title:rw?rw.title:'',
+    tip:rw?rw.tip:'',
+    warmup:rw&&rw.warmup?rw.warmup:[],
+    cooldown:rw&&rw.cooldown?rw.cooldown:[],
+    checks:checks
+  };
   var hist=ld('run_hist',[]);
-  // Sobreescribir si ya existe entrada de hoy
   var idx=hist.findIndex(function(h){return h.date===getLogDate();});
   if(idx>=0) hist[idx]=session; else hist.unshift(session);
   sd('run_hist',hist.slice(0,50));
@@ -1632,12 +1643,76 @@ function renderRunHistory(){
   var hist=ld('run_hist',[]);
   var el=document.getElementById('run-history-content');
   if(!hist.length){el.innerHTML='<div class="empty"><div class="empty-icon">🏃</div><div class="empty-text">Sin sesiones aún. Completa tu primera sesión de running.</div></div>';return;}
-  el.innerHTML=hist.map(function(s){
+  el.innerHTML=hist.map(function(s,idx){
     var feelEmoji=s.feeling==='bien'?'😊':s.feeling==='regular'?'😐':'😓';
-    return '<div class="card" style="margin:0 0 8px"><div class="ch"><span class="ci">🏃</span><span class="ct">Semana '+s.week+'</span><span class="cbadge bg">'+fmtDate(s.date)+'</span></div>'+
-    '<div class="cb"><div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px">'+(s.work||'Sesión completada')+'</div>'+
-    '<div style="font-size:12px;color:var(--m)">'+s.duration+' min · '+feelEmoji+' '+s.feeling+(s.notes?' · '+s.notes:'')+'</div></div></div>';
+    var checks=s.checks||{};
+    var doneCount=[checks.warmup,checks.work,checks.cooldown].filter(Boolean).length;
+    return '<div class="card" style="margin:0 0 8px">'+
+      '<div class="ch"><span class="ci">🏃</span><span class="ct">Semana '+s.week+(s.title?' · '+s.title:'')+'</span><span class="cbadge bg">'+fmtDate(s.date)+'</span></div>'+
+      '<div class="cb">'+
+      '<div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px">'+(s.work||'Sesión completada')+'</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between">'+
+      '<div style="font-size:12px;color:var(--m)">'+s.duration+' min · '+feelEmoji+' '+s.feeling+' · ✅ '+doneCount+'/3 fases</div>'+
+      '<button class="btn bth btn-sm" onclick="openRunDetail('+idx+')">Ver detalle</button>'+
+      '</div></div></div>';
   }).join('');
+}
+
+function openRunDetail(idx){
+  var hist=ld('run_hist',[]);
+  var s=hist[idx];
+  if(!s) return;
+  var checks=s.checks||{};
+  var modal=document.getElementById('run-detail-modal');
+  var title=document.getElementById('run-detail-title');
+  var body=document.getElementById('run-detail-body');
+  if(!modal) return;
+  title.textContent='Semana '+s.week+' — '+fmtDate(s.date);
+  var html='';
+
+  // Bloque de trabajo
+  html+='<div class="al alg" style="margin-bottom:10px"><span class="ali">🏃</span><span><strong>'+s.work+'</strong></span></div>';
+  if(s.workDetail) html+='<div style="font-size:13px;color:var(--m);margin-bottom:10px;line-height:1.6">'+s.workDetail+'</div>';
+
+  // Checks de fases
+  html+='<div style="margin-bottom:12px">';
+  [{key:'warmup',label:'⚡ Calentamiento'},{key:'work',label:'🏃 Bloque principal'},{key:'cooldown',label:'🧘 Vuelta a la calma'}].forEach(function(ph){
+    var done=checks[ph.key];
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--b)">'+
+      '<span style="font-size:14px">'+(done?'✅':'⬜')+'</span>'+
+      '<span style="font-size:13px;color:'+(done?'var(--g)':'var(--m)')+'">'+ph.label+'</span></div>';
+  });
+  html+='</div>';
+
+  // Calentamiento detallado
+  if(s.warmup&&s.warmup.length){
+    html+='<div style="font-size:11px;font-weight:600;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">⚡ Calentamiento</div>';
+    s.warmup.forEach(function(w){
+      html+='<div style="padding:8px 0;border-bottom:1px solid var(--b)">'+
+        '<div style="font-size:13px;font-weight:600;color:var(--t)">'+w.name+'</div>'+
+        '<div style="font-size:11px;color:var(--o);margin:2px 0">⏱️ '+w.dur+'</div>'+
+        '<div style="font-size:12px;color:var(--m)">'+w.exec+'</div></div>';
+    });
+  }
+
+  // Vuelta a la calma detallada
+  if(s.cooldown&&s.cooldown.length){
+    html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px">🧘 Vuelta a la calma</div>';
+    s.cooldown.forEach(function(c){
+      html+='<div style="padding:8px 0;border-bottom:1px solid var(--b)">'+
+        '<div style="font-size:13px;font-weight:600;color:var(--t)">'+c.name+'</div>'+
+        '<div style="font-size:11px;color:var(--o);margin:2px 0">⏱️ '+c.dur+'</div>'+
+        '<div style="font-size:12px;color:var(--m)">'+c.exec+'</div></div>';
+    });
+  }
+
+  // Tip
+  if(s.tip){
+    html+='<div class="al alb" style="margin-top:10px"><span class="ali">💡</span><span style="font-size:12px">'+s.tip+'</span></div>';
+  }
+
+  body.innerHTML=html;
+  modal.classList.add('open');
 }
 
 function renderRunToday(){
@@ -2684,7 +2759,7 @@ function init(){
   renderHome();
 
   // Modal close on overlay click
-  ['food-modal','pf-modal','ex-modal','rep-modal','recipe-detail-modal'].forEach(function(id){
+  ['food-modal','pf-modal','ex-modal','rep-modal','recipe-detail-modal','run-detail-modal'].forEach(function(id){
     var el=document.getElementById(id);
     if(el) el.addEventListener('click',function(e){if(e.target===this) this.classList.remove('open');});
   });
@@ -3210,6 +3285,15 @@ function generateShopListFromPlan(){
 
 
 </script>
+
+<!-- RUN DETAIL MODAL -->
+<div class="mo" id="run-detail-modal">
+  <div class="md">
+    <div class="mdt" id="run-detail-title">Detalle de sesión</div>
+    <span class="mdc" onclick="document.getElementById('run-detail-modal').classList.remove('open')">✕</span>
+    <div id="run-detail-body"></div>
+  </div>
+</div>
 
 <!-- RECIPE DETAIL MODAL -->
 <div class="mo" id="recipe-detail-modal">
