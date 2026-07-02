@@ -442,14 +442,14 @@ select.if{cursor:pointer;}
     <div class="sb"><div class="sv" id="w-lost" style="color:var(--g)">—</div><div class="sl">Perdido (kg)</div></div>
   </div>
   <div class="card"><div class="ch"><span class="ci">📈</span><span class="ct">Evolución</span></div><div style="padding:8px"><canvas id="w-chart" height="180"></canvas></div></div>
-  <div class="card" style="margin-bottom:20px"><div class="ch"><span class="ci">📋</span><span class="ct">Registros</span></div><div id="w-list"></div></div>
-</div>
-  <div class="card" style="margin:8px 16px 16px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.25)">
+  <div class="card" style="margin-bottom:8px"><div class="ch"><span class="ci">📋</span><span class="ct">Registros</span></div><div id="w-list"></div></div>
+  <div class="card" style="margin:0 0 16px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.25)">
     <div style="display:flex;gap:8px;padding:4px 0">
       <button onclick="exportData()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;color:var(--t);font-size:13px;font-weight:600;cursor:pointer">📤 Exportar datos</button>
       <button onclick="importData()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;color:var(--t);font-size:13px;font-weight:600;cursor:pointer">📥 Importar datos</button>
     </div>
   </div>
+</div>
 
 <!-- HEALTH -->
 <div class="page" id="pg-health">
@@ -604,18 +604,42 @@ const GYM_BASE={
     ],
     cardio:"10-15 min remo / bici / caminata (opcional, sin running hoy)",
     mobility:[
-      {name:"Distracción de hombro con banda",dur:"45 seg/lado",
-       pos:"Ata una banda a un punto fijo bajo. Pasa la banda alrededor de la muñeca derecha.",
-       exec:"Inclínate hacia delante dejando el brazo completamente relajado. La banda tira del hombro hacia abajo creando espacio articular. Relájate 45 segundos. Cambia de lado."},
-      {name:"Estiramiento dorsal en cuadrupedia diagonal",dur:"45 seg/lado",
-       pos:"A cuatro patas. Extiende el brazo derecho en diagonal a las 11h sobre el suelo.",
-       exec:"Siéntate lentamente hacia los talones manteniendo el brazo extendido. El pecho baja hacia el suelo. Mantén 45 segundos. Cambia de lado."},
-      {name:"Estiramiento de bíceps en pared",dur:"30 seg/lado",
-       pos:"De pie frente a la pared. Extiende el brazo y apoya la palma con el pulgar hacia abajo.",
-       exec:"Sin doblar el codo, gira el cuerpo alejándote de la pared. Mantén 30 segundos. Cambia de lado."},
-      {name:"Estiramiento de trapecio lateral",dur:"30 seg/lado",
-       pos:"Sentado o de pie. Brazo derecho relajado a lo largo del cuerpo.",
-       exec:"Lleva la oreja izquierda hacia el hombro izquierdo. Mano izquierda en la sien, presión mínima. 30 segundos. Cambia de lado."},
+      {name:'Foam roller — Columna dorsal (dorsal/romboides)',dur:'60 seg (🟠 Foam roller desde el lunes)',
+       pos:'Foam roller horizontal a la altura de los omóplatos. Rodillas flexionadas, manos en la nuca.',
+       exec:'Deja caer el peso hacia atrás sobre el rodillo. Muévelo lentamente desde los omóplatos hasta la mitad de la espalda (no zona lumbar). 60 segundos. Libera tensión del romboides y erector dorsal.'},
+      {name:'Foam roller — Lat / Dorsal ancho',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Tumbado de lado. Rodillo bajo la axila, brazo extendido sobre la cabeza.',
+       exec:'Con las piernas apiladas, rueda desde la axila hasta la cintura lentamente. 45 segundos cada lado. Alivia tensión del dorsal ancho y redondo mayor.'},
+      {name:'Child\'s pose extendido (dorsal bajo)',dur:'60 seg',
+       pos:'De rodillas, siéntate sobre los talones y estira los brazos al frente sobre el suelo.',
+       exec:'Manos a máxima distancia. Frente al suelo. Respira profundo: al exhalar relaja los hombros y deja caer el pecho. 60 segundos. Estiramiento profundo del dorsal y zona lumbar.'},
+      {name:'Thread the needle — Rotación torácica',dur:'45 seg/lado',
+       pos:'A cuatro patas. Manos bajo los hombros, rodillas bajo las caderas.',
+       exec:'Desliza el brazo derecho bajo el izquierdo hasta apoyar el hombro en el suelo. La cadera no se mueve. Mantén 45 segundos. Mejora rotación torácica y movilidad de romboides. Cambia de lado.'},
+      {name:'Puppy pose — Dorsal + hombros',dur:'60 seg',
+       pos:'A cuatro patas. Camina con las manos al frente hasta bajar el pecho hacia el suelo.',
+       exec:'Cadera sobre las rodillas. Frente apoyada o barbilla en el suelo. Brazos extendidos. Mantén 60 segundos. Combina estiramiento de dorsal, romboides y hombro anterior.'},
+      {name:'Distracción de hombro en marco de puerta',dur:'45 seg/lado',
+       pos:'De pie. Brazo a 90° apoyado en el marco de una puerta, codo a la altura del hombro.',
+       exec:'Gira el cuerpo hacia afuera alejándote del brazo. Nota la apertura de la cápsula articular del hombro. 45 segundos. Cambia de lado.'},
+      {name:'Estiramiento dorsal diagonal en cuadrupedia',dur:'45 seg/lado',
+       pos:'A cuatro patas. Extiende el brazo derecho en diagonal a las 11h sobre el suelo.',
+       exec:'Siéntate lentamente hacia los talones manteniendo el brazo extendido. Pecho baja hacia el suelo. 45 segundos. Aísla el dorsal con mayor efectividad que el child\'s pose.'},
+      {name:'Estiramiento de bíceps en pared',dur:'30 seg/lado',
+       pos:'De pie junto a la pared. Extiende el brazo y apoya la palma con el pulgar hacia abajo.',
+       exec:'Sin doblar el codo, gira el cuerpo alejándote de la pared. Notarás el tirón en el bíceps y hombro anterior. 30 segundos cada lado.'},
+      {name:'Cat-cow — Movilidad segmentaria lumbar',dur:'60 seg (10 reps)',
+       pos:'A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas.',
+       exec:'Exhala: redondea toda la columna (cat). Inhala: extiende columna dejando caer el abdomen (cow). Movimiento vertebra a vertebra, lento. 10 respiraciones completas.'},
+      {name:'Estiramiento de trapecio lateral',dur:'30 seg/lado',
+       pos:'Sentado o de pie. Brazo derecho relajado a lo largo del cuerpo.',
+       exec:'Lleva la oreja izquierda hacia el hombro izquierdo. Mano izquierda en la sien, presión mínima. Mantén la barbilla neutral. 30 segundos. Cambia de lado.'},
+      {name:'Supine spinal twist — Rotación lumbar',dur:'45 seg/lado',
+       pos:'Tumbado boca arriba. Lleva la rodilla derecha al pecho y crúzala hacia el lado izquierdo. Brazos en T.',
+       exec:'La rodilla toca el suelo (o se queda suspendida). La cabeza mira hacia la derecha. No fuerces. 45 segundos por lado. Libera la tensión residual lumbar tras la sesión.'},
+      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
+       pos:'Tumbado boca arriba, rodillas flexionadas. Una mano en el pecho, otra en el abdomen.',
+       exec:'Inhala 4 seg solo con el abdomen (la mano del pecho no se mueve). Aguanta 2 seg. Exhala 6 seg vaciando completamente. Activa el sistema parasimpático y acelera la recuperación muscular.'},
     ],
     mobGeneral:true,running:false,kcal:480},
   martes:{name:"Pecho + Tríceps",emoji:"🏋️",
@@ -638,18 +662,39 @@ const GYM_BASE={
     ],
     cardio:"",
     mobility:[
-      {name:"Apertura de pecho en foam roller",dur:"60 segundos",
-       pos:"Foam roller horizontal a la altura de los omóplatos. Rodillas flexionadas, brazos en T.",
-       exec:"Deja caer el peso del cuerpo. El pecho se abre hacia el techo. Inspira profundo, muévete suavemente arriba y abajo."},
-      {name:"Estiramiento de pectoral en marco de puerta",dur:"45 seg/lado",
-       pos:"En el marco de una puerta. Antebrazo apoyado a 90°.",
-       exec:"Da un paso adelante y gira el cuerpo hasta notar el estiramiento. Prueba diferentes alturas. 45 segundos cada lado."},
-      {name:"Estiramiento de tríceps sobre cabeza",dur:"30 seg/lado",
-       pos:"De pie. Codo derecho detrás de la cabeza con la mano entre los omóplatos.",
-       exec:"La mano izquierda empuja el codo hacia atrás y hacia la cabeza suavemente. 30 segundos. Cambia de lado."},
-      {name:"Rotación interna/externa de hombro con banda",dur:"10 rep/lado",
-       pos:"De pie con el codo pegado al costado flexionado a 90°. Banda de tensión suave.",
-       exec:"Rotación externa: lleva la mano hacia afuera manteniendo el codo pegado. Rotación interna: hacia el abdomen. 10 repeticiones cada dirección."},
+      {name:'Foam roller — Columna dorsal alta (pectoral/serrato)',dur:'60 seg (🟠 Foam roller desde el lunes)',
+       pos:'Foam roller horizontal a la altura de los omóplatos altos (entre omóplatos y cuello).',
+       exec:'Brazos cruzados en el pecho. Deja caer hacia atrás. Muévete muy lentamente. 60 segundos. Libera la tensión del trapecio medio y mejora la extensión torácica necesaria para el press.'},
+      {name:'Foam roller — Pectoral menor en esquina',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Rodillo vertical (de pie contra la pared). Apoya el pectoral menor (entre clavícula y axila) contra el rodillo.',
+       exec:'Presión suave y sostenida. Rueda 2-3 cm arriba/abajo. 45 segundos por lado. El pectoral menor es el músculo más acortado tras el press — este trabajo previene la anteversión escapular.'},
+      {name:'Apertura de pecho en foam roller longitudinal',dur:'60 seg',
+       pos:'Foam roller en vertical (a lo largo de la columna, de la cabeza al sacro). Brazos en T o en Y.',
+       exec:'Abre el pecho dejando caer los brazos hacia los lados por gravedad. No fuerces. 60 segundos. Contrarresta la postura de flexión del press. Evidencia: mejora la retracción escapular y la postura.'},
+      {name:'Doorway pectoral stretch — 3 ángulos',dur:'30 seg x3 ángulos',
+       pos:'En marco de puerta. Posición 1: brazo a 90° (fibras medias). Posición 2: brazo a 120° (fibras inferiores). Posición 3: brazo a 60° (fibras superiores).',
+       exec:'Un paso al frente y gira el cuerpo en cada posición. 30 seg cada ángulo. Cubre todas las fibras del pectoral mayor. Evidencia: superior al estiramiento en una sola posición.'},
+      {name:'Estiramiento de tríceps sobre la cabeza',dur:'45 seg/lado',
+       pos:'De pie. Codo derecho doblado detrás de la cabeza, mano entre los omóplatos.',
+       exec:'La mano izquierda en el codo empuja suavemente hacia atrás y hacia abajo. Torso recto, sin hiperextender la lumbar. 45 segundos. Aísla la cabeza larga del tríceps (la más trabajada en press francés).'},
+      {name:'Cross-body shoulder stretch (deltoides posterior)',dur:'45 seg/lado',
+       pos:'De pie. Lleva el brazo derecho horizontal cruzando el pecho. Sujétalo con el antebrazo izquierdo.',
+       exec:'Mantén el hombro derecho hacia abajo (no elevado). Presiona suavemente hacia el pecho. 45 segundos. Estira el deltoides posterior y el infraespinoso, frecuentemente olvidados en días de pecho.'},
+      {name:'Thread the needle — Serrato anterior',dur:'45 seg/lado',
+       pos:'A cuatro patas. Desliza el brazo derecho bajo el torso hacia la izquierda.',
+       exec:'El hombro toca el suelo. Mantén la cadera alta y perpendicular. 45 segundos por lado. Estira el serrato anterior, que trabaja intensamente en el press y las aperturas.'},
+      {name:'Eagle arms — Hombro posterior y trapecio medio',dur:'45 seg/lado',
+       pos:'Sentado o de pie. Cruza el brazo derecho POR DEBAJO del izquierdo. Entrelaza los antebrazos.',
+       exec:'Eleva los codos a la altura de los hombros y aléjalos del pecho. Mantén 45 segundos. Aísla el hombro posterior y el romboides. Cambia el brazo que queda abajo.'},
+      {name:'Extensión de muñeca y antebrazo (flexores)',dur:'30 seg/lado',
+       pos:'De rodillas o de pie. Apoya la palma derecha en el suelo con los dedos apuntando hacia las rodillas.',
+       exec:'Inclínate ligeramente hacia delante. Nota el estiramiento en el antebrazo. 30 segundos. Previene tendinitis del codo (epicondilitis), frecuente en días de press.'},
+      {name:'Rotación torácica en suelo (book openings)',dur:'45 seg/lado',
+       pos:'Tumbado de lado. Rodillas flexionadas a 90°. Ambos brazos extendidos al frente.',
+       exec:'Sin mover la cadera, abre el brazo de arriba hacia atrás hasta donde llegues. Ojos siguiendo la mano. Mantén el punto final 3 seg. 8 repeticiones lentas por lado.'},
+      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
+       pos:'Tumbado boca arriba, rodillas flexionadas.',
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. La exhalación lenta activa el vago y reduce el cortisol post-entreno. 8-10 ciclos.'},
     ],
     mobGeneral:true,running:true,kcal:420},
   miercoles:{name:"Pierna",emoji:"🏋️",
@@ -672,18 +717,42 @@ const GYM_BASE={
     ],
     cardio:"10-15 min bici o caminata suave (opcional, sin sobrecargar más las piernas)",
     mobility:[
-      {name:"Estocada baja con apertura de cadera (Lizard)",dur:"45 seg/lado",
-       pos:"Pie derecho adelantado. Rodilla izquierda en el suelo.",
-       exec:"Lleva la cadera hacia delante y abajo. Manos en el suelo a los lados del pie. 45 segundos cada lado."},
-      {name:"Estiramiento de isquiotibiales con banda",dur:"45 seg/lado",
-       pos:"Tumbado boca arriba. Banda alrededor del pie derecho.",
-       exec:"Tira llevando la pierna derecha hacia el pecho con rodilla extendida. 45 segundos. Cambia de lado."},
-      {name:"Estiramiento de gemelo en pared",dur:"30 seg × 2 posiciones/lado",
-       pos:"Manos en la pared. Pie trasero a 80-90 cm.",
-       exec:"Posición 1 (gemelo): rodilla recta, talón en suelo, 30 seg. Posición 2 (sóleo): dobla la rodilla manteniendo el talón, 30 seg."},
-      {name:"Mariposa — aductores profundos",dur:"60 segundos",
-       pos:"Sentado en el suelo. Plantas de los pies juntas.",
-       exec:"Codos en los muslos interiores, presión suave hacia abajo. Espalda recta. 60 segundos."},
+      {name:'Foam roller — Cuádriceps',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Boca abajo. Rodillo bajo el muslo derecho, desde la cadera hasta la rodilla.',
+       exec:'Apoya el peso en los antebrazos. Rueda lentamente. Cuando encuentres un punto sensible, para 10 seg antes de seguir. 60 seg por lado. Evidencia: reduce DOMS y mejora ROM en flexión de rodilla.'},
+      {name:'Foam roller — Isquiotibiales',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Sentado. Rodillo bajo el muslo derecho. Manos en el suelo detrás para apoyar.',
+       exec:'Rueda desde la tuberosidad isquiática hasta la fosa poplítea. Rota ligeramente la pierna para cubrir más fibras. 60 seg por lado. Los isquios acortan mucho tras el curl femoral.'},
+      {name:'Foam roller — TFL / Banda IT',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'De lado. Rodillo bajo el lateral del muslo derecho, entre la cadera y la rodilla.',
+       exec:'Apoya el codo. Rueda lentamente. Es la zona más sensible — no fuerces. 60 seg por lado. Fundamental tras el abductor y las zancadas.'},
+      {name:'Foam roller — Gemelo + sóleo',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Sentado. Rodillo bajo el gemelo derecho.',
+       exec:'Gemelo: rodillo a la parte alta de la pantorrilla, pierna recta. Sóleo: dobla ligeramente la rodilla. 45 seg por posición. El sóleo es el músculo más olvidado pero más limitante en la sentadilla.'},
+      {name:'Couch stretch — Psoas y cuádriceps distal',dur:'60 seg/lado',
+       pos:'Rodilla trasera apoyada en la pared o en el sofá. Pie delantero en el suelo a 90°.',
+       exec:'Mantén el torso recto, la pelvis neutra (contrae glúteo trasero suavemente). Cuanto más juntas las rodillas a la pared, más profundo. 60 seg cada lado. El mejor estiramiento del psoas tras el día de pierna.'},
+      {name:'Pigeon pose — Glúteo profundo y piriforme',dur:'90 seg/lado',
+       pos:'Desde cuatro patas, lleva la rodilla derecha hacia la muñeca derecha. La pierna trasera estirada.',
+       exec:'Baja el torso hacia el suelo sobre los antebrazos o completamente. El ángulo de la espinilla delantera = más intensidad. 90 seg por lado. El piriforme es el músculo clave que libera el nervio ciático.'},
+      {name:'Mariposa — Aductores con oscilaciones',dur:'60 seg',
+       pos:'Sentado. Plantas de los pies juntas. Manos en los pies, codos en los muslos.',
+       exec:'Empuja suavemente los muslos hacia el suelo con los codos. Oscilaciones suaves de 2-3 cm durante los primeros 30 seg, luego mantén. 60 segundos. Abductores y aductores trabajan mucho en zancadas.'},
+      {name:'Estiramiento de isquios supino con banda o toalla',dur:'60 seg/lado',
+       pos:'Tumbado boca arriba. Banda o toalla alrededor del pie derecho. Pierna izquierda en el suelo.',
+       exec:'Eleva la pierna derecha manteniéndola recta hasta notar el tirón. Rodilla completamente extendida. 60 seg. Más efectivo que el estiramiento de pie porque elimina la compensación lumbar.'},
+      {name:'Gemelo en pared — gastrocnemio + sóleo',dur:'45 seg x2/lado',
+       pos:'Manos en pared. Pie trasero a 80-90 cm.',
+       exec:'Posición 1: pierna recta, talón pegado al suelo (gastrocnemio, 45 seg). Posición 2: rodilla ligeramente doblada, mismo talón (sóleo, 45 seg). El sóleo es limitante en la sentadilla profunda.'},
+      {name:'Deep squat hold — Movilidad global cadera/tobillo',dur:'60 seg',
+       pos:'Cuclillas completas con los pies a la anchura de las caderas, puntas ligeramente hacia afuera.',
+       exec:'Talones en el suelo (si no puedes, pon una cuña). Codos empujan las rodillas hacia afuera desde dentro. Columna recta. 60 seg. Diagnostica y mejora simultáneamente la movilidad de tobillo, cadera y columna.'},
+      {name:'Supine twist — Liberación lumbar',dur:'45 seg/lado',
+       pos:'Tumbado boca arriba. Rodilla derecha al pecho y crúzala hacia la izquierda.',
+       exec:'Brazos en T. La cabeza mira hacia la derecha. No fuerces la rodilla al suelo. 45 seg por lado. Descomprime las carillas articulares lumbares tras el trabajo de sentadilla y prensa.'},
+      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
+       pos:'Tumbado boca arriba, piernas extendidas o en mariposa.',
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. Los días de pierna son los más demandantes del SNC — este protocolo acelera la recuperación del sistema nervioso. 8-10 ciclos.'},
     ],
     mobGeneral:true,running:false,kcal:520},
   jueves:{name:"Hombro + Core",emoji:"🏋️",
@@ -706,18 +775,42 @@ const GYM_BASE={
     ],
     cardio:"",
     mobility:[
-      {name:"Estiramiento de hombro cruzado",dur:"30 seg/lado",
-       pos:"De pie. Brazo derecho cruzado frente al pecho.",
-       exec:"Con el brazo izquierdo, presiona suavemente el codo derecho hacia el cuerpo. 30 segundos. Cambia de lado."},
-      {name:"Apertura de pecho en marco de puerta",dur:"45 seg/lado",
-       pos:"En el marco de una puerta. Antebrazo apoyado a 90°.",
-       exec:"Da un paso adelante y gira el cuerpo. 45 segundos cada lado."},
-      {name:"Estiramiento de trapecio lateral",dur:"30 seg/lado",
-       pos:"Sentado o de pie. Brazo relajado.",
-       exec:"Lleva la oreja hacia el hombro contrario. Mano en la sien, presión mínima. 30 segundos. Cambia de lado."},
-      {name:"Niño extendido (core/lumbar)",dur:"60 segundos",
-       pos:"A cuatro patas. Siéntate hacia los talones, brazos extendidos.",
-       exec:"Relaja completamente la espalda baja. Respira profundo. 60 segundos."},
+      {name:'Foam roller — Dorsal alto y trapecio',dur:'60 seg (🟠 Foam roller desde el lunes)',
+       pos:'Foam roller horizontal a la altura dorsal alta. Manos en la nuca.',
+       exec:'Deja caer el peso. Muévete desde la T4 hasta T8 (no lumbar). 60 seg. El trapecio y romboides acumulan tensión intensa en los días de hombro y remo.'},
+      {name:'Foam roller — Infraespinoso / Manguito rotador',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'De lado. Rodillo bajo la zona posterior del hombro (entre escápula y húmero).',
+       exec:'Apoya el peso gradualmente. Gira ligeramente el brazo. 45 seg por lado. El infraespinoso es el rotador externo más usado en press militar — su acortamiento causa impingement.'},
+      {name:'Sleeper stretch — Manguito rotador interno',dur:'45 seg/lado',
+       pos:'Tumbado de lado derecho. Hombro a 90°, codo a 90°. Antebrazo perpendicular al suelo.',
+       exec:'Con la mano izquierda, empuja suavemente el antebrazo derecho hacia el suelo. Sin dolor. 45 seg. Evidencia (Laudner 2015): el más efectivo para la flexibilidad del manguito rotador y la reducción de lesiones de hombro.'},
+      {name:'Cross-body stretch — Deltoides posterior',dur:'45 seg/lado',
+       pos:'De pie. Lleva el brazo derecho horizontal cruzando el pecho. Antebrazo izquierdo lo sujeta.',
+       exec:'Hombro derecho hacia abajo (no elevado). Mantén 45 seg. El deltoides posterior está intensamente implicado en las elevaciones y el vuelo posterior.'},
+      {name:'Wall slide — Movilidad escapular',dur:'45 seg (10 reps)',
+       pos:'De pie contra la pared. Codos y muñecas pegados a la pared, brazos en W (ángulo 90°).',
+       exec:'Desliza los brazos hacia arriba en Y manteniendo el contacto con la pared. Baja lentamente. 10 reps. Activa el serrato anterior y mejora el ritmo escapulohumeral, clave para el press militar seguro.'},
+      {name:'Doorway pectoral stretch (deltoides anterior)',dur:'45 seg/lado',
+       pos:'Marco de puerta. Antebrazo a 90°.',
+       exec:'Paso adelante y gira el cuerpo. 45 seg por lado. El deltoides anterior acorta mucho en pressing overhead. Evidencia: mejora el rango en press militar en 8-12°.'},
+      {name:'Child\'s pose lateral — Oblicuos y core lateral',dur:'45 seg/lado',
+       pos:'Desde child\'s pose, desplaza las manos hacia la derecha.',
+       exec:'La cadera izquierda ancla al suelo. Nota el estiramiento en el flanco izquierdo. 45 seg por lado. Estira el cuadrado lumbar y oblicuos trabajados en el core.'},
+      {name:'Cat-cow — Movilidad segmentaria lumbar',dur:'60 seg (10 reps)',
+       pos:'A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas.',
+       exec:'Exhala: redondea toda la columna. Inhala: extiende. Vertebra a vertebra, lento y controlado. 10 respiraciones completas. El mejor warm-down para la columna tras ejercicios de overhead.'},
+      {name:'90/90 Hip switches — Cadera y core',dur:'60 seg (8 reps)',
+       pos:'Sentado en el suelo. Piernas en forma de 90/90: una delante, una lateral.',
+       exec:'Rota la cadera lentamente y cambia de posición sin ayudarte con las manos. 8 repeticiones. Mejora la movilidad articular coxofemoral que estabiliza el core en todos los ejercicios.'},
+      {name:'Supine twist — Lumbar',dur:'45 seg/lado',
+       pos:'Tumbado. Rodilla al pecho y cruzarla al lado opuesto.',
+       exec:'Sin forzar. Brazos en T. 45 seg por lado. Descomprime las vértebras lumbares tras el trabajo de overhead y core.'},
+      {name:'Neck CARs — Movilidad cervical controlada',dur:'60 seg',
+       pos:'De pie o sentado. Columna neutra, hombros bajos.',
+       exec:'Rotación lenta de cuello describiendo el mayor círculo posible, controlando cada grado. 3 círculos en cada dirección. Sin tirones ni rebotes. Los días de hombro sobrecargan los elevadores de la escápula.'},
+      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
+       pos:'Tumbado boca arriba.',
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 8-10 ciclos. Activa el parasimpático y baja el cortisol.'},
     ],
     mobGeneral:true,running:true,kcal:380},
   viernes:{name:"Full body funcional + Core",emoji:"🏋️",
@@ -740,18 +833,42 @@ const GYM_BASE={
     ],
     cardio:"",
     mobility:[
-      {name:"Estiramiento de isquiotibiales de pie",dur:"30 seg/lado",
-       pos:"De pie, pierna derecha adelantada y estirada, talón en el suelo.",
-       exec:"Flexiona la cadera inclinándote hacia adelante manteniendo la espalda recta. 30 segundos. Cambia de lado."},
-      {name:"Estiramiento de cuádriceps de pie",dur:"30 seg/lado",
-       pos:"De pie, sujeta el tobillo derecho llevándolo hacia el glúteo.",
-       exec:"Mantén las rodillas juntas y la cadera empujada hacia adelante. 30 segundos. Cambia de lado."},
-      {name:"Postura del niño (core/lumbar)",dur:"60 segundos",
-       pos:"A cuatro patas, siéntate hacia los talones, brazos extendidos.",
-       exec:"Relaja la espalda baja completamente. Respira profundo. 60 segundos."},
-      {name:"Estiramiento de glúteo cruzado",dur:"30 seg/lado",
-       pos:"Tumbado boca arriba, tobillo derecho sobre la rodilla izquierda.",
-       exec:"Tira de la pierna izquierda hacia el pecho. Notarás el estiramiento en el glúteo derecho. 30 segundos. Cambia de lado."},
+      {name:'Foam roller — Full body sweep',dur:'3 minutos (🟠 Foam roller desde el lunes)',
+       pos:'Rueda por cuádriceps, isquios, glúteo, dorsal y dorsal alto. ~30 seg cada zona.',
+       exec:'Pasa el rodillo rápidamente por los grupos principales trabajados. Prioriza las zonas más sensibles y detente 10 seg en los puntos de tensión. Perfecto como warm-down global.'},
+      {name:'World\'s greatest stretch — Movilidad global',dur:'45 seg/lado',
+       pos:'En posición de zancada. Pie derecho delante, mano derecha al lado del pie.',
+       exec:'Abre el brazo derecho hacia el techo rotando el torso. Luego baja y estira la pierna delantera. Alterna 5 veces por lado. El ejercicio de movilidad con mayor transferencia funcional: cadera, torácica, isquios, psoas.'},
+      {name:'Hip 90/90 con rotación activa',dur:'60 seg (8 reps)',
+       pos:'Sentado en el suelo, piernas en 90/90.',
+       exec:'Rota la cadera lentamente y cambia de posición sin apoyar las manos. 8 reps. Trabaja simultáneamente la rotación interna y externa de cadera, limitante en sentadilla y zancadas.'},
+      {name:'Thoracic rotation en cuadrupedia',dur:'45 seg/lado',
+       pos:'A cuatro patas. Una mano en la nuca.',
+       exec:'Rota el codo hacia arriba siguiendo con los ojos. Aguanta el punto final 2 seg. 8 reps por lado. La movilidad torácica protege el hombro y la lumbar en todos los movimientos funcionales.'},
+      {name:'Pigeon pose — Piriforme y cadera',dur:'75 seg/lado',
+       pos:'Desde cuatro patas, rodilla derecha hacia la muñeca derecha. Pierna trasera estirada.',
+       exec:'Baja el torso hacia el suelo. 75 seg por lado. Los viernes de full body la cadera ha trabajado en múltiples planos — este estiramiento libera la compresión del nervio ciático.'},
+      {name:'Couch stretch — Psoas y cuádriceps',dur:'60 seg/lado',
+       pos:'Rodilla trasera contra la pared. Pie delantero en el suelo.',
+       exec:'Contrae el glúteo trasero para neutralizar la pelvis. 60 seg. El psoas acorta en sedestación y se vuelve a contraer en todos los movimientos de cadera del full body.'},
+      {name:'Shoulder CARs — Rotación articular controlada',dur:'45 seg/lado',
+       pos:'De pie. Fija la escápula con la otra mano en el hombro.',
+       exec:'Rota el húmero describiendo el mayor círculo posible de forma controlada. 3 rotaciones por lado. Los CARs mejoran la lubricación articular y el control neuromuscular del hombro.'},
+      {name:'Spiderman stretch con rotación',dur:'45 seg/lado',
+       pos:'En posición de zancada larga. Mano interior al lado del pie.',
+       exec:'Abre el codo interior hacia el suelo. Luego sube el brazo hacia el techo. 5 reps por lado. Combina apertura de cadera, movilidad torácica y estiramiento de psoas.'},
+      {name:'Ankle CARs — Movilidad de tobillo',dur:'30 seg/lado',
+       pos:'De pie, apoyado. Eleva el pie derecho del suelo.',
+       exec:'Rota el tobillo describiendo el mayor círculo posible, despacio y controlado. 3 círculos por sentido. La movilidad de tobillo es el factor más limitante en sentadilla y zancadas — se pierde rápido.'},
+      {name:'Deep squat hold progresivo',dur:'90 seg',
+       pos:'Cuclillas completas, talones en el suelo si es posible (si no, cuña).',
+       exec:'Codos empujan las rodillas. Torso erguido. Primeros 30 seg: muévete suavemente. Últimos 60 seg: mantén. La movilidad en cuclillas es el mejor indicador de salud articular global.'},
+      {name:'Child\'s pose final',dur:'60 seg',
+       pos:'De rodillas, siéntate sobre talones y estira brazos al frente.',
+       exec:'Respiración profunda. Libera dorsal, lumbar y cadera. Señal al sistema nervioso de que la sesión ha terminado.'},
+      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
+       pos:'Tumbado boca arriba.',
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 8-10 ciclos.'},
     ],
     mobGeneral:true,running:false,kcal:450},
   sabado:{name:"Running largo (sin gym)",emoji:"🏃",
@@ -763,47 +880,93 @@ const GYM_BASE={
     exercises:[],
     cardio:"Running largo según semana del plan (ver pestaña Running)",
     mobility:[
-      {name:"Estiramiento de gemelo en pared",dur:"30 seg × 2 posiciones/lado",
-       pos:"Manos en la pared. Pie trasero a 80-90 cm.",
-       exec:"Posición 1 (gemelo): rodilla recta, talón en suelo, 30 seg. Posición 2 (sóleo): dobla la rodilla manteniendo el talón, 30 seg."},
-      {name:"Estiramiento de isquiotibiales con banda",dur:"45 seg/lado",
-       pos:"Tumbado boca arriba. Banda alrededor del pie derecho.",
-       exec:"Tira llevando la pierna derecha hacia el pecho con rodilla extendida. 45 segundos. Cambia de lado."},
-      {name:"Estiramiento de cuádriceps de pie",dur:"30 seg/lado",
-       pos:"De pie, sujeta el tobillo derecho llevándolo hacia el glúteo.",
-       exec:"Mantén las rodillas juntas y la cadera empujada hacia adelante. 30 segundos. Cambia de lado."},
-      {name:"Postura del niño — cierre de sesión",dur:"90 segundos",
-       pos:"A cuatro patas. Siéntate hacia los talones, brazos extendidos.",
-       exec:"Relaja completamente. Respira profundo durante 90 segundos para bajar pulsaciones."},
+      {name:'Foam roller — Cuádriceps (post-running prioritario)',dur:'75 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Boca abajo. Rodillo bajo el muslo.',
+       exec:'Rueda lento. Para en los puntos sensibles. 75 seg por lado. Los cuádriceps son el grupo más cargado en el running — el foam rolling post-carrera reduce el DOMS en 24-48h.'},
+      {name:'Foam roller — Isquiotibiales',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Sentado. Rodillo bajo el muslo posterior.',
+       exec:'Rueda desde la tuberosidad isquiática hasta la fosa poplítea. Rota la pierna. 60 seg por lado.'},
+      {name:'Foam roller — Gemelo',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Sentado. Rodillo bajo la pantorrilla.',
+       exec:'Pierna recta y luego con rodilla flexionada (sóleo). 60 seg por posición. El gemelo acumula más carga que ningún otro músculo en running.'},
+      {name:'Foam roller — TFL / IT band lateral',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'De lado. Rodillo bajo el lateral del muslo.',
+       exec:'Apoya el codo. Rueda lento desde la cadera a la rodilla. 60 seg por lado. La banda IT es la causa más común de dolor lateral de rodilla en runners.'},
+      {name:'Foam roller — Glúteo y piriforme',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
+       pos:'Sentado sobre el rodillo. Cruza el tobillo derecho sobre la rodilla izquierda.',
+       exec:'Inclínate hacia el lado derecho. Rueda el glúteo. Para en los puntos sensibles. 60 seg por lado. El piriforme irrita el nervio ciático en runners.'},
+      {name:'Calf stretch en pared — gastrocnemio + sóleo',dur:'45 seg x2/lado',
+       pos:'Pie trasero a 80-90 cm de la pared.',
+       exec:'Pierna recta: gastrocnemio. Rodilla doblada: sóleo. 45 seg por posición por lado. Evidencia clara en reducción de lesiones aquileas en runners.'},
+      {name:'Estiramiento de isquios supino con banda',dur:'60 seg/lado',
+       pos:'Tumbado. Banda o toalla en el pie. Pierna elevada.',
+       exec:'Rodilla completamente extendida. 60 seg por lado. Elimina la compensación lumbar que aparece en el estiramiento de pie.'},
+      {name:'Couch stretch — Psoas y flexores de cadera',dur:'75 seg/lado',
+       pos:'Rodilla trasera contra la pared. Pie delantero en el suelo.',
+       exec:'El psoas trabaja excéntricamente en cada zancada del running. 75 seg por lado. El estiramiento más importante para runners.'},
+      {name:'Pigeon pose — Glúteo y piriforme',dur:'90 seg/lado',
+       pos:'Rodilla delantera hacia la muñeca. Pierna trasera estirada.',
+       exec:'Torso hacia el suelo. 90 seg por lado. Alivia la compresión del nervio ciático y el síndrome piriforme.'},
+      {name:'Deep squat hold — Recuperación articular',dur:'60 seg',
+       pos:'Cuclillas. Talones en el suelo.',
+       exec:'Codos abren las rodillas. 60 seg. Restaura la movilidad de tobillo y cadera perdida durante el impacto del running.'},
+      {name:'Supine twist — Liberación lumbar',dur:'60 seg/lado',
+       pos:'Tumbado. Rodilla al pecho y cruzarla al lado.',
+       exec:'La columna lumbar sufre microvibraciones durante el running. 60 seg por lado.'},
+      {name:'Respiración diafragmática de cierre',dur:'3 minutos',
+       pos:'Tumbado boca arriba.',
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 10-12 ciclos. Los sábados el volumen total es el mayor de la semana — este protocolo acelera la recuperación para el descanso del domingo.'},
     ],
-    mobGeneral:false,running:true,kcal:300}
+    mobGeneral:false,running:true,kcal:300},
+  domingo:{name:'Descanso + Movilidad 35min',emoji:'🧘',
+    warmup:null,exercises:[],cardio:'',running:false,kcal:0,
+    mobility:[
+      {name:'Foam roller — Columna dorsal completa',dur:'90 seg (🟠 Foam roller desde el lunes)',pos:'Foam roller horizontal. De los omóplatos hasta la zona dorsal media.',exec:'Manos en la nuca. Muévete muy lento. Para donde notes más tensión. 90 seg. El domingo es el mejor día para el trabajo de movilidad extenso sin fatiga.'},
+      {name:'Foam roller — Cuádriceps y pierna completa',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',pos:'Boca abajo. Pasa el rodillo por cuádriceps, luego rotando hacia el exterior (TFL) e interior (aductores).',exec:'60 seg por lado cubriendo los 3 ángulos. Recuperación preventiva para la semana siguiente.'},
+      {name:'Foam roller — Glúteo y piriforme',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',pos:'Sentado sobre el rodillo. Tobillo cruzado.',exec:'60 seg por lado. Sin prisa. El domingo es el día con más tiempo de calidad para el foam rolling.'},
+      {name:'World\'s greatest stretch',dur:'60 seg/lado',pos:'Zancada larga. Mano al lado del pie.',exec:'Abre el brazo hacia el techo rotando el torso. Baja y estira la pierna. 5 reps lentas por lado. Movilidad global para mantener el ROM de toda la semana.'},
+      {name:'Pigeon pose prolongado',dur:'2 minutos/lado',pos:'Rodilla delantera hacia la muñeca. Pierna trasera estirada.',exec:'El tiempo extra en domingo (2 min por lado) permite trabajo fascial profundo que no se consigue con tiempos cortos. Usa una almohada bajo la cadera si es necesario.'},
+      {name:'Couch stretch largo',dur:'90 seg/lado',pos:'Rodilla trasera contra la pared.',exec:'El tiempo prolongado activa la inhibición autogénica del huso muscular, permitiendo mayor relajación que los 60 seg de los días de semana.'},
+      {name:'Estiramiento de isquios supino',dur:'75 seg/lado',pos:'Tumbado. Banda o toalla en el pie.',exec:'El estiramiento prolongado (>60 seg) produce cambios en la viscoelasticidad del tejido conectivo. 75 seg por lado.'},
+      {name:'Mariposa profunda con tracción',dur:'90 seg',pos:'Sentado. Plantas de pies juntas. Manos en los pies.',exec:'Inclínate hacia delante desde la cadera (no redondees la espalda). Codos empujan los muslos. 90 seg. Aductores profundos y abre la cápsula de la cadera.'},
+      {name:'Doorway pectoral stretch — 3 ángulos',dur:'30 seg x3',pos:'Marco de puerta. Ángulos bajo, medio y alto.',exec:'Previene la anteversión escapular acumulada durante la semana de entreno. 30 seg cada posición.'},
+      {name:'Neck y trapecio — liberación completa',dur:'30 seg x4 direcciones',pos:'Sentado. Columna neutra.',exec:'Flexión, extensión, lateralización y rotación. 30 seg en cada posición. El trapecio acumula tensión durante toda la semana y el domingo es el momento de liberarlo completamente.'},
+      {name:'Respiración 4-7-8 de cierre semanal',dur:'3 minutos',pos:'Tumbado boca arriba o sentado en meditación.',exec:'Inhala 4 seg, aguanta 7 seg, exhala 8 seg. 6 ciclos. Esta técnica (Dr. Andrew Weil) produce el mayor efecto parasimpático de todos los protocolos de respiración. Prepara el cuerpo para la semana siguiente.'},
+    ],
+    mobGeneral:true}
 };
 
 const MOB_GENERAL=[
-  {name:"Estiramiento de isquiotibiales",dur:"60 seg/lado",
-   pos:"De pie, talón apoyado en una superficie a la altura de la cadera o pierna extendida en el suelo.",
-   exec:"Flexiona la cadera inclinándote hacia adelante manteniendo la espalda recta hasta notar el tirón en la parte trasera del muslo. Sin rebotes. 60 segundos cada lado."},
-  {name:"Estiramiento de cuádriceps de pie",dur:"45 seg/lado",
-   pos:"De pie, sujeta el tobillo llevándolo al glúteo. Rodillas juntas.",
-   exec:"Empuja la cadera ligeramente hacia adelante. El muslo de la pierna estirda paralelo al otro. 45 segundos. Cambia de lado."},
-  {name:"Estiramiento de psoas en zancada baja",dur:"60 seg/lado",
-   pos:"Rodilla trasera apoyada en el suelo con almohadilla, rodilla delantera a 90°.",
-   exec:"Empuja cadera hacia adelante y abajo. Torso erguido. Puedes elevar el brazo contrario para mayor apertura. 60 segundos cada lado."},
-  {name:"Estiramiento de glúteo cruzado (figura 4)",dur:"45 seg/lado",
-   pos:"Tumbado boca arriba. Cruza el tobillo derecho sobre la rodilla izquierda.",
-   exec:"Lleva la rodilla izquierda hacia el pecho. Nota el estiramiento profundo en el glúteo derecho. 45 segundos. Cambia de lado."},
-  {name:"Estiramiento de espalda baja (rodillas al pecho)",dur:"60 segundos",
-   pos:"Tumbado boca arriba.",
-   exec:"Lleva ambas rodillas al pecho y abrázalas. Redondeando la zona lumbar contra el suelo. Balancéate suavemente de lado a lado. 60 segundos."},
-  {name:"Rotación de columna tumbado",dur:"30 seg/lado",
-   pos:"Tumbado boca arriba, rodillas juntas flexionadas, brazos en T.",
-   exec:"Deja caer las rodillas hacia un lado mientras la cabeza mira al lado contrario. Sin forzar. 30 segundos. Cambia de lado."},
-  {name:"Estiramiento de pecho y hombro en marco de puerta",dur:"45 seg/lado",
-   pos:"En el marco de una puerta, antebrazo a 90°.",
-   exec:"Da un paso adelante girando ligeramente el cuerpo. Nota el estiramiento en pecho y hombro anterior. 45 segundos. Cambia de lado."},
-  {name:"Estiramiento de cuello y trapecio",dur:"30 seg/lado",
-   pos:"Sentado o de pie, brazo relajado.",
-   exec:"Lleva la oreja hacia el hombro contrario. Mano en sien, presión mínima. 30 segundos. Cambia de lado."},
+  {name:'Cat-cow — Activación columna',dur:'60 seg (10 reps)',
+   pos:'A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas.',
+   exec:'Exhala: redondea toda la columna vertebra a vertebra. Inhala: extiende dejando el abdomen caer. 10 respiraciones lentas. Mejora la propiocepción vertebral y activa el parasimpático.'},
+  {name:'Thread the needle bilateral',dur:'45 seg/lado',
+   pos:'A cuatro patas.',
+   exec:'Desliza el brazo bajo el torso. Hombro al suelo. 45 seg por lado. Movilidad torácica más demandada por el trabajo de escritorio y el entreno de espalda.'},
+  {name:'Child\'s pose → Upward dog flow',dur:'60 seg (5 ciclos)',
+   pos:'A cuatro patas.',
+   exec:'Child\'s pose: siéntate hacia los talones y extiende los brazos. Upward dog: avanza con las caderas y extiende la columna hacia arriba. 5 ciclos lentos. Mejora la movilidad de extensión lumbar y apertura de cadera flexora.'},
+  {name:'Pigeon pose',dur:'75 seg/lado',
+   pos:'Rodilla delantera hacia la muñeca. Pierna trasera estirada.',
+   exec:'Torso hacia abajo sobre los antebrazos o en el suelo. 75 seg por lado. El piriforme es el músculo que más limita la movilidad funcional y comprime el nervio ciático.'},
+  {name:'Couch stretch — Psoas',dur:'60 seg/lado',
+   pos:'Rodilla trasera contra la pared.',
+   exec:'Contrae el glúteo trasero, mantén el torso recto. 60 seg. El psoas es el músculo más acortado por la vida moderna y el más limitante en el rendimiento atlético.'},
+  {name:'Supine hamstring stretch',dur:'60 seg/lado',
+   pos:'Tumbado. Banda o toalla en el pie. Pierna elevada.',
+   exec:'Rodilla completamente recta. 60 seg por lado. Los isquiotibiales cortos provocan dolor lumbar — se estiran mejor de forma supina eliminando la compensación pélvica.'},
+  {name:'Mariposa — Aductores',dur:'60 seg',
+   pos:'Sentado. Plantas de pies juntas.',
+   exec:'Inclínate desde la cadera hacia adelante. Codos en muslos empujando suavemente. 60 seg. Abre la articulación coxofemoral y estira los aductores.'},
+  {name:'Doorway pectoral stretch — 3 ángulos',dur:'30 seg x3',
+   pos:'Marco de puerta.',
+   exec:'Brazo a 60°, 90° y 120°. 30 seg cada posición. Cubre las 3 porciones del pectoral mayor. La postura forward-head acorta el pectoral — este estiramiento la revierte.'},
+  {name:'Supine twist bilateral',dur:'45 seg/lado',
+   pos:'Tumbado. Rodilla al pecho y cruzarla al lado opuesto.',
+   exec:'Brazos en T. No fuerces la rodilla al suelo. 45 seg por lado. Descomprime las carillas articulares lumbares y libera el cuadrado lumbar.'},
+  {name:'Respiración 4-6-8 diaria de cierre',dur:'2 minutos',
+   pos:'Tumbado boca arriba.',
+   exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 8 ciclos. Realizado a las 21h tiene el mayor impacto en la calidad del sueño. Reduce el cortisol nocturno y mejora la recuperación muscular durante el sueño.'},
 ];
 
 const RUN_WEEKS=[
@@ -879,7 +1042,7 @@ const RUN_WEEKS=[
 ];
 
 ;(function _seedData(){
-  var FLAG='miplan_seeded_v4';
+  var FLAG='miplan_seeded_v5';
   if(localStorage.getItem(FLAG)) return;
   try{
     // ── Seed gym history ──
@@ -990,6 +1153,16 @@ const RUN_WEEKS=[
       localStorage.setItem('run_hist',JSON.stringify(runHist.slice(0,50)));
       localStorage.setItem('run_checks_2026-06-30',JSON.stringify({warmup:true,work:true,cooldown:true}));
     }
+
+    // ── Seed weight history ──
+    var wArr=JSON.parse(localStorage.getItem('weights')||'[]');
+    var wDates=wArr.map(function(w){return w.date;});
+    [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},
+     {date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},
+     {date:'2026-06-22',val:89.4},{date:'2026-06-29',val:90.6}
+    ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
+    wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
+    localStorage.setItem('weights',JSON.stringify(wArr));
 
     localStorage.setItem(FLAG,'1');
   }catch(e){console.warn('Seed error:',e);}
@@ -1830,12 +2003,108 @@ function renderGymDay(dk,container,isSession){
   if(plan.mobility&&plan.mobility.length){
     var mobChecks=ld('mob_check_'+dk+'_'+getLogDate(),{});
     html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:10px 0 7px">🧘 Movilidad post-entreno</div>';
-    var mobImgMap={'Estiramiento de isquiotibiales':'Romanian_Deadlift','Estiramiento de cuádriceps':'Barbell_Full_Squat','Estiramiento de psoas / flexor de cadera':'Dumbbell_Lunges','Estiramiento de espalda baja (rodillas al pecho)':'Lying_Leg_Curls','Estiramiento de pecho y hombro en marco de puerta':'Barbell_Bench_Press_-_Medium_Grip','Estiramiento de cuello y trapecio':'Dumbbell_Shrug','Distracción de hombro con banda':'Side_Lateral_Raise','Estiramiento dorsal en cuadrupedia diagonal':'Bent_Over_Barbell_Row','Estiramiento de bíceps en pared':'EZ-Bar_Curl','Estiramiento de trapecio lateral':'Dumbbell_Shrug','Estocada baja con apertura de cadera':'Dumbbell_Lunges','Estiramiento de isquiotibiales con banda':'Romanian_Deadlift','Estiramiento de gemelo en pared':'Barbell_Full_Squat','Mariposa — aductores profundos':'Lying_Leg_Curls','Estiramiento de hombro cruzado':'Side_Lateral_Raise','Apertura de pecho en marco de puerta':'Barbell_Bench_Press_-_Medium_Grip','Niño extendido (core/lumbar)':'Plank','Estiramiento de isquiotibiales de pie':'Romanian_Deadlift','Estiramiento de cuádriceps de pie':'Barbell_Full_Squat','Postura del niño (core/lumbar)':'Plank','Estiramiento de glúteo cruzado':'Glute_Kickback','Apertura de pecho en foam roller':'Barbell_Bench_Press_-_Medium_Grip','Estiramiento de pectoral en marco de puerta':'Barbell_Bench_Press_-_Medium_Grip','Estiramiento de tríceps sobre cabeza':'Cable_Crunch','Rotación interna/externa de hombro con banda':'Side_Lateral_Raise','Caminata suave de activación':'Mountain_Climbers','Elevaciones de rodilla caminando':'Mountain_Climbers','Talones al glúteo caminando':'Glute_Kickback','Círculos de tobillo':'Barbell_Full_Squat','Caminata a paso RÁPIDO':'Mountain_Climbers','Caminata de vuelta a la calma':'Mountain_Climbers'};
+    var mobImgMap={
+    // Lunes - Espalda
+    'Foam roller — Columna dorsal (dorsal/romboides)':'Bent_Over_Barbell_Row',
+    'Foam roller — Lat / Dorsal ancho':'Wide-Grip_Lat_Pulldown',
+    "Child's pose extendido (dorsal bajo)":'Wide-Grip_Lat_Pulldown',
+    'Thread the needle — Rotación torácica':'Bent_Over_Barbell_Row',
+    'Puppy pose — Dorsal + hombros':'Wide-Grip_Lat_Pulldown',
+    'Distracción de hombro en marco de puerta':'Side_Lateral_Raise',
+    'Estiramiento dorsal diagonal en cuadrupedia':'Wide-Grip_Lat_Pulldown',
+    'Estiramiento de bíceps en pared':'EZ-Bar_Curl',
+    'Cat-cow — Movilidad segmentaria lumbar':'Plank',
+    'Estiramiento de trapecio lateral':'Dumbbell_Shrug',
+    'Supine spinal twist — Rotación lumbar':'Plank',
+    'Respiración diafragmática de cierre':'Plank',
+    // Martes - Pecho
+    'Foam roller — Columna dorsal alta (pectoral/serrato)':'Barbell_Bench_Press_-_Medium_Grip',
+    'Foam roller — Pectoral menor en esquina':'Barbell_Bench_Press_-_Medium_Grip',
+    'Apertura de pecho en foam roller longitudinal':'Barbell_Bench_Press_-_Medium_Grip',
+    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
+    'Estiramiento de tríceps sobre la cabeza':'Barbell_Bench_Press_-_Medium_Grip',
+    'Cross-body shoulder stretch (deltoides posterior)':'Side_Lateral_Raise',
+    'Thread the needle — Serrato anterior':'Barbell_Bench_Press_-_Medium_Grip',
+    'Eagle arms — Hombro posterior y trapecio medio':'Side_Lateral_Raise',
+    'Extensión de muñeca y antebrazo (flexores)':'EZ-Bar_Curl',
+    'Rotación torácica en suelo (book openings)':'Barbell_Bench_Press_-_Medium_Grip',
+    // Miercoles - Pierna
+    'Foam roller — Cuádriceps':'Barbell_Full_Squat',
+    'Foam roller — Isquiotibiales':'Lying_Leg_Curls',
+    'Foam roller — TFL / Banda IT':'Glute_Kickback',
+    'Foam roller — Gemelo + sóleo':'Barbell_Full_Squat',
+    'Couch stretch — Psoas y cuádriceps distal':'Dumbbell_Lunges',
+    'Pigeon pose — Glúteo profundo y piriforme':'Glute_Kickback',
+    'Mariposa — Aductores con oscilaciones':'Barbell_Full_Squat',
+    'Estiramiento de isquios supino con banda o toalla':'Lying_Leg_Curls',
+    'Gemelo en pared — gastrocnemio + sóleo':'Barbell_Full_Squat',
+    'Deep squat hold — Movilidad global cadera/tobillo':'Goblet_Squat',
+    'Supine twist — Liberación lumbar':'Plank',
+    // Jueves - Hombro
+    'Foam roller — Dorsal alto y trapecio':'Barbell_Shoulder_Press',
+    'Foam roller — Infraespinoso / Manguito rotador':'Side_Lateral_Raise',
+    'Sleeper stretch — Manguito rotador interno':'Side_Lateral_Raise',
+    'Cross-body stretch — Deltoides posterior':'Seated_Bent-Over_Rear_Delt_Raise',
+    'Wall slide — Movilidad escapular':'Barbell_Shoulder_Press',
+    'Doorway pectoral stretch (deltoides anterior)':'Barbell_Shoulder_Press',
+    "Child's pose lateral — Oblicuos y core lateral":'Plank',
+    'Cat-cow — Movilidad segmentaria lumbar':'Plank',
+    '90/90 Hip switches — Cadera y core':'Goblet_Squat',
+    'Supine twist — Lumbar':'Plank',
+    'Neck CARs — Movilidad cervical controlada':'Dumbbell_Shrug',
+    // Viernes - Full Body
+    'Foam roller — Full body sweep':'Plank',
+    "World's greatest stretch — Movilidad global":'Dumbbell_Lunges',
+    'Hip 90/90 con rotación activa':'Goblet_Squat',
+    'Thoracic rotation en cuadrupedia':'Bent_Over_Barbell_Row',
+    'Pigeon pose — Piriforme y cadera':'Glute_Kickback',
+    'Couch stretch — Psoas y cuádriceps':'Dumbbell_Lunges',
+    'Shoulder CARs — Rotación articular controlada':'Side_Lateral_Raise',
+    'Spiderman stretch con rotación':'Dumbbell_Lunges',
+    'Ankle CARs — Movilidad de tobillo':'Barbell_Full_Squat',
+    'Deep squat hold progresivo':'Goblet_Squat',
+    "Child's pose final":'Wide-Grip_Lat_Pulldown',
+    // Sábado - Post running
+    'Foam roller — Cuádriceps (post-running prioritario)':'Barbell_Full_Squat',
+    'Foam roller — Isquiotibiales':'Lying_Leg_Curls',
+    'Foam roller — Gemelo':'Barbell_Full_Squat',
+    'Foam roller — TFL / IT band lateral':'Glute_Kickback',
+    'Foam roller — Glúteo y piriforme':'Glute_Kickback',
+    'Calf stretch en pared — gastrocnemio + sóleo':'Barbell_Full_Squat',
+    'Estiramiento de isquios supino con banda':'Lying_Leg_Curls',
+    'Couch stretch — Psoas y flexores de cadera':'Dumbbell_Lunges',
+    'Pigeon pose — Glúteo y piriforme':'Glute_Kickback',
+    'Deep squat hold — Recuperación articular':'Goblet_Squat',
+    'Supine twist — Liberación lumbar':'Plank',
+    // Domingo
+    'Foam roller — Columna dorsal completa':'Plank',
+    'Foam roller — Cuádriceps y pierna completa':'Barbell_Full_Squat',
+    'Foam roller — Glúteo y piriforme':'Glute_Kickback',
+    "World's greatest stretch":'Dumbbell_Lunges',
+    'Pigeon pose prolongado':'Glute_Kickback',
+    'Couch stretch largo':'Dumbbell_Lunges',
+    'Estiramiento de isquios supino':'Lying_Leg_Curls',
+    'Mariposa profunda con tracción':'Barbell_Full_Squat',
+    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
+    'Neck y trapecio — liberación completa':'Dumbbell_Shrug',
+    'Respiración 4-7-8 de cierre semanal':'Plank',
+    // General (same keys for MOB_GENERAL)
+    'Cat-cow — Activación columna':'Plank',
+    'Thread the needle bilateral':'Bent_Over_Barbell_Row',
+    "Child's pose → Upward dog flow":'Wide-Grip_Lat_Pulldown',
+    'Pigeon pose':'Glute_Kickback',
+    'Couch stretch — Psoas':'Dumbbell_Lunges',
+    'Supine hamstring stretch':'Lying_Leg_Curls',
+    'Mariposa — Aductores':'Barbell_Full_Squat',
+    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
+    'Supine twist bilateral':'Plank',
+    'Respiración 4-6-8 diaria de cierre':'Plank',
+};
     plan.mobility.forEach(function(m,mi){
       var done=mobChecks['post_'+mi];
-      var mobImgFile=mobImgMap[m.name]||'Plank';
+      var safeMobName=m.name.replace(/'/g,"\\'");
       var mobImgId='mobimg-post-'+dk+'-'+mi;
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadMobImage(this,\''+mobImgId+'\',\''+mobImgFile+'\')">';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadMobImage(this,\''+mobImgId+'\',\''+safeMobName+'\')">';
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
       html+='<div onclick="event.stopPropagation();toggleMobCheck(\''+dk+'\',\'post_'+mi+'\')" style="width:24px;height:24px;border-radius:7px;border:2px solid '+(done?'var(--g)':'var(--b)')+';background:'+(done?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;margin-right:6px;flex-shrink:0">'+(done?'✅':'')+'</div>';
       html+='<span class="exba">›</span></div>';
@@ -1851,9 +2120,9 @@ function renderGymDay(dk,container,isSession){
     html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:10px 0 7px">🌿 Movilidad general (flexibilidad)</div>';
     MOB_GENERAL.forEach(function(m,mi){
       var done=mobChecksG['gen_'+mi];
-      var mobImgFile2=mobImgMap[m.name]||'Plank';
+      var safeMobName2=m.name.replace(/'/g,"\\'");
       var mobImgId2='mobimg-gen-'+dk+'-'+mi;
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadMobImage(this,\''+mobImgId2+'\',\''+mobImgFile2+'\')">';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadMobImage(this,\''+mobImgId2+'\',\''+safeMobName2+'\')">';
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
       html+='<div onclick="event.stopPropagation();toggleMobCheck(\''+dk+'\',\'gen_'+mi+'\')" style="width:24px;height:24px;border-radius:7px;border:2px solid '+(done?'var(--g)':'var(--b)')+';background:'+(done?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;margin-right:6px;flex-shrink:0">'+(done?'✅':'')+'</div>';
       html+='<span class="exba">›</span></div>';
@@ -2696,8 +2965,14 @@ function renderFoodModalBody(mode){
     h+='<div id="recipe-list" style="max-height:260px;overflow-y:auto;border:1px solid var(--b);border-radius:10px"></div>';
     h+='</div>';
     h+='<div id="rm-api-panel" style="display:none">';
+    h+='<div class="ig" style="margin-bottom:4px"><label class="il">Buscar por nombre</label>';
+    h+='<input type="search" class="sb2" id="recipe-search-api" placeholder="Ej: Matutano Chips, Yogur griego..." oninput="searchFoodAPI()" autocomplete="off" style="margin-bottom:0"></div>';
+    h+='<div style="display:flex;gap:6px;align-items:flex-end;margin-bottom:8px">';
+    h+='<div style="flex:1"><label class="il">O código de barras (EAN)</label>';
+    h+='<input type="number" class="if" id="barcode-input" placeholder="Ej: 8410525010073" style="margin-bottom:0" inputmode="numeric"></div>';
+    h+='<button onclick="lookupBarcode(document.getElementById(\'barcode-input\').value)" style="padding:10px 14px;background:var(--a);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">Buscar</button>';
+    h+='</div>';
     h+='<div id="food-results" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);border-radius:10px;margin-bottom:8px"><div style="padding:12px;font-size:13px;color:var(--m);text-align:center">Escribe para buscar en Open Food Facts</div></div>';
-    h+='<div id="food-selected" style="display:none;margin-bottom:8px"></div>';
     h+='<div id="food-portion-row" style="display:none;margin-bottom:8px"></div>';
     h+='<div id="food-grams-row" style="display:none" class="ig"><label class="il" style="font-size:11px;color:var(--m)">O cantidad exacta (g)</label><input type="number" class="if" id="food-grams" value="100" min="1" oninput="updateFoodPreview()"></div>';
     h+='<div id="food-preview-box" style="display:none" class="al alb"><span class="ali">📊</span><span id="food-preview-text"></span></div>';
@@ -2790,69 +3065,6 @@ function setFoodPortion(r){
       d.style.border='2px solid '+(dr===r?'var(--g)':'var(--b)');
       d.style.background=dr===r?'rgba(61,214,140,0.08)':'var(--s2)';
     });
-  }
-}
-
-function openBarcodeScanner(){
-  // Try BarcodeDetector (Safari iOS 16+) or fallback to file input
-  if(typeof BarcodeDetector !== 'undefined'){
-    var video=document.createElement('video');
-    var overlay=document.createElement('div');
-    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
-    overlay.innerHTML='<div style="font-size:16px;color:#fff;font-weight:600">Apunta al código de barras</div>';
-    video.style.cssText='width:90vw;max-width:400px;border-radius:12px';
-    video.autoplay=true;video.playsinline=true;
-    overlay.appendChild(video);
-    var cancelBtn=document.createElement('button');
-    cancelBtn.textContent='Cancelar';
-    cancelBtn.style.cssText='padding:12px 32px;border-radius:10px;background:#333;color:#fff;border:none;font-size:15px;cursor:pointer';
-    cancelBtn.onclick=function(){stream.getTracks().forEach(function(t){t.stop();});document.body.removeChild(overlay);};
-    overlay.appendChild(cancelBtn);
-    document.body.appendChild(overlay);
-    var stream;
-    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(function(s){
-      stream=s;video.srcObject=s;
-      var detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128']});
-      var scanning=setInterval(function(){
-        if(!video.videoWidth) return;
-        detector.detect(video).then(function(barcodes){
-          if(!barcodes.length) return;
-          clearInterval(scanning);
-          stream.getTracks().forEach(function(t){t.stop();});
-          document.body.removeChild(overlay);
-          lookupBarcode(barcodes[0].rawValue);
-        });
-      },300);
-    }).catch(function(){
-      document.body.removeChild(overlay);
-      // Fallback: file input
-      var inp=document.createElement('input');
-      inp.type='file';inp.accept='image/*';inp.capture='environment';
-      inp.onchange=function(e){
-        var file=e.target.files[0];if(!file) return;
-        var img=new Image();
-        img.onload=function(){
-          if(typeof BarcodeDetector!=='undefined'){
-            new BarcodeDetector().detect(img).then(function(codes){
-              if(codes.length) lookupBarcode(codes[0].rawValue);
-              else alert('No se detectó código de barras. Prueba con mejor iluminación.');
-            });
-          }
-        };
-        img.src=URL.createObjectURL(file);
-      };
-      inp.click();
-    });
-  } else {
-    // No BarcodeDetector — use file input only
-    var inp=document.createElement('input');
-    inp.type='file';inp.accept='image/*';inp.capture='environment';
-    inp.onchange=function(e){
-      alert('Tu navegador no soporta lectura automática de códigos de barras. Introduce el nombre del producto manualmente.');
-    };
-    // Actually just show a prompt for manual barcode entry
-    var code=prompt('Introduce el código de barras (EAN-13):');
-    if(code) lookupBarcode(code.trim());
   }
 }
 
@@ -3620,7 +3832,7 @@ function switchRecipeMode(mode){
   document.getElementById('rm-tab-recipe').classList.toggle('active',isRecipe);
   document.getElementById('rm-tab-api').classList.toggle('active',!isRecipe);
   if(!isRecipe){
-    var q=document.getElementById('recipe-search');
+    var q=document.getElementById('recipe-search-api')||document.getElementById('recipe-search');
     if(q&&q.value.trim().length>1) searchFoodAPI();
     else showRecentFoods();
   }
@@ -3691,7 +3903,7 @@ function showRecentFoods(){
 
 // Override searchFoodAPI to use recipe-search input when in unified mode
 function searchFoodAPI(){
-  var inputEl=document.getElementById('food-search')||document.getElementById('recipe-search');
+  var inputEl=document.getElementById('food-search')||document.getElementById('recipe-search-api')||document.getElementById('recipe-search');
   if(!inputEl) return;
   var q=inputEl.value.trim();
   var results=document.getElementById('food-results');
@@ -3806,6 +4018,103 @@ var IMG_MAP={
   'Postura del niño (core/lumbar)':'Plank',
   'Niño extendido (core/lumbar)':'Plank',
 };
+var MOB_IMG_MAP={
+    // Lunes - Espalda
+    'Foam roller — Columna dorsal (dorsal/romboides)':'Bent_Over_Barbell_Row',
+    'Foam roller — Lat / Dorsal ancho':'Wide-Grip_Lat_Pulldown',
+    "Child's pose extendido (dorsal bajo)":'Wide-Grip_Lat_Pulldown',
+    'Thread the needle — Rotación torácica':'Bent_Over_Barbell_Row',
+    'Puppy pose — Dorsal + hombros':'Wide-Grip_Lat_Pulldown',
+    'Distracción de hombro en marco de puerta':'Side_Lateral_Raise',
+    'Estiramiento dorsal diagonal en cuadrupedia':'Wide-Grip_Lat_Pulldown',
+    'Estiramiento de bíceps en pared':'EZ-Bar_Curl',
+    'Cat-cow — Movilidad segmentaria lumbar':'Plank',
+    'Estiramiento de trapecio lateral':'Dumbbell_Shrug',
+    'Supine spinal twist — Rotación lumbar':'Plank',
+    'Respiración diafragmática de cierre':'Plank',
+    // Martes - Pecho
+    'Foam roller — Columna dorsal alta (pectoral/serrato)':'Barbell_Bench_Press_-_Medium_Grip',
+    'Foam roller — Pectoral menor en esquina':'Barbell_Bench_Press_-_Medium_Grip',
+    'Apertura de pecho en foam roller longitudinal':'Barbell_Bench_Press_-_Medium_Grip',
+    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
+    'Estiramiento de tríceps sobre la cabeza':'Barbell_Bench_Press_-_Medium_Grip',
+    'Cross-body shoulder stretch (deltoides posterior)':'Side_Lateral_Raise',
+    'Thread the needle — Serrato anterior':'Barbell_Bench_Press_-_Medium_Grip',
+    'Eagle arms — Hombro posterior y trapecio medio':'Side_Lateral_Raise',
+    'Extensión de muñeca y antebrazo (flexores)':'EZ-Bar_Curl',
+    'Rotación torácica en suelo (book openings)':'Barbell_Bench_Press_-_Medium_Grip',
+    // Miercoles - Pierna
+    'Foam roller — Cuádriceps':'Barbell_Full_Squat',
+    'Foam roller — Isquiotibiales':'Lying_Leg_Curls',
+    'Foam roller — TFL / Banda IT':'Glute_Kickback',
+    'Foam roller — Gemelo + sóleo':'Barbell_Full_Squat',
+    'Couch stretch — Psoas y cuádriceps distal':'Dumbbell_Lunges',
+    'Pigeon pose — Glúteo profundo y piriforme':'Glute_Kickback',
+    'Mariposa — Aductores con oscilaciones':'Barbell_Full_Squat',
+    'Estiramiento de isquios supino con banda o toalla':'Lying_Leg_Curls',
+    'Gemelo en pared — gastrocnemio + sóleo':'Barbell_Full_Squat',
+    'Deep squat hold — Movilidad global cadera/tobillo':'Goblet_Squat',
+    'Supine twist — Liberación lumbar':'Plank',
+    // Jueves - Hombro
+    'Foam roller — Dorsal alto y trapecio':'Barbell_Shoulder_Press',
+    'Foam roller — Infraespinoso / Manguito rotador':'Side_Lateral_Raise',
+    'Sleeper stretch — Manguito rotador interno':'Side_Lateral_Raise',
+    'Cross-body stretch — Deltoides posterior':'Seated_Bent-Over_Rear_Delt_Raise',
+    'Wall slide — Movilidad escapular':'Barbell_Shoulder_Press',
+    'Doorway pectoral stretch (deltoides anterior)':'Barbell_Shoulder_Press',
+    "Child's pose lateral — Oblicuos y core lateral":'Plank',
+    'Cat-cow — Movilidad segmentaria lumbar':'Plank',
+    '90/90 Hip switches — Cadera y core':'Goblet_Squat',
+    'Supine twist — Lumbar':'Plank',
+    'Neck CARs — Movilidad cervical controlada':'Dumbbell_Shrug',
+    // Viernes - Full Body
+    'Foam roller — Full body sweep':'Plank',
+    "World's greatest stretch — Movilidad global":'Dumbbell_Lunges',
+    'Hip 90/90 con rotación activa':'Goblet_Squat',
+    'Thoracic rotation en cuadrupedia':'Bent_Over_Barbell_Row',
+    'Pigeon pose — Piriforme y cadera':'Glute_Kickback',
+    'Couch stretch — Psoas y cuádriceps':'Dumbbell_Lunges',
+    'Shoulder CARs — Rotación articular controlada':'Side_Lateral_Raise',
+    'Spiderman stretch con rotación':'Dumbbell_Lunges',
+    'Ankle CARs — Movilidad de tobillo':'Barbell_Full_Squat',
+    'Deep squat hold progresivo':'Goblet_Squat',
+    "Child's pose final":'Wide-Grip_Lat_Pulldown',
+    // Sábado - Post running
+    'Foam roller — Cuádriceps (post-running prioritario)':'Barbell_Full_Squat',
+    'Foam roller — Isquiotibiales':'Lying_Leg_Curls',
+    'Foam roller — Gemelo':'Barbell_Full_Squat',
+    'Foam roller — TFL / IT band lateral':'Glute_Kickback',
+    'Foam roller — Glúteo y piriforme':'Glute_Kickback',
+    'Calf stretch en pared — gastrocnemio + sóleo':'Barbell_Full_Squat',
+    'Estiramiento de isquios supino con banda':'Lying_Leg_Curls',
+    'Couch stretch — Psoas y flexores de cadera':'Dumbbell_Lunges',
+    'Pigeon pose — Glúteo y piriforme':'Glute_Kickback',
+    'Deep squat hold — Recuperación articular':'Goblet_Squat',
+    'Supine twist — Liberación lumbar':'Plank',
+    // Domingo
+    'Foam roller — Columna dorsal completa':'Plank',
+    'Foam roller — Cuádriceps y pierna completa':'Barbell_Full_Squat',
+    'Foam roller — Glúteo y piriforme':'Glute_Kickback',
+    "World's greatest stretch":'Dumbbell_Lunges',
+    'Pigeon pose prolongado':'Glute_Kickback',
+    'Couch stretch largo':'Dumbbell_Lunges',
+    'Estiramiento de isquios supino':'Lying_Leg_Curls',
+    'Mariposa profunda con tracción':'Barbell_Full_Squat',
+    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
+    'Neck y trapecio — liberación completa':'Dumbbell_Shrug',
+    'Respiración 4-7-8 de cierre semanal':'Plank',
+    // General (same keys for MOB_GENERAL)
+    'Cat-cow — Activación columna':'Plank',
+    'Thread the needle bilateral':'Bent_Over_Barbell_Row',
+    "Child's pose → Upward dog flow":'Wide-Grip_Lat_Pulldown',
+    'Pigeon pose':'Glute_Kickback',
+    'Couch stretch — Psoas':'Dumbbell_Lunges',
+    'Supine hamstring stretch':'Lying_Leg_Curls',
+    'Mariposa — Aductores':'Barbell_Full_Squat',
+    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
+    'Supine twist bilateral':'Plank',
+    'Respiración 4-6-8 diaria de cierre':'Plank',
+};
 var IMG_BASE='https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
 function _loadTwoPhotos(box, fileName, exName){
@@ -3832,10 +4141,11 @@ function loadExerciseImage(headerEl,exName,dk,i){
   _loadTwoPhotos(box, IMG_MAP[exName], exName);
 }
 
-function loadMobImage(headerEl,boxId,fileName){
+function loadMobImage(headerEl,boxId,exName){
   var box=document.getElementById(boxId);
-  // fileName is already the file key (e.g. 'Romanian_Deadlift'), not Spanish name
-  _loadTwoPhotos(box, fileName, fileName);
+  // exName is the Spanish exercise name — look up in MOB_IMG_MAP
+  var fileName=MOB_IMG_MAP[exName]||'Plank';
+  _loadTwoPhotos(box, fileName, exName);
 }
 
 
