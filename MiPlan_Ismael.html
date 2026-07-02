@@ -322,6 +322,7 @@ select.if{cursor:pointer;}
     </div>
   </div>
     <div id="hab-confirm" style="display:none;font-size:12px;color:var(--g);text-align:center;padding:10px 16px 4px;font-weight:500"></div>
+
 </div>
 
 <!-- GYM -->
@@ -443,9 +444,11 @@ select.if{cursor:pointer;}
   <div class="card"><div class="ch"><span class="ci">📈</span><span class="ct">Evolución</span></div><div style="padding:8px"><canvas id="w-chart" height="180"></canvas></div></div>
   <div class="card" style="margin-bottom:20px"><div class="ch"><span class="ci">📋</span><span class="ct">Registros</span></div><div id="w-list"></div></div>
 </div>
-  <div style="margin:8px 16px;display:flex;gap:8px;opacity:0.6">
-    <button onclick="exportData()" style="flex:1;font-size:11px;padding:6px;background:var(--s2);border:1px solid var(--b);border-radius:8px;color:var(--m);cursor:pointer">📤 Exportar datos</button>
-    <button onclick="importData()" style="flex:1;font-size:11px;padding:6px;background:var(--s2);border:1px solid var(--b);border-radius:8px;color:var(--m);cursor:pointer">📥 Importar datos</button>
+  <div class="card" style="margin:8px 16px 16px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.25)">
+    <div style="display:flex;gap:8px;padding:4px 0">
+      <button onclick="exportData()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;color:var(--t);font-size:13px;font-weight:600;cursor:pointer">📤 Exportar datos</button>
+      <button onclick="importData()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;color:var(--t);font-size:13px;font-weight:600;cursor:pointer">📥 Importar datos</button>
+    </div>
   </div>
 
 <!-- HEALTH -->
@@ -875,6 +878,123 @@ const RUN_WEEKS=[
    tip:"Llevas 7 semanas de trabajo. Disfruta este momento.",startDate:"2026-08-03"},
 ];
 
+;(function _seedData(){
+  var FLAG='miplan_seeded_v4';
+  if(localStorage.getItem(FLAG)) return;
+  try{
+    // ── Seed gym history ──
+    var gymHist=JSON.parse(localStorage.getItem('gym_hist')||'[]');
+    var existDates=gymHist.map(function(h){return h.date;});
+    function eb(s,r,w){return [{s:s,r:''+r,w:w}];}
+    var espaldaEx=function(a,b,c,d,e,f){return [
+      {name:'Jalón al pecho (barra larga)',blocks:eb(3,12,a)},
+      {name:'Remo en polea sentado',blocks:eb(3,12,b)},
+      {name:'Jalón cerrado triángulo',blocks:eb(3,12,c)},
+      {name:'Aperturas hacia atrás en máquina',blocks:eb(3,12,d)},
+      {name:'Curl bíceps barra curva',blocks:eb(3,12,e)},
+      {name:'Curl martillo mancuerna',blocks:eb(3,12,f)},
+    ];};
+    var pechoEx=function(a,b,c,d,e,f){return [
+      {name:'Press banca plano en máquina',blocks:eb(3,12,a)},
+      {name:'Press inclinado mancuernas',blocks:eb(3,12,b)},
+      {name:'Elevación pecho en polea',blocks:eb(3,12,c)},
+      {name:'Cierres pecho en máquina',blocks:eb(3,12,d)},
+      {name:'Extensión tríceps barra V en polea',blocks:eb(3,12,e)},
+      {name:'Extensión tríceps tras nuca en polea',blocks:eb(3,12,f)},
+    ];};
+    var piernaEx=[
+      {name:'Prensa de piernas',blocks:eb(3,12,60)},
+      {name:'Zancadas con mancuernas',blocks:eb(3,12,10)},
+      {name:'Elevación de gemelos de pie',blocks:eb(3,15,40)},
+      {name:'Abductor en máquina',blocks:eb(3,15,30)},
+      {name:'Aductor en máquina',blocks:eb(3,15,30)},
+    ];
+    var sessions=[
+      {date:'2026-06-01',day:'lunes',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,25,10,7.5)},
+      {date:'2026-06-02',day:'martes',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,25,10,7.5)},
+      {date:'2026-06-03',day:'miercoles',name:'Pecho + Tríceps',exercises:pechoEx(5,15,7.5,20,15,10)},
+      {date:'2026-06-04',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(25,25,20,20,7.5,6)},
+      {date:'2026-06-05',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(5,15,7.5,20,15,10)},
+      {date:'2026-06-08',day:'lunes',name:'Espalda + Bíceps',exercises:espaldaEx(25,25,20,15,5,10)},
+      {date:'2026-06-09',day:'martes',name:'Espalda + Bíceps',exercises:espaldaEx(25,25,20,15,5,10)},
+      {date:'2026-06-10',day:'miercoles',name:'Pecho + Tríceps',exercises:pechoEx(5,15,7.5,20,15,10)},
+      {date:'2026-06-11',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(25,25,20,15,5,10)},
+      {date:'2026-06-12',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(5,15,7.5,20,10,10)},
+      {date:'2026-06-15',day:'lunes',name:'Espalda + Bíceps',exercises:espaldaEx(25,25,20,20,12.5,7.5)},
+      {date:'2026-06-16',day:'martes',name:'Pecho + Tríceps',exercises:[
+        {name:'Press banca plano en máquina',blocks:[{s:1,r:'16',w:5},{s:1,r:'12',w:5},{s:1,r:'10',w:5}]},
+        {name:'Elevación pecho en polea (adelante)',blocks:eb(3,12,30)},
+        {name:'Cierres pecho en máquina',blocks:eb(3,12,10)},
+        {name:'Cruce pecho en polea',blocks:eb(3,12,7.5)},
+        {name:'Extensión tríceps barra V en polea',blocks:eb(3,12,10)},
+        {name:'Extensión tríceps un brazo',blocks:eb(3,12,5)},
+        {name:'Extensión tríceps barra recta',blocks:eb(3,12,10)},
+      ]},
+      {date:'2026-06-17',day:'miercoles',name:'Pecho + Tríceps',exercises:pechoEx(5,15,7.5,10,10,10)},
+      {date:'2026-06-18',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(25,25,20,20,12.5,7.5)},
+      {date:'2026-06-19',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(15,15,7.5,10,15,10)},
+      {date:'2026-06-22',day:'lunes',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,20,12.5,7.5)},
+      {date:'2026-06-23',day:'martes',name:'Pecho + Tríceps',exercises:pechoEx(15,15,7.5,10,15,10)},
+      {date:'2026-06-24',day:'miercoles',name:'Pierna',exercises:piernaEx},
+      {date:'2026-06-25',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,20,12.5,7.5)},
+      {date:'2026-06-26',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(15,15,7.5,10,15,10)},
+      // ── Semana nueva 29/06 — nuevo plan completo ──
+      {date:'2026-06-29',day:'lunes',name:'Espalda + Bíceps',exercises:[
+        {name:'Jalón al pecho',blocks:[{s:4,r:'12',w:32.5}]},
+        {name:'Remo con barra',blocks:[{s:4,r:'10',w:70}]},
+        {name:'Remo en máquina',blocks:[{s:3,r:'12',w:35}]},
+        {name:'Peso muerto rumano',blocks:[{s:3,r:'10',w:50}]},
+        {name:'Curl con barra Z',blocks:[{s:3,r:'12',w:20}]},
+        {name:'Curl martillo',blocks:[{s:3,r:'12',w:10}]},
+        {name:'Curl concentrado',blocks:[{s:3,r:'12',w:10}]},
+      ]},
+      {date:'2026-06-30',day:'martes',name:'Pecho + Tríceps',exercises:[
+        {name:'Press banca con barra',blocks:[{s:4,r:'10',w:40}]},
+        {name:'Press inclinado con mancuernas',blocks:[{s:3,r:'12',w:16}]},
+        {name:'Aperturas en máquina (pec deck)',blocks:[{s:3,r:'12',w:30}]},
+        {name:'Fondos en paralelas',blocks:[{s:3,r:'12',w:0}]},
+        {name:'Press francés con mancuernas',blocks:[{s:3,r:'12',w:12}]},
+        {name:'Extensión de tríceps en polea alta',blocks:[{s:3,r:'15',w:15}]},
+        {name:'Tríceps con barra/goma en polea (atrás-adelante)',blocks:[{s:3,r:'15',w:12}]},
+      ]},
+      {date:'2026-07-01',day:'miercoles',name:'Pierna',exercises:[
+        {name:'Prensa de piernas',blocks:[{s:4,r:'12',w:60}]},
+        {name:'Zancadas con mancuernas',blocks:[{s:3,r:'12',w:10}]},
+        {name:'Curl femoral en máquina',blocks:[{s:3,r:'12',w:30}]},
+        {name:'Hip thrust con barra o máquina',blocks:[{s:3,r:'12',w:30}]},
+        {name:'Abductor en máquina',blocks:[{s:3,r:'15',w:30}]},
+        {name:'Aductor en máquina',blocks:[{s:3,r:'15',w:30}]},
+        {name:'Elevación de gemelos de pie',blocks:[{s:4,r:'15',w:40}]},
+      ]},
+    ];
+    sessions.forEach(function(s){
+      if(existDates.indexOf(s.date)<0) gymHist.push(s);
+    });
+    gymHist.sort(function(a,b){return b.date.localeCompare(a.date);});
+    localStorage.setItem('gym_hist',JSON.stringify(gymHist.slice(0,60)));
+
+    // ── Seed running history ──
+    var runHist=JSON.parse(localStorage.getItem('run_hist')||'[]');
+    var hasJune30=runHist.some(function(s){return s.date==='2026-06-30';});
+    if(!hasJune30){
+      runHist.unshift({
+        date:'2026-06-30',week:1,duration:30,feeling:'bien',
+        notes:'Primera sesión completada',
+        work:'8 × [ 30 seg trote + 90 seg caminata ]',
+        workDetail:'Semana 1 completada con éxito. 8 repeticiones de 30seg trote + 90seg caminata de recuperación LENTA.',
+        title:'30s trote / 90s caminata',
+        tip:'El objetivo es que el cuerpo se acostumbre a salir.',
+        warmup:[],cooldown:[],
+        checks:{warmup:true,work:true,cooldown:true}
+      });
+      localStorage.setItem('run_hist',JSON.stringify(runHist.slice(0,50)));
+      localStorage.setItem('run_checks_2026-06-30',JSON.stringify({warmup:true,work:true,cooldown:true}));
+    }
+
+    localStorage.setItem(FLAG,'1');
+  }catch(e){console.warn('Seed error:',e);}
+})();
+
 // ANALYTIC VALUES
 const ANALYTICS={
   trig:{name:"Triglicéridos",val:280,ref:"50-150",unit:"mg/dL",status:"red",estimated:235,
@@ -1173,91 +1293,6 @@ function removeHistSeries(exIdx, si){
   if(el) el.remove();
 }
 
-function seedInitialData(){
-  // Pre-populate running session June 30 if not already saved
-  var runHist=ld('run_hist',[]);
-  var hasJune30=runHist.some(function(s){return s.date==='2026-06-30';});
-  if(!hasJune30){
-    var rw=RUN_WEEKS[0];
-    runHist.unshift({
-      date:'2026-06-30',week:1,duration:30,feeling:'bien',notes:'Primera sesión completada',
-      work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,
-      warmup:rw.warmup,cooldown:rw.cooldown,
-      checks:{warmup:true,work:true,cooldown:true}
-    });
-    sd('run_hist',runHist);
-    sd('run_checks_2026-06-30',{warmup:true,work:true,cooldown:true});
-  }
-
-  // Pre-populate gym history from June 2-25 (old routine)
-  var gymHist=ld('gym_hist',[]);
-  if(gymHist.length>18) return; // Don't overwrite if user has substantial real data
-  var existingDates=gymHist.map(function(h){return h.date;});
-
-  var oldSessions=[
-    // ── Lunes 01/06 — Espalda+Bíceps ──
-    {date:'2026-06-01',day:'lunes',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:30}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:30}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:25}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:25}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:10}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:7.5}]}]},
-    // ── Martes 02/06 — Pecho+Tríceps ──  (msg: Jalón 30, Remo 30, Espalda 25, Bíceps 10 → user probably did Espalda day on Tuesday)
-    {date:'2026-06-02',day:'martes',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:30}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:30}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:25}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:25}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:10}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:7.5}]}]},
-    // ── Miércoles 03/06 — Pecho+Tríceps (msg: press 5, tríceps 15, pecho 20, cruzado 7.5) ──
-    {date:'2026-06-03',day:'miercoles',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:5}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:15}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Jueves 04/06 — Espalda+Bíceps (msg: 7.5kg, 6kg, 25kg) ──
-    {date:'2026-06-04',day:'jueves',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:25}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:25}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:20}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:7.5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:6}]}]},
-    // ── Viernes 05/06 — Pecho+Tríceps (mismo que miércoles) ──
-    {date:'2026-06-05',day:'viernes',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:5}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:15}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Lunes 08/06 — Espalda+Bíceps (msg: Deltoides 15, Remo 25, Espalda 25, Bíceps 5, Deltoides 10) ──
-    {date:'2026-06-08',day:'lunes',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:25}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:25}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:20}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:15}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Martes 09/06 — Espalda+Bíceps (mismo que lunes) ──
-    {date:'2026-06-09',day:'martes',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:25}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:25}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:20}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:15}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Miércoles 10/06 — Pecho+Tríceps ──
-    {date:'2026-06-10',day:'miercoles',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:5}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:15}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Jueves 11/06 — Espalda+Bíceps ──
-    {date:'2026-06-11',day:'jueves',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:25}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:25}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:20}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:15}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Viernes 12/06 — Pecho+Tríceps (msg: 15kg press, 7.5 cruzado, tríceps V 10) ──
-    {date:'2026-06-12',day:'viernes',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:5}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:10}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Lunes 15/06 — Espalda+Bíceps (msg: espalda 25, remo 25, pared 20, bíceps 5, barra recta 12.5, martillo 7.5) ──
-    {date:'2026-06-15',day:'lunes',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:25}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:25}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:20}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:12.5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:7.5}]}]},
-    // ── Martes 16/06 — Pecho+Tríceps (msg: press 5[16-12-10], polea 30, esquina 10, cruzado 7.5, tríceps V 10, 1sola 5, barra recta 10) ──
-    {date:'2026-06-16',day:'martes',name:'Pecho + Tríceps',exercises:[
-      {name:'Press banca plano en máquina',blocks:[{s:1,r:'16',w:5},{s:1,r:'12',w:5},{s:1,r:'10',w:5}]},
-      {name:'Elevación pecho en polea (adelante)',blocks:[{s:3,r:'12',w:30}]},
-      {name:'Cierres pecho en máquina (esquina)',blocks:[{s:3,r:'12',w:10}]},
-      {name:'Cruce pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},
-      {name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:10}]},
-      {name:'Extensión tríceps un brazo',blocks:[{s:3,r:'12',w:5}]},
-      {name:'Extensión tríceps barra recta',blocks:[{s:3,r:'12',w:10}]},
-    ]},
-    // ── Miércoles 17/06 — Pecho+Tríceps (mismo que martes) ──
-    {date:'2026-06-17',day:'miercoles',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:5}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:10}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:10}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Jueves 18/06 — Espalda+Bíceps (msg: 7.5kg → completamos con mismos de lunes) ──
-    {date:'2026-06-18',day:'jueves',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:25}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:25}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:20}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:12.5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:7.5}]}]},
-    // ── Viernes 19/06 — Pecho+Tríceps (msg: 15kg press, barra V 15) ──
-    {date:'2026-06-19',day:'viernes',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:15}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:10}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:15}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Semana 22/06 — nuevo planning lunes ──
-    {date:'2026-06-22',day:'lunes',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:30}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:30}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:25}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:12.5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:7.5}]}]},
-    // ── Martes 23/06 — Pecho+Tríceps ──
-    {date:'2026-06-23',day:'martes',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:15}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:10}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:15}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-    // ── Miércoles 24/06 — Pierna ──
-    {date:'2026-06-24',day:'miercoles',name:'Pierna',exercises:[{name:'Prensa de piernas',blocks:[{s:3,r:'12',w:60}]},{name:'Zancadas con mancuernas',blocks:[{s:3,r:'12',w:10}]},{name:'Elevación de gemelos de pie',blocks:[{s:3,r:'15',w:40}]},{name:'Abductor en máquina',blocks:[{s:3,r:'15',w:30}]},{name:'Aductor en máquina',blocks:[{s:3,r:'15',w:30}]}]},
-    // ── Jueves 25/06 — Espalda+Bíceps (igual que lunes 22) ──
-    {date:'2026-06-25',day:'jueves',name:'Espalda + Bíceps',exercises:[{name:'Jalón al pecho (barra larga)',blocks:[{s:3,r:'12',w:30}]},{name:'Remo en polea sentado',blocks:[{s:3,r:'12',w:30}]},{name:'Jalón cerrado triángulo',blocks:[{s:3,r:'12',w:25}]},{name:'Aperturas hacia atrás en máquina',blocks:[{s:3,r:'12',w:20}]},{name:'Curl bíceps barra curva',blocks:[{s:3,r:'12',w:12.5}]},{name:'Curl martillo mancuerna',blocks:[{s:3,r:'12',w:7.5}]}]},
-    // ── Viernes 26/06 — Pecho+Tríceps ──
-    {date:'2026-06-26',day:'viernes',name:'Pecho + Tríceps',exercises:[{name:'Press banca plano en máquina',blocks:[{s:3,r:'12',w:15}]},{name:'Press inclinado mancuernas',blocks:[{s:3,r:'12',w:15}]},{name:'Elevación pecho en polea',blocks:[{s:3,r:'12',w:7.5}]},{name:'Cierres pecho en máquina',blocks:[{s:3,r:'12',w:10}]},{name:'Extensión tríceps barra V en polea',blocks:[{s:3,r:'12',w:15}]},{name:'Extensión tríceps tras nuca en polea',blocks:[{s:3,r:'12',w:10}]}]},
-  ];
-
-  var added=0;
-  oldSessions.forEach(function(s){
-    if(existingDates.indexOf(s.date)<0){
-      gymHist.push(s);
-      added++;
-    }
-  });
-  if(added>0){
-    gymHist.sort(function(a,b){return b.date.localeCompare(a.date);});
-    sd('gym_hist',gymHist.slice(0,60));
-  }
-}
-
 function exportData(){
   var data={};
   for(var i=0;i<localStorage.length;i++){
@@ -1265,13 +1300,22 @@ function exportData(){
     data[k]=localStorage.getItem(k);
   }
   var json=JSON.stringify(data,null,2);
+  var filename='MiPlan_backup_'+today()+'.json';
   var blob=new Blob([json],{type:'application/json'});
+  // iOS PWA: use navigator.share if available
+  if(navigator.share&&navigator.canShare){
+    var file=new File([blob],filename,{type:'application/json'});
+    if(navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:'MiPlan Backup',text:'Copia de seguridad de MiPlan'}).catch(function(){});
+      return;
+    }
+  }
+  // Fallback: download link
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
-  a.href=url;
-  a.download='MiPlan_backup_'+today()+'.json';
-  a.click();
-  URL.revokeObjectURL(url);
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
 }
 
 function importData(){
@@ -1533,7 +1577,6 @@ function toggleHabit(h){
   var habits=ld('habits_'+today(),{read:false,sun:false});
   habits[h]=!habits[h];
   sd('habits_'+today(),habits);
-  seedInitialData();
   renderHome();
 }
 function togglePhotoCheck(){
@@ -1926,13 +1969,20 @@ function renderGymHistory(){
     el.innerHTML=btnHtml+'<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Sin sesiones aún. Pulsa el botón para añadir un día.</div></div>';
     return;
   }
-  el.innerHTML=btnHtml+hist.slice(0,20).map(function(s){
-    return '<div class="card" style="margin:0 0 8px"><div class="ch"><span class="ci">🏋️</span><span class="ct">'+s.name+'</span><span class="cbadge bb">'+fmtDate(s.date)+'</span></div><div class="cb">'+
-    s.exercises.map(function(e){
-      var blStr=e.blocks?e.blocks.map(function(b){return b.s+'×'+b.r+'·'+b.w+'kg';}).join(' — '):(e.s+'×'+e.r+'·'+e.w+'kg');
-      return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--b);font-size:12px"><span>'+e.name+'</span><span style="color:var(--o);font-weight:600;font-size:11px">'+blStr+'</span></div>';
-    }).join('')+
-    '</div></div>';
+  el.innerHTML=btnHtml+hist.slice(0,25).map(function(s){
+    var exHtml='';
+    if(s.exercises&&s.exercises.length){
+      exHtml=s.exercises.map(function(e){
+        var blocks=e.blocks||[{s:e.s||3,r:e.r||'12',w:e.w||0}];
+        var blStr=blocks.map(function(b){return b.s+'×'+b.r+' @ '+b.w+'kg';}).join(' · ');
+        return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--b);font-size:12px">'+
+          '<span style="color:var(--t)">'+e.name+'</span>'+
+          '<span style="color:var(--o);font-weight:600;font-size:11px">'+blStr+'</span></div>';
+      }).join('');
+    }
+    return '<div class="card" style="margin:0 0 8px">'+
+      '<div class="ch"><span class="ci">🏋️</span><span class="ct">'+s.name+'</span><span class="cbadge bb">'+fmtDate(s.date)+'</span></div>'+
+      '<div class="cb">'+exHtml+'</div></div>';
   }).join('');
 }
 
@@ -2609,11 +2659,15 @@ function renderFoodModalBody(mode){
   // FOOD MODE — Open Food Facts search
   if(mode==='food'){
     var h='<div class="ig"><label class="il">Toma</label><select class="if" id="food-meal">'+buildMealOpts()+'</select></div>';
-    h+='<div class="ig"><label class="il">Buscar producto</label>';
-    h+='<input type="search" class="if" id="food-search" placeholder="Ej: Gyozas Vici, Yogur griego..." oninput="searchFoodAPI()" autocomplete="off"></div>';
+    h+='<div style="display:flex;gap:6px;align-items:flex-end;margin-bottom:8px">';
+    h+='<div style="flex:1"><label class="il">Buscar producto</label>';
+    h+='<input type="search" class="if" id="food-search" placeholder="Ej: Matutano, Yogur..." oninput="searchFoodAPI()" autocomplete="off" style="margin-bottom:0"></div>';
+    h+='<button onclick="openBarcodeScanner()" style="padding:10px 12px;background:var(--s2);border:1px solid var(--b);border-radius:10px;color:var(--t);font-size:18px;cursor:pointer;flex-shrink:0">📷</button>';
+    h+='</div>';
     h+='<div id="food-results" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--b);border-radius:10px;margin-bottom:10px"></div>';
     h+='<div id="food-selected" style="display:none;margin-bottom:8px"></div>';
-    h+='<div id="food-grams-row" style="display:none" class="ig"><label class="il">Cantidad (g)</label>';
+    h+='<div id="food-portion-row" style="display:none;margin-bottom:8px"></div>';
+    h+='<div id="food-grams-row" style="display:none" class="ig"><label class="il" style="font-size:11px;color:var(--m)">O cantidad exacta (g)</label>';
     h+='<input type="number" class="if" id="food-grams" value="100" min="1" oninput="updateFoodPreview()"></div>';
     h+='<div id="food-preview-box" style="display:none" class="al alb"><span class="ali">📊</span><span id="food-preview-text"></span></div>';
     h+='<button id="food-add-btn" class="btn btg" style="display:none;margin-top:10px" onclick="addFoodEntry()">Añadir alimento</button>';
@@ -2644,7 +2698,8 @@ function renderFoodModalBody(mode){
     h+='<div id="rm-api-panel" style="display:none">';
     h+='<div id="food-results" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);border-radius:10px;margin-bottom:8px"><div style="padding:12px;font-size:13px;color:var(--m);text-align:center">Escribe para buscar en Open Food Facts</div></div>';
     h+='<div id="food-selected" style="display:none;margin-bottom:8px"></div>';
-    h+='<div id="food-grams-row" style="display:none" class="ig"><label class="il">Cantidad (g)</label><input type="number" class="if" id="food-grams" value="100" min="1" oninput="updateFoodPreview()"></div>';
+    h+='<div id="food-portion-row" style="display:none;margin-bottom:8px"></div>';
+    h+='<div id="food-grams-row" style="display:none" class="ig"><label class="il" style="font-size:11px;color:var(--m)">O cantidad exacta (g)</label><input type="number" class="if" id="food-grams" value="100" min="1" oninput="updateFoodPreview()"></div>';
     h+='<div id="food-preview-box" style="display:none" class="al alb"><span class="ali">📊</span><span id="food-preview-text"></span></div>';
     h+='<button id="food-add-btn" class="btn btg" style="display:none;margin-top:10px" onclick="addFoodEntry()">Añadir producto</button>';
     h+='</div>';
@@ -2688,18 +2743,148 @@ function selectFood(el,idx){
   selFood=JSON.parse(decodeURIComponent(el.dataset.food));
   trackFoodUsed(selFood);
   var impData=getFoodImpact(selFood.name,selFood.impact,selFood.why||'');
-  document.getElementById('food-selected').style.display='block';
-  document.getElementById('food-selected').innerHTML='<div class="al '+(selFood.impact==='good'?'alg':selFood.impact==='bad'?'alr':'alo')+'"><span class="ali">'+impData.emoji+'</span><span><strong>'+selFood.name+'</strong><br><span style="font-size:11px">'+impData.msg+'</span></span></div>';
+  var selEl=document.getElementById('food-selected');
+  if(selEl){selEl.style.display='block';selEl.innerHTML='<div class="al '+(selFood.impact==='good'?'alg':selFood.impact==='bad'?'alr':'alo')+'"><span class="ali">'+impData.emoji+'</span><span><strong>'+selFood.name+'</strong><br><span style="font-size:11px">'+impData.msg+'</span></span></div>';}
+  document.getElementById('food-results').style.display='none';
+
+  // Show portion selector (based on 100g standard)
+  var portEl=document.getElementById('food-portion-row');
+  if(portEl){
+    var raciones=[0.25,0.5,1,1.5,2];
+    var labels=['¼','½','1','1½','2'];
+    portEl.style.display='block';
+    portEl.innerHTML='<div style="display:flex;gap:5px;flex-wrap:wrap">'+
+      raciones.map(function(r,i){
+        var g=Math.round(100*r);
+        var k=Math.round((selFood.k||0)*r);
+        var isOne=r===1;
+        return '<div onclick="setFoodPortion('+r+')" style="flex:1;min-width:54px;padding:8px 4px;border-radius:10px;border:2px solid '+(isOne?'var(--g)':'var(--b)')+';background:'+(isOne?'rgba(61,214,140,0.08)':'var(--s2)')+';cursor:pointer;text-align:center">'+
+          '<div style="font-size:13px;font-weight:700;color:var(--t)">'+labels[i]+'</div>'+
+          '<div style="font-size:10px;color:var(--m)">'+g+'g</div>'+
+          '<div style="font-size:11px;color:var(--o);font-weight:600">'+k+'kcal</div>'+
+          '</div>';
+      }).join('')+
+    '</div>';
+  }
+
   document.getElementById('food-grams-row').style.display='block';
   document.getElementById('food-grams').value='100';
-  document.getElementById('food-results').style.display='none';
   updateFoodPreview();
-  if(selFood.impact!=='bad') document.getElementById('food-add-btn').style.display='block';
-  else {
-    document.getElementById('food-add-btn').style.display='block';
-    document.getElementById('food-add-btn').textContent='⚠️ Añadir de todas formas';
-    document.getElementById('food-add-btn').className='btn bto';
+  var addBtn=document.getElementById('food-add-btn');
+  if(addBtn){
+    addBtn.style.display='block';
+    if(selFood.impact==='bad'){addBtn.textContent='⚠️ Añadir de todas formas';addBtn.className='btn bto';}
+    else{addBtn.textContent='Añadir alimento';addBtn.className='btn btg';}
   }
+}
+
+function setFoodPortion(r){
+  var g=Math.round(100*r);
+  var inp=document.getElementById('food-grams');
+  if(inp){inp.value=g;updateFoodPreview();}
+  // Highlight selected portion
+  var portEl=document.getElementById('food-portion-row');
+  if(portEl){
+    portEl.querySelectorAll('div[onclick]').forEach(function(d){
+      var dr=parseFloat(d.getAttribute('onclick').replace('setFoodPortion(','').replace(')',''));
+      d.style.border='2px solid '+(dr===r?'var(--g)':'var(--b)');
+      d.style.background=dr===r?'rgba(61,214,140,0.08)':'var(--s2)';
+    });
+  }
+}
+
+function openBarcodeScanner(){
+  // Try BarcodeDetector (Safari iOS 16+) or fallback to file input
+  if(typeof BarcodeDetector !== 'undefined'){
+    var video=document.createElement('video');
+    var overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
+    overlay.innerHTML='<div style="font-size:16px;color:#fff;font-weight:600">Apunta al código de barras</div>';
+    video.style.cssText='width:90vw;max-width:400px;border-radius:12px';
+    video.autoplay=true;video.playsinline=true;
+    overlay.appendChild(video);
+    var cancelBtn=document.createElement('button');
+    cancelBtn.textContent='Cancelar';
+    cancelBtn.style.cssText='padding:12px 32px;border-radius:10px;background:#333;color:#fff;border:none;font-size:15px;cursor:pointer';
+    cancelBtn.onclick=function(){stream.getTracks().forEach(function(t){t.stop();});document.body.removeChild(overlay);};
+    overlay.appendChild(cancelBtn);
+    document.body.appendChild(overlay);
+    var stream;
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(function(s){
+      stream=s;video.srcObject=s;
+      var detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128']});
+      var scanning=setInterval(function(){
+        if(!video.videoWidth) return;
+        detector.detect(video).then(function(barcodes){
+          if(!barcodes.length) return;
+          clearInterval(scanning);
+          stream.getTracks().forEach(function(t){t.stop();});
+          document.body.removeChild(overlay);
+          lookupBarcode(barcodes[0].rawValue);
+        });
+      },300);
+    }).catch(function(){
+      document.body.removeChild(overlay);
+      // Fallback: file input
+      var inp=document.createElement('input');
+      inp.type='file';inp.accept='image/*';inp.capture='environment';
+      inp.onchange=function(e){
+        var file=e.target.files[0];if(!file) return;
+        var img=new Image();
+        img.onload=function(){
+          if(typeof BarcodeDetector!=='undefined'){
+            new BarcodeDetector().detect(img).then(function(codes){
+              if(codes.length) lookupBarcode(codes[0].rawValue);
+              else alert('No se detectó código de barras. Prueba con mejor iluminación.');
+            });
+          }
+        };
+        img.src=URL.createObjectURL(file);
+      };
+      inp.click();
+    });
+  } else {
+    // No BarcodeDetector — use file input only
+    var inp=document.createElement('input');
+    inp.type='file';inp.accept='image/*';inp.capture='environment';
+    inp.onchange=function(e){
+      alert('Tu navegador no soporta lectura automática de códigos de barras. Introduce el nombre del producto manualmente.');
+    };
+    // Actually just show a prompt for manual barcode entry
+    var code=prompt('Introduce el código de barras (EAN-13):');
+    if(code) lookupBarcode(code.trim());
+  }
+}
+
+function lookupBarcode(barcode){
+  var results=document.getElementById('food-results');
+  if(!results) return;
+  results.style.display='block';
+  results.innerHTML='<div style="padding:12px;color:var(--m);font-size:13px">🔍 Buscando código '+barcode+'...</div>';
+  fetch('https://world.openfoodfacts.org/api/v0/product/'+barcode+'.json')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.status!==1||!data.product){
+      results.innerHTML='<div style="padding:12px;color:var(--r);font-size:13px">❌ Producto no encontrado en Open Food Facts</div>';
+      return;
+    }
+    var pr=data.product;
+    var n=pr.nutriments;
+    var k=Math.round(n['energy-kcal_100g']||((n['energy_100g']||0)/4.184));
+    var brand=pr.brands?pr.brands.split(',')[0].trim():'';
+    var item={
+      name:(pr.product_name||'Producto')+(brand?' · '+brand:''),
+      k:k,
+      p:Math.round((n.proteins_100g||0)*10)/10,
+      c:Math.round((n.carbohydrates_100g||0)*10)/10,
+      f:Math.round((n.fat_100g||0)*10)/10,
+      impact:'moderate',why:'Open Food Facts · valores por 100g.',source:'api'
+    };
+    renderFoodResults([item], results, null);
+  })
+  .catch(function(){
+    results.innerHTML='<div style="padding:12px;color:var(--r);font-size:13px">❌ Error de conexión</div>';
+  });
 }
 
 function updateFoodPreview(){
@@ -3194,7 +3379,15 @@ function init(){
 
   document.getElementById('w-date').value=today();
 
-  var wsinit=ld('weights',null); if(!wsinit||!wsinit.length) sd('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
+  // Seed weight history including user's real entries
+  var wArr=ld('weights',[]);
+  var wDates=wArr.map(function(w){return w.date;});
+  [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},
+   {date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},{date:'2026-06-22',val:89.4},
+   {date:'2026-06-29',val:90.6}
+  ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
+  wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
+  sd('weights',wArr);
   // Supplements reset: they key includes today's date so yesterday's data is ignored automatically
   // Health tab Sunday only
   var healthNb=document.getElementById('nb-health');
