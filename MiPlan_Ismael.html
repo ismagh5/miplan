@@ -335,11 +335,21 @@ select.if{cursor:pointer;}
   </div>
   <!-- Date selector for gym — static in DOM like weight page -->
   <div id="gt-session">
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px 4px" id="gym-date-row">
-      <div style="flex:1"><label class="il">Registrando día</label>
+    <div style="display:flex;align-items:center;gap:6px;padding:8px 16px 4px;flex-wrap:wrap" id="gym-date-row">
+      <div style="flex:1;min-width:120px"><label class="il">Día</label>
         <input type="date" class="if" id="gym-log-date" style="font-size:13px" onchange="applyGymDate()">
       </div>
-      <button class="btn bth btn-sm" id="gym-date-today-btn" onclick="resetGymDate()" style="display:none;margin-top:18px">Volver a hoy</button>
+      <div style="flex:1;min-width:120px"><label class="il">Rutina</label>
+        <select class="if" id="gym-routine-override" style="font-size:13px" onchange="applyRoutineOverride()">
+          <option value="">📅 Del día</option>
+          <option value="lunes">💪 Lunes — Espalda + Bíceps</option>
+          <option value="martes">🏋️ Martes — Pecho + Tríceps</option>
+          <option value="miercoles">🦵 Miércoles — Pierna</option>
+          <option value="jueves">🏋️ Jueves — Hombro + Core</option>
+          <option value="viernes">⚡ Viernes — Full Body</option>
+        </select>
+      </div>
+      <button class="btn bth btn-sm" id="gym-date-today-btn" onclick="resetGymDate()" style="display:none;margin-top:18px">Hoy</button>
     </div>
     <div id="gym-session-content"></div>
   </div>
@@ -1417,6 +1427,12 @@ function applyDatePicker(){
   toggleLogDate(_datePickerCtx, val);
 }
 
+function applyRoutineOverride(){
+  var sel=document.getElementById('gym-routine-override');
+  if(sel) sd('gym_routine_override', sel.value||'');
+  renderGymSession();
+}
+
 function applyGymDate(){
   var val=document.getElementById('gym-log-date').value;
   if(!val) return;
@@ -1427,10 +1443,13 @@ function applyGymDate(){
 }
 function resetGymDate(){
   sd('active_log_date', today());
+  sd('gym_routine_override', '');
   var inp=document.getElementById('gym-log-date');
   if(inp) inp.value=today();
   var btn=document.getElementById('gym-date-today-btn');
   if(btn) btn.style.display='none';
+  var sel=document.getElementById('gym-routine-override');
+  if(sel) sel.value='';
   renderGymSession();
 }
 function applyRunDate(){
@@ -1892,13 +1911,17 @@ function renderGymSession(){
   var dLD=new Date(logDate+'T12:00:00');
   var dow=dLD.getDay();
   var dayMap={1:'lunes',2:'martes',3:'miercoles',4:'jueves',5:'viernes',6:'sabado'};
-  var dk=dayMap[dow];
+  var override=ld('gym_routine_override','')||'';
+  var dk=override||dayMap[dow];
   var el=document.getElementById('gym-session-content');
   var isYesterday=logDate!==today();
-  // Update static date input
+  // Sync selectors
   var gInp=document.getElementById('gym-log-date'); if(gInp) gInp.value=logDate;
   var gBtn=document.getElementById('gym-date-today-btn'); if(gBtn) gBtn.style.display=isYesterday?'block':'none';
-  var toggleHtml=isYesterday?'<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDate)+'</span></div>':'';
+  var gSel=document.getElementById('gym-routine-override'); if(gSel) gSel.value=override;
+  var toggleHtml='';
+  if(isYesterday) toggleHtml+='<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDate)+'</span></div>';
+  if(override) toggleHtml+='<div style="background:rgba(99,102,241,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--p)">🔄 Rutina: '+override.charAt(0).toUpperCase()+override.slice(1)+'</span></div>';
   if(!dk){el.innerHTML=toggleHtml+'<div class="empty"><div class="empty-icon">😴</div><div class="empty-text">'+(isYesterday?'Ese día era domingo — descanso.':'Hoy es domingo — día de descanso.')+'</div></div>';return;}
   el.innerHTML=toggleHtml+'<div id="gym-session-inner"></div>';
   renderGymDay(dk,document.getElementById('gym-session-inner'),true);
@@ -3574,6 +3597,7 @@ function clearShopList(){
 function init(){
   // Reset log date to today on fresh load (avoid getting stuck on "ayer")
   sd('active_log_date',today());
+  sd('gym_routine_override','');
   // Set static date inputs to today
   setTimeout(function(){
     var gd=document.getElementById('gym-log-date');
