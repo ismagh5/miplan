@@ -278,6 +278,14 @@ select.if{cursor:pointer;}
   </div>
 
   <!-- HABITS -->
+  <div class="card" style="margin:8px 16px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25)">
+    <div class="ch"><span class="ci">💪</span><span class="ct">Grease the Groove — Flexiones</span><span id="gtg-badge" class="cbadge bb">0/6</span></div>
+    <div class="cb">
+      <div style="font-size:12px;color:var(--m);margin-bottom:8px">Haz <strong id="gtg-target">2 flexiones</strong> ahora. Sin llegar al fallo. Cada vez que pases por aquí.</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="gtg-checks"></div>
+      <button class="btn bth btn-sm" style="margin-top:8px;width:100%" onclick="logGTG()">✓ Hecho</button>
+    </div>
+  </div>
   <div id="hab-row" style="margin:0 16px 8px;display:flex;gap:14px;align-items:center;justify-content:center">
     <div id="hab-read" onclick="toggleHabit('read')" style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer">
       <div style="width:64px;height:64px;border-radius:50%;background:rgba(79,142,247,0.1);border:1.5px solid rgba(79,142,247,0.35);display:flex;align-items:center;justify-content:center;font-size:28px">📖</div>
@@ -362,14 +370,17 @@ select.if{cursor:pointer;}
       <button class="tb" onclick="planDay('viernes')">Vie</button>
       <button class="tb" onclick="planDay('sabado')">Sáb</button>
     </div>
-    <div id="gym-plan-content" style="padding:12px 16px"></div>
+    <div style="padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--p)">📈 Progresión 5 semanas</div>
+    <div id="gym-progression-content" style="padding:0 16px 8px"></div>
+    <div style="border-top:1px solid var(--b);padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--t)">📋 Ejercicios del día</div>
+    <div id="gym-plan-content" style="padding:0 16px 12px"></div>
   </div>
   <div id="gt-history" style="display:none"><div id="gym-history-content" style="padding:12px 16px"></div></div>
 </div>
 
 <!-- RUNNING -->
 <div class="page" id="pg-run">
-  <div class="ph"><div class="pt">🏃 Running</div><div class="ps">Plan 7 semanas · Empieza 29 junio</div></div>
+  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">Plan 7 semanas · Empieza 6 julio</div></div>
   <div class="tr">
     <button class="tb active" onclick="runTab('today')">Hoy</button>
     <button class="tb" onclick="runTab('plan')">Plan completo</button>
@@ -377,11 +388,14 @@ select.if{cursor:pointer;}
   </div>
   <!-- Date selector for run — static in DOM like weight page -->
   <div id="rt-today">
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px 4px" id="run-date-row">
-      <div style="flex:1"><label class="il">Registrando día</label>
+    <div style="display:flex;align-items:center;gap:6px;padding:8px 16px 4px;flex-wrap:wrap" id="run-date-row">
+      <div style="flex:1;min-width:120px"><label class="il">Registrando día</label>
         <input type="date" class="if" id="run-log-date" style="font-size:13px" onchange="applyRunDate()">
       </div>
-      <button class="btn bth btn-sm" id="run-date-today-btn" onclick="resetRunDate()" style="display:none;margin-top:18px">Volver a hoy</button>
+      <div style="flex:1;min-width:120px"><label class="il">Inicio del plan</label>
+        <input type="date" class="if" id="run-plan-start" style="font-size:13px" onchange="applyRunPlanStart()">
+      </div>
+      <button class="btn bth btn-sm" id="run-date-today-btn" onclick="resetRunDate()" style="display:none;margin-top:18px">Hoy</button>
     </div>
     <div id="run-today-content"></div>
   </div>
@@ -476,7 +490,21 @@ select.if{cursor:pointer;}
 
 <!-- SHOP (solo domingo) -->
 <div class="page" id="pg-shop">
-  <div class="ph"><div class="pt">🛒 Lista de la compra</div><div class="ps">Planificador semanal</div></div>
+  <div class="ph"><div class="pt">🛒 Planificador semanal</div><div class="ps">Menú + lista de la compra</div></div>
+  <div class="tr">
+    <button class="tb active" onclick="shopTab('menu')">📅 Menú</button>
+    <button class="tb" onclick="shopTab('lista')">🛒 Lista</button>
+  </div>
+  <div id="shop-menu-panel">
+    <div style="padding:10px 16px 4px;font-size:12px;color:var(--m)">Cambia cualquier plato antes de generar la lista</div>
+    <div id="shop-menu-content" style="padding:0 16px"></div>
+    <div style="padding:10px 16px">
+      <button class="btn btg" style="width:100%" onclick="generateShoppingList()">🛒 Generar lista de la compra</button>
+    </div>
+  </div>
+  <div id="shop-lista-panel" style="display:none">
+    <div id="shop-lista-content" style="padding:12px 16px"></div>
+  </div>
   <div class="tr">
     <button class="tb active" onclick="shopTab('menu')">Menú semanal</button>
     <button class="tb" onclick="shopTab('list')">Lista compra</button>
@@ -603,53 +631,46 @@ const GYM_BASE={
        exec:"Tira de la barra hacia el pecho alto. Ritmo lento — 2 seg bajada, 2 seg subida. Solo activación, sin esfuerzo."},
     ]},
     exercises:[
-      {name:"Jalón al pecho (polea alta)",muscle:"Espalda (dorsal)",grip:"Agarre prono, ancho (manos más anchas que hombros)",sets:4,reps:"8-10",weight:25,rir:"1-2",rest:"90seg",gif:"https://wger.de/static/images/muscles/main/muscle-12.svg"},
-      {name:"Remo con barra",muscle:"Espalda (dorsal+trapecio)",grip:"Agarre prono, anchura hombros, torso inclinado 45°",sets:4,reps:"8-10",weight:30,rir:"1-2",rest:"90seg",gif:""},
-      {name:"Remo en máquina",muscle:"Espalda (medio)",grip:"Agarre neutro (palmas enfrentadas)",sets:3,reps:"10-12",weight:25,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Peso muerto rumano con mancuernas",muscle:"Isquios + Espalda baja",grip:"Mancuernas pegadas a las piernas",sets:3,reps:"10-12",weight:12,rir:"1-2",rest:"90seg",gif:""},
-      {name:"Curl con barra Z",muscle:"Bíceps",grip:"Barra EZ, agarre cómodo para la muñeca",sets:3,reps:"10-12",weight:12.5,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Curl martillo",muscle:"Bíceps + Antebrazo",grip:"Agarre neutro (martillo)",sets:3,reps:"12-15",weight:8,rir:"0-1",rest:"45seg",gif:""},
-      {name:"Curl concentrado (sentado)",muscle:"Bíceps (aislamiento)",grip:"Codo apoyado en el muslo del mismo lado",sets:3,reps:"12-15",weight:8,rir:"0-1",rest:"45seg",gif:""},
-      {name:"Plancha lateral (core variado)",muscle:"Oblicuos + Glúteo medio",grip:"Apoyo en antebrazo, cuerpo en línea recta",sets:3,reps:"30-40seg/lado",weight:0,rir:"-",rest:"30seg",gif:""},
+      {name:"Jalón al pecho en polea alta",muscle:"Dorsal ancho + bíceps",grip:"Agarre prono ancho. Pecho arriba. Barra hasta la clavícula. Codos apuntan al suelo al final",sets:3,reps:"12-15",weight:30,rir:"2-1-0",rest:"60seg",gif:""},
+      {name:"Remo en polea con triángulo",muscle:"Romboides + dorsal medio",grip:"Sentado. Espalda recta. Tira el triángulo hacia el abdomen bajo. No redondees al volver",sets:3,reps:"12-15",weight:30,rir:"2-1-0",rest:"60seg",gif:""},
+      {name:"Deltoides posterior en máquina",muscle:"Deltoides posterior + romboides",grip:"Sentado de frente al respaldo. Codos al nivel del hombro. Abre hasta el plano coronal",sets:3,reps:"15-20",weight:20,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Jalón cerrado con triángulo",muscle:"Dorsal ancho porción inferior",grip:"Triángulo agarre neutro. Pecho fuera. Baja hasta el esternón. Codos al cuerpo",sets:3,reps:"12-15",weight:25,rir:"2-1-0",rest:"60seg",gif:""},
+      {name:"Curl con barra Z de pie",muscle:"Bíceps braquial",grip:"Agarre supino. Codos fijos a los costados. Sube sin balancear el torso",sets:3,reps:"12-15",weight:15,rir:"2-1-0",rest:"60seg",gif:""},
+      {name:"Curl concentrado sentado",muscle:"Pico del bíceps",grip:"Codo apoyado en el interior del muslo. Sube girando ligeramente la muñeca hacia fuera",sets:3,reps:"12-15",weight:8,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Curl en polea baja con barra recta",muscle:"Bíceps + braquiorradial",grip:"Agarre supino. Tensión constante en todo el recorrido gracias a la polea",sets:3,reps:"15-20",weight:10,rir:"0",rest:"45seg",gif:""},
     ],
     cardio:"10-15 min remo / bici / caminata (opcional, sin running hoy)",
     mobility:[
-      {name:'Foam roller — Columna dorsal (dorsal/romboides)',dur:'60 seg (🟠 Foam roller desde el lunes)',
-       pos:'Foam roller horizontal a la altura de los omóplatos. Rodillas flexionadas, manos en la nuca.',
-       exec:'Deja caer el peso hacia atrás sobre el rodillo. Muévelo lentamente desde los omóplatos hasta la mitad de la espalda (no zona lumbar). 60 segundos. Libera tensión del romboides y erector dorsal.'},
-      {name:'Foam roller — Lat / Dorsal ancho',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
-       pos:'Tumbado de lado. Rodillo bajo la axila, brazo extendido sobre la cabeza.',
-       exec:'Con las piernas apiladas, rueda desde la axila hasta la cintura lentamente. 45 segundos cada lado. Alivia tensión del dorsal ancho y redondo mayor.'},
-      {name:'Child\'s pose extendido (dorsal bajo)',dur:'60 seg',
-       pos:'De rodillas, siéntate sobre los talones y estira los brazos al frente sobre el suelo.',
-       exec:'Manos a máxima distancia. Frente al suelo. Respira profundo: al exhalar relaja los hombros y deja caer el pecho. 60 segundos. Estiramiento profundo del dorsal y zona lumbar.'},
-      {name:'Thread the needle — Rotación torácica',dur:'45 seg/lado',
-       pos:'A cuatro patas. Manos bajo los hombros, rodillas bajo las caderas.',
-       exec:'Desliza el brazo derecho bajo el izquierdo hasta apoyar el hombro en el suelo. La cadera no se mueve. Mantén 45 segundos. Mejora rotación torácica y movilidad de romboides. Cambia de lado.'},
-      {name:'Puppy pose — Dorsal + hombros',dur:'60 seg',
-       pos:'A cuatro patas. Camina con las manos al frente hasta bajar el pecho hacia el suelo.',
-       exec:'Cadera sobre las rodillas. Frente apoyada o barbilla en el suelo. Brazos extendidos. Mantén 60 segundos. Combina estiramiento de dorsal, romboides y hombro anterior.'},
-      {name:'Distracción de hombro en marco de puerta',dur:'45 seg/lado',
-       pos:'De pie. Brazo a 90° apoyado en el marco de una puerta, codo a la altura del hombro.',
-       exec:'Gira el cuerpo hacia afuera alejándote del brazo. Nota la apertura de la cápsula articular del hombro. 45 segundos. Cambia de lado.'},
-      {name:'Estiramiento dorsal diagonal en cuadrupedia',dur:'45 seg/lado',
-       pos:'A cuatro patas. Extiende el brazo derecho en diagonal a las 11h sobre el suelo.',
-       exec:'Siéntate lentamente hacia los talones manteniendo el brazo extendido. Pecho baja hacia el suelo. 45 segundos. Aísla el dorsal con mayor efectividad que el child\'s pose.'},
-      {name:'Estiramiento de bíceps en pared',dur:'30 seg/lado',
-       pos:'De pie junto a la pared. Extiende el brazo y apoya la palma con el pulgar hacia abajo.',
-       exec:'Sin doblar el codo, gira el cuerpo alejándote de la pared. Notarás el tirón en el bíceps y hombro anterior. 30 segundos cada lado.'},
-      {name:'Cat-cow — Movilidad segmentaria lumbar',dur:'60 seg (10 reps)',
-       pos:'A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas.',
-       exec:'Exhala: redondea toda la columna (cat). Inhala: extiende columna dejando caer el abdomen (cow). Movimiento vertebra a vertebra, lento. 10 respiraciones completas.'},
-      {name:'Estiramiento de trapecio lateral',dur:'30 seg/lado',
-       pos:'Sentado o de pie. Brazo derecho relajado a lo largo del cuerpo.',
-       exec:'Lleva la oreja izquierda hacia el hombro izquierdo. Mano izquierda en la sien, presión mínima. Mantén la barbilla neutral. 30 segundos. Cambia de lado.'},
-      {name:'Supine spinal twist — Rotación lumbar',dur:'45 seg/lado',
-       pos:'Tumbado boca arriba. Lleva la rodilla derecha al pecho y crúzala hacia el lado izquierdo. Brazos en T.',
-       exec:'La rodilla toca el suelo (o se queda suspendida). La cabeza mira hacia la derecha. No fuerces. 45 segundos por lado. Libera la tensión residual lumbar tras la sesión.'},
-      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
-       pos:'Tumbado boca arriba, rodillas flexionadas. Una mano en el pecho, otra en el abdomen.',
-       exec:'Inhala 4 seg solo con el abdomen (la mano del pecho no se mueve). Aguanta 2 seg. Exhala 6 seg vaciando completamente. Activa el sistema parasimpático y acelera la recuperación muscular.'},
+      {name:'Foam roller — Dorsal ancho (lat)',dur:'45 seg/lado',
+       pos:'Tumbado de lado. Rodillo bajo la axila, en el borde externo del lat. Brazo extendido hacia arriba. Piernas apiladas para apoyar el peso.',
+       exec:'Rueda desde la axila hasta la cintura muy lentamente. Cuando encuentres un punto tenso, para 8-10 seg sin moverte. El lat es el músculo de mayor superficie del cuerpo y el principal motor del jalón. 45 seg por lado. Evidencia: Cheatham 2015 — el foam rolling previo al estiramiento aumenta el ROM en un 10% adicional.'},
+      {name:'Foam roller — Columna dorsal y romboides',dur:'60 seg',
+       pos:'Rodillo horizontal a la altura de los omóplatos. Manos entrelazadas en la nuca. Rodillas flexionadas, pies en el suelo.',
+       exec:'Deja caer el peso hacia atrás lentamente. Muévete de T4 a T8 (entre los omóplatos y la mitad de la espalda). No bajes a la zona lumbar. 60 seg. Libera los músculos erectores y romboides que mantienen la postura durante el remo y el jalón.'},
+      {name:'Child\'s pose lateralizado — Dorsal ancho aislado',dur:'45 seg/lado',
+       pos:'A cuatro patas. Desde aquí lleva los brazos hacia la esquina superior derecha del suelo (no al centro).',
+       exec:'Siéntate hacia el talón izquierdo mientras los brazos permanecen a la derecha. Notarás el estiramiento en el lado derecho del torso, mucho más específico al dorsal que el child\'s pose central. 45 seg. Cambia de lado. Más efectivo que el child\'s pose estándar para aislar el lat.'},
+      {name:'Thread the needle — Romboides y rotación torácica',dur:'45 seg/lado',
+       pos:'A cuatro patas. Manos bajo los hombros, rodillas bajo las caderas. Columna neutra.',
+       exec:'Desliza el brazo derecho POR DEBAJO del izquierdo hasta apoyar el hombro derecho en el suelo. La cadera no se mueve — solo rota el torso. El ojo sigue el brazo. Mantén 45 seg sintiendo el estiramiento entre los omóplatos. Cambia de lado. Específico para los romboides y la rotación torácica limitada por el jalón.'},
+      {name:'Estiramiento de bíceps en pared — pronación activa',dur:'30 seg/lado',
+       pos:'De pie junto a la pared. Extiende el brazo derecho y apoya la palma con el PULGAR HACIA ABAJO (pronación). Codo completamente estirado.',
+       exec:'Gira el cuerpo lentamente hacia la izquierda hasta notar el tirón en la cara anterior del brazo. No dobles el codo. 30 seg. La pronación del antebrazo aumenta la tensión sobre el bíceps braquial respecto al agarre neutro. Cambia de lado.'},
+      {name:'Sleeper stretch — Cápsula posterior del hombro',dur:'45 seg/lado',
+       pos:'Tumbado sobre el lado derecho. Hombro derecho a 90° respecto al torso, codo derecho también a 90°. El antebrazo apunta al techo.',
+       exec:'Con la mano izquierda, empuja SUAVEMENTE el antebrazo derecho hacia el suelo. Nota la tensión en la parte posterior del hombro. Sin dolor agudo — si lo hay, reduce la presión. 45 seg. Laudner et al. 2015 (AJSM): el estiramiento más efectivo para la cápsula posterior y el único con evidencia directa en reducción de impingement subacromial.'},
+      {name:'Cross-body stretch — Deltoides posterior',dur:'40 seg/lado',
+       pos:'De pie. Lleva el brazo derecho horizontal cruzando el pecho. El antebrazo izquierdo lo sostiene por debajo.',
+       exec:'Mantén el hombro derecho hacia ABAJO — no lo dejes subir. Presiona suavemente hacia el pecho. 40 seg. El deltoides posterior se activa isométricamente durante el remo para estabilizar el húmero. Si no lo estiras, acorta progresivamente y limita el recorrido del jalón.'},
+      {name:'Estiramiento de trapecio superior y elevador de la escápula',dur:'30 seg/lado',
+       pos:'Sentado en una silla o de pie. Brazo derecho detrás de la espalda o relajado hacia el suelo.',
+       exec:'Lleva la oreja izquierda al hombro izquierdo. Para el trapecio superior: mantén la barbilla paralela al suelo. Para el elevador de la escápula: gira la barbilla 45° hacia la axila izquierda y luego inclina. 30 seg por posición. El trapecio superior trabaja durante todo el jalón para estabilizar la escápula.'},
+      {name:'Rotación torácica en supino (book openings)',dur:'45 seg/lado',
+       pos:'Tumbado de lado derecho con rodillas juntas a 90°. Ambos brazos extendidos al frente, palmas juntas.',
+       exec:'Abre el brazo izquierdo hacia atrás, siguiéndolo con los ojos, hasta donde llegues sin que la rodilla se despegue del suelo. Mantén el punto final 3 seg. 8 repeticiones lentas. Luego cambia. Mejora la rotación torácica que limita el remo con barra en pronación.'},
+      {name:'Respiración diafragmática 4-2-6',dur:'2 minutos',
+       pos:'Tumbado boca arriba. Rodillas flexionadas. Una mano en el pecho, otra en el abdomen.',
+       exec:'Inhala 4 seg solo con el abdomen (la mano del pecho no se mueve). Aguanta 2 seg. Exhala 6 seg vaciando completamente. 10 ciclos. Morán-Navarro 2017: la exhalación prolongada activa el nervio vago y reduce el cortisol post-entrenamiento un 15-20% en los 30 min posteriores.'},
     ],
     mobGeneral:true,running:false,kcal:480},
   martes:{name:"Pecho + Tríceps",emoji:"🏋️",
@@ -662,49 +683,47 @@ const GYM_BASE={
        exec:"Baja la barra lentamente hacia el pecho alto. Toca suavemente y empuja. Conexión mente-músculo, sin esfuerzo."},
     ]},
     exercises:[
-      {name:"Press banca con barra",muscle:"Pecho",grip:"Agarre prono, algo más ancho que hombros",sets:4,reps:"8-10",weight:30,rir:"1-2",rest:"90seg",gif:""},
-      {name:"Press inclinado con mancuernas",muscle:"Pecho (porción superior)",grip:"Banco a 30-45°",sets:3,reps:"10-12",weight:14,rir:"1-2",rest:"90seg",gif:""},
-      {name:"Aperturas en máquina (pec deck)",muscle:"Pecho (aislamiento)",grip:"Máquina de aperturas pecho/espalda",sets:3,reps:"12-15",weight:15,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Fondos en paralelas",muscle:"Pecho + Tríceps",grip:"Torso inclinado hacia adelante",sets:3,reps:"10-12",weight:0,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Press francés con mancuernas",muscle:"Tríceps",grip:"Tumbado en banco, mancuernas de 4kg",sets:3,reps:"10-12",weight:4,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Extensión de tríceps en polea alta",muscle:"Tríceps",grip:"Agarre prono, cuerda o barra recta",sets:3,reps:"12-15",weight:15,rir:"0-1",rest:"45seg",gif:""},
-      {name:"Tríceps con barra/goma en polea (atrás-adelante)",muscle:"Tríceps (aislamiento)",grip:"Polea alta, barra o goma, codos altos, tirar de atrás hacia adelante",sets:3,reps:"12-15",weight:5,rir:"0-1",rest:"45seg",gif:""},
+      {name:"Press banca con barra",muscle:"Pectoral mayor + deltoides anterior + tríceps",grip:"Agarre a 81cm. Antebrazos perpendiculares al suelo. Barra baja hasta rozar la camiseta",sets:4,reps:"10-12",weight:30,rir:"2-2-1-0",rest:"75seg",gif:""},
+      {name:"Press inclinado con mancuernas",muscle:"Pectoral clavicular + deltoides anterior",grip:"Banco a 30 grados. Mancuernas bajan en línea con los pezones. No toques arriba",sets:3,reps:"12-15",weight:14,rir:"2-1-0",rest:"60seg",gif:""},
+      {name:"Aperturas en máquina pec deck",muscle:"Pectoral puro en aislamiento",grip:"Codos ligeramente flexionados y fijos. Movimiento en arco. Retén 1 seg al cerrar",sets:3,reps:"15-20",weight:30,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Press de pecho en máquina",muscle:"Pectoral + tríceps. Más estable que barra para trabajar al fallo",grip:"Agarre neutro o prono. Empuja sin bloquear el codo arriba. Baja controlado",sets:3,reps:"12-15",weight:30,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Extensión tríceps polea alta con cuerda",muscle:"Cabeza lateral y medial del tríceps",grip:"De pie ligeramente inclinado. Separa la cuerda al final. Codos completamente fijos",sets:3,reps:"15-20",weight:15,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Press francés con mancuernas",muscle:"Cabeza larga del tríceps",grip:"Tumbado. Codos apuntan al techo. Baja hasta la frente. Codos no se abren",sets:3,reps:"12-15",weight:10,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Tríceps en polea baja con cuerda",muscle:"Tríceps completo. Ángulo inferior distinto a la polea alta",grip:"De pie. Tira la cuerda hacia abajo separando al final. Codos fijos a los costados",sets:3,reps:"15-20",weight:10,rir:"0",rest:"45seg",gif:""},
+      {name:"Flexiones — test semanal de progresión",muscle:"Pectoral + tríceps + core. Indicador de fuerza funcional real",grip:"Manos a la anchura de los hombros. Cuerpo en línea recta. Baja hasta rozar el suelo. Máximas seguidas sin parar",sets:1,reps:"máximas",weight:0,rir:"0",rest:"—",gif:""},
     ],
     cardio:"",
     mobility:[
-      {name:'Foam roller — Columna dorsal alta (pectoral/serrato)',dur:'60 seg (🟠 Foam roller desde el lunes)',
-       pos:'Foam roller horizontal a la altura de los omóplatos altos (entre omóplatos y cuello).',
-       exec:'Brazos cruzados en el pecho. Deja caer hacia atrás. Muévete muy lentamente. 60 segundos. Libera la tensión del trapecio medio y mejora la extensión torácica necesaria para el press.'},
-      {name:'Foam roller — Pectoral menor en esquina',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
-       pos:'Rodillo vertical (de pie contra la pared). Apoya el pectoral menor (entre clavícula y axila) contra el rodillo.',
-       exec:'Presión suave y sostenida. Rueda 2-3 cm arriba/abajo. 45 segundos por lado. El pectoral menor es el músculo más acortado tras el press — este trabajo previene la anteversión escapular.'},
-      {name:'Apertura de pecho en foam roller longitudinal',dur:'60 seg',
-       pos:'Foam roller en vertical (a lo largo de la columna, de la cabeza al sacro). Brazos en T o en Y.',
-       exec:'Abre el pecho dejando caer los brazos hacia los lados por gravedad. No fuerces. 60 segundos. Contrarresta la postura de flexión del press. Evidencia: mejora la retracción escapular y la postura.'},
-      {name:'Doorway pectoral stretch — 3 ángulos',dur:'30 seg x3 ángulos',
-       pos:'En marco de puerta. Posición 1: brazo a 90° (fibras medias). Posición 2: brazo a 120° (fibras inferiores). Posición 3: brazo a 60° (fibras superiores).',
-       exec:'Un paso al frente y gira el cuerpo en cada posición. 30 seg cada ángulo. Cubre todas las fibras del pectoral mayor. Evidencia: superior al estiramiento en una sola posición.'},
-      {name:'Estiramiento de tríceps sobre la cabeza',dur:'45 seg/lado',
-       pos:'De pie. Codo derecho doblado detrás de la cabeza, mano entre los omóplatos.',
-       exec:'La mano izquierda en el codo empuja suavemente hacia atrás y hacia abajo. Torso recto, sin hiperextender la lumbar. 45 segundos. Aísla la cabeza larga del tríceps (la más trabajada en press francés).'},
-      {name:'Cross-body shoulder stretch (deltoides posterior)',dur:'45 seg/lado',
-       pos:'De pie. Lleva el brazo derecho horizontal cruzando el pecho. Sujétalo con el antebrazo izquierdo.',
-       exec:'Mantén el hombro derecho hacia abajo (no elevado). Presiona suavemente hacia el pecho. 45 segundos. Estira el deltoides posterior y el infraespinoso, frecuentemente olvidados en días de pecho.'},
-      {name:'Thread the needle — Serrato anterior',dur:'45 seg/lado',
-       pos:'A cuatro patas. Desliza el brazo derecho bajo el torso hacia la izquierda.',
-       exec:'El hombro toca el suelo. Mantén la cadera alta y perpendicular. 45 segundos por lado. Estira el serrato anterior, que trabaja intensamente en el press y las aperturas.'},
-      {name:'Eagle arms — Hombro posterior y trapecio medio',dur:'45 seg/lado',
-       pos:'Sentado o de pie. Cruza el brazo derecho POR DEBAJO del izquierdo. Entrelaza los antebrazos.',
-       exec:'Eleva los codos a la altura de los hombros y aléjalos del pecho. Mantén 45 segundos. Aísla el hombro posterior y el romboides. Cambia el brazo que queda abajo.'},
-      {name:'Extensión de muñeca y antebrazo (flexores)',dur:'30 seg/lado',
-       pos:'De rodillas o de pie. Apoya la palma derecha en el suelo con los dedos apuntando hacia las rodillas.',
-       exec:'Inclínate ligeramente hacia delante. Nota el estiramiento en el antebrazo. 30 segundos. Previene tendinitis del codo (epicondilitis), frecuente en días de press.'},
-      {name:'Rotación torácica en suelo (book openings)',dur:'45 seg/lado',
-       pos:'Tumbado de lado. Rodillas flexionadas a 90°. Ambos brazos extendidos al frente.',
-       exec:'Sin mover la cadera, abre el brazo de arriba hacia atrás hasta donde llegues. Ojos siguiendo la mano. Mantén el punto final 3 seg. 8 repeticiones lentas por lado.'},
-      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
-       pos:'Tumbado boca arriba, rodillas flexionadas.',
-       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. La exhalación lenta activa el vago y reduce el cortisol post-entreno. 8-10 ciclos.'},
+      {name:'Foam roller — Pectoral menor (esquina de pared)',dur:'45 seg/lado',
+       pos:'De pie frente a la esquina de una pared. Coloca el foam roller vertical entre el pectoral menor (entre clavícula y axila, NO el pectoral mayor) y la pared. Brazo a 90°.',
+       exec:'Aplica presión corporal suave y realiza pequeños movimientos de 2-3 cm arriba y abajo. 45 seg por lado. El pectoral menor es el músculo más acortado por el press y causa anteversión escapular — nadie lo trabaja con el foam roller estándar. Evidencia: articulación glenohumeral: cada grado de anteversión escapular reduce el espacio subacromial.'},
+      {name:'Extensión torácica en foam roller (longitudinal)',dur:'60 seg',
+       pos:'Foam roller EN VERTICAL (a lo largo de la columna, desde la cabeza hasta el sacro). Tumbado sobre él.',
+       exec:'Brazos en T o en Y, codos hacia el suelo por gravedad. No hagas nada — deja que el peso del cuerpo abra el pecho pasivamente. 60 seg. Contrarresta la postura de flexión del press. Esta posición invierte la cifosis torácica que el entreno de pecho refuerza. La evidencia es clara: el pectoral está en acortamiento en TODAS las posiciones de press.'},
+      {name:'Doorway pectoral stretch — 3 posiciones secuenciales',dur:'30 seg x3 posiciones',
+       pos:'En el marco de una puerta. Los 3 ángulos del brazo: 60° (bajo), 90° (medio), 120° (alto).',
+       exec:'En cada posición da un paso al frente y gira el torso. 30 seg cada ángulo, sin cambiar el ritmo. La posición de 60° estira las fibras claviculares (más activas en press inclinado), 90° las esternocostales medias (press plano), 120° las fibras inferiores (fondos). Un estudio en 3 posiciones cubre el músculo completo vs uno en una sola posición.'},
+      {name:'Estiramiento de tríceps cabeza larga (overhead)',dur:'45 seg/lado',
+       pos:'De pie. Lleva el codo derecho al techo con el brazo doblado — la mano cae entre los omóplatos. La mano izquierda en el codo.',
+       exec:'Empuja el codo hacia atrás y ligeramente hacia la línea media. Torso RECTO, sin hiperlordosis lumbar (contrae el abdomen). 45 seg. La cabeza larga del tríceps tiene origen en la escápula — es el único músculo biarticular del tríceps y el único que se estira completamente en posición overhead. Los tríceps monoarticulares NO se estiran con este ejercicio.'},
+      {name:'Estiramiento de muñeca — flexores y extensores',dur:'30 seg x2 posiciones/lado',
+       pos:'Posición 1: arrodillado, apoya la palma en el suelo con dedos apuntando HACIA TI. Posición 2: duerso de la mano en el suelo, dedos apuntando hacia ti.',
+       exec:'En cada posición inclínate suavemente hacia adelante hasta notar el estiramiento en el antebrazo. 30 seg por posición. Los flexores de muñeca trabajan isométricamente durante el press y los fondos para estabilizar el agarre. La tendinitis de codo medial (codo del golfista) está directamente relacionada con el acortamiento de estos músculos.'},
+      {name:'Cross-body — Deltoides posterior y cápsula glenohumeral',dur:'40 seg/lado',
+       pos:'De pie. Brazo derecho horizontal, cruzando el pecho. Antebrazo izquierdo debajo sujetando.',
+       exec:'Hombro derecho ABAJO. Presiona hacia el esternón. 40 seg. El deltoides anterior se trabaja intensamente en el press, pero es el deltoides POSTERIOR el que se acorta compensatoriamente para estabilizar — y es el menos estirado.'},
+      {name:'Rotación torácica en supino',dur:'45 seg/lado',
+       pos:'Tumbado de lado. Rodillas a 90°. Brazos extendidos al frente, palmas juntas.',
+       exec:'Abre el brazo de arriba hacia atrás siguiendo con los ojos. Aguanta 3 seg en el punto máximo. 8 repeticiones lentas. El serrato anterior (muy activo en press y fondos) se estira con la rotación torácica más que con ningún otro ejercicio.'},
+      {name:'Neck stretch — Trapecio superior y esternocleidomastoideo',dur:'30 seg x2/lado',
+       pos:'Sentado. Posición 1: oreja al hombro. Posición 2: barbilla 45° hacia la axila y luego inclina (elevador de la escápula).',
+       exec:'Presión mínima con la mano. 30 seg en cada variación por lado. El trapecio superior trabaja isométricamente durante los fondos y el press para mantener la posición cefálica. Suele quedar en contracción sostenida al acabar una sesión de empuje.'},
+      {name:'Cat-cow — Movilidad segmentaria de la columna',dur:'60 seg — 10 ciclos lentos',
+       pos:'A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas. Columna en posición neutra.',
+       exec:'EXHALA: redondea toda la columna vertebra a vertebra desde el cóccix hasta la cervical (cat). INHALA: extiende la columna dejando caer el abdomen, pelvis en anteversión, cabeza arriba (cow). Muévete como si fueras a cámara lenta. 10 ciclos. Restaura la movilidad segmentaria que el esfuerzo isométrico de los erectores durante el press tiende a fijar.'},
+      {name:'Respiración diafragmática 4-2-6',dur:'2 minutos',
+       pos:'Tumbado boca arriba.',
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 10 ciclos. Activa el sistema parasimpático post-esfuerzo. Mantén la exhalación completa — es el componente más importante para la recuperación del SNC.'},
     ],
     mobGeneral:true,running:true,kcal:420},
   miercoles:{name:"Pierna",emoji:"🏋️",
@@ -717,52 +736,47 @@ const GYM_BASE={
        exec:"Empuja lentamente sintiendo el cuádriceps. Activa sin esfuerzo. Rodillas siguiendo la dirección de los pies."},
     ]},
     exercises:[
-      {name:"Prensa de piernas",muscle:"Cuádriceps + Glúteo",grip:"Pies a media altura de la plataforma",sets:4,reps:"10-12",weight:60,rir:"1-2",rest:"90seg",gif:""},
-      {name:"Zancadas con mancuernas",muscle:"Cuádriceps + Glúteo (unilateral)",grip:"Paso largo, rodilla trasera casi al suelo",sets:3,reps:"12/pierna",weight:10,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Curl femoral en máquina",muscle:"Isquiotibiales",grip:"Tumbado o sentado en máquina",sets:3,reps:"12-15",weight:25,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Hip thrust con barra o máquina",muscle:"Glúteo (aislamiento)",grip:"Espalda apoyada en banco, barra sobre cadera",sets:3,reps:"12-15",weight:30,rir:"0-1",rest:"60seg",gif:""},
-      {name:"Abductor en máquina",muscle:"Glúteo medio + Abductores",grip:"Sentado, empuja las piernas hacia afuera contra la resistencia",sets:3,reps:"15-20",weight:30,rir:"1-2",rest:"45seg",gif:""},
-      {name:"Aductor en máquina",muscle:"Aductores internos",grip:"Sentado, junta las piernas contra la resistencia",sets:3,reps:"15-20",weight:30,rir:"1-2",rest:"45seg",gif:""},
-      {name:"Elevación de gemelos de pie",muscle:"Gemelo",grip:"Máquina de gemelos de pie",sets:4,reps:"15-20",weight:40,rir:"0-1",rest:"45seg",gif:""},
+      {name:"Curl femoral sentado en máquina",muscle:"Isquiotibiales. Prioridad para definir y alargar la pierna trasera",grip:"Espalda pegada. Baja controlado en 3 seg. Contrae isquio al subir. No uses el glúteo",sets:3,reps:"15-20",weight:25,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Extensión de cuádriceps en máquina",muscle:"Cuádriceps. Menos series que isquios — objetivo definir, no crecer",grip:"Espalda pegada. Extiende completo. Retén 1 seg arriba. Baja en 3 seg",sets:2,reps:"20",weight:25,rir:"1",rest:"45seg",gif:""},
+      {name:"Hip thrust con barra o máquina",muscle:"Glúteo mayor. Mayor activación EMG de todos los ejercicios de glúteo",grip:"Espalda en banco. Barbilla al pecho. Empuja con los talones. Retén 1 seg arriba",sets:3,reps:"15-20",weight:40,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Prensa con pies altos",muscle:"Isquiotibiales + glúteo. Pies altos reducen cuádriceps y aumentan posterior",grip:"Pies en la parte alta de la plataforma. Baja hasta 90 grados mínimo. No bloquees",sets:3,reps:"15-20",weight:60,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Zancadas con mancuernas paso largo",muscle:"Glúteo + isquio. Paso largo = más glúteo, menos cuádriceps",grip:"Paso largo hacia adelante. Rodilla trasera casi toca el suelo. Empuja con el talón delantero",sets:3,reps:"12/pierna",weight:10,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Abductor en máquina",muscle:"Glúteo medio + TFL. Define el contorno lateral de la pierna",grip:"Sentado. Empuja hacia fuera 2 seg. Retén 1 seg. Vuelve 3 seg controlado",sets:3,reps:"20",weight:30,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Aductor en máquina",muscle:"Aductores. Define cara interna del muslo y estabiliza la cadera en running",grip:"Sentado. Junta las piernas 2 seg. Retén 1 seg. Abre 3 seg controlado",sets:3,reps:"20",weight:30,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Gemelos en máquina o escalón",muscle:"Gastrocnemio. Define la pantorrilla sin agrandarla",grip:"Talon colgando. Baja al máximo. Sube al máximo. Para 1 seg arriba. Sin rebotes",sets:3,reps:"20-25",weight:40,rir:"0",rest:"30seg",gif:""},
     ],
     cardio:"10-15 min bici o caminata suave (opcional, sin sobrecargar más las piernas)",
     mobility:[
-      {name:'Foam roller — Cuádriceps',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
-       pos:'Boca abajo. Rodillo bajo el muslo derecho, desde la cadera hasta la rodilla.',
-       exec:'Apoya el peso en los antebrazos. Rueda lentamente. Cuando encuentres un punto sensible, para 10 seg antes de seguir. 60 seg por lado. Evidencia: reduce DOMS y mejora ROM en flexión de rodilla.'},
-      {name:'Foam roller — Isquiotibiales',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
-       pos:'Sentado. Rodillo bajo el muslo derecho. Manos en el suelo detrás para apoyar.',
-       exec:'Rueda desde la tuberosidad isquiática hasta la fosa poplítea. Rota ligeramente la pierna para cubrir más fibras. 60 seg por lado. Los isquios acortan mucho tras el curl femoral.'},
-      {name:'Foam roller — TFL / Banda IT',dur:'60 seg/lado (🟠 Foam roller desde el lunes)',
-       pos:'De lado. Rodillo bajo el lateral del muslo derecho, entre la cadera y la rodilla.',
-       exec:'Apoya el codo. Rueda lentamente. Es la zona más sensible — no fuerces. 60 seg por lado. Fundamental tras el abductor y las zancadas.'},
-      {name:'Foam roller — Gemelo + sóleo',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
-       pos:'Sentado. Rodillo bajo el gemelo derecho.',
-       exec:'Gemelo: rodillo a la parte alta de la pantorrilla, pierna recta. Sóleo: dobla ligeramente la rodilla. 45 seg por posición. El sóleo es el músculo más olvidado pero más limitante en la sentadilla.'},
-      {name:'Couch stretch — Psoas y cuádriceps distal',dur:'60 seg/lado',
-       pos:'Rodilla trasera apoyada en la pared o en el sofá. Pie delantero en el suelo a 90°.',
-       exec:'Mantén el torso recto, la pelvis neutra (contrae glúteo trasero suavemente). Cuanto más juntas las rodillas a la pared, más profundo. 60 seg cada lado. El mejor estiramiento del psoas tras el día de pierna.'},
-      {name:'Pigeon pose — Glúteo profundo y piriforme',dur:'90 seg/lado',
-       pos:'Desde cuatro patas, lleva la rodilla derecha hacia la muñeca derecha. La pierna trasera estirada.',
-       exec:'Baja el torso hacia el suelo sobre los antebrazos o completamente. El ángulo de la espinilla delantera = más intensidad. 90 seg por lado. El piriforme es el músculo clave que libera el nervio ciático.'},
-      {name:'Mariposa — Aductores con oscilaciones',dur:'60 seg',
-       pos:'Sentado. Plantas de los pies juntas. Manos en los pies, codos en los muslos.',
-       exec:'Empuja suavemente los muslos hacia el suelo con los codos. Oscilaciones suaves de 2-3 cm durante los primeros 30 seg, luego mantén. 60 segundos. Abductores y aductores trabajan mucho en zancadas.'},
-      {name:'Estiramiento de isquios supino con banda o toalla',dur:'60 seg/lado',
-       pos:'Tumbado boca arriba. Banda o toalla alrededor del pie derecho. Pierna izquierda en el suelo.',
-       exec:'Eleva la pierna derecha manteniéndola recta hasta notar el tirón. Rodilla completamente extendida. 60 seg. Más efectivo que el estiramiento de pie porque elimina la compensación lumbar.'},
-      {name:'Gemelo en pared — gastrocnemio + sóleo',dur:'45 seg x2/lado',
-       pos:'Manos en pared. Pie trasero a 80-90 cm.',
-       exec:'Posición 1: pierna recta, talón pegado al suelo (gastrocnemio, 45 seg). Posición 2: rodilla ligeramente doblada, mismo talón (sóleo, 45 seg). El sóleo es limitante en la sentadilla profunda.'},
-      {name:'Deep squat hold — Movilidad global cadera/tobillo',dur:'60 seg',
-       pos:'Cuclillas completas con los pies a la anchura de las caderas, puntas ligeramente hacia afuera.',
-       exec:'Talones en el suelo (si no puedes, pon una cuña). Codos empujan las rodillas hacia afuera desde dentro. Columna recta. 60 seg. Diagnostica y mejora simultáneamente la movilidad de tobillo, cadera y columna.'},
-      {name:'Supine twist — Liberación lumbar',dur:'45 seg/lado',
-       pos:'Tumbado boca arriba. Rodilla derecha al pecho y crúzala hacia la izquierda.',
-       exec:'Brazos en T. La cabeza mira hacia la derecha. No fuerces la rodilla al suelo. 45 seg por lado. Descomprime las carillas articulares lumbares tras el trabajo de sentadilla y prensa.'},
-      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
-       pos:'Tumbado boca arriba, piernas extendidas o en mariposa.',
-       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. Los días de pierna son los más demandantes del SNC — este protocolo acelera la recuperación del sistema nervioso. 8-10 ciclos.'},
+      {name:'Foam roller — Cuádriceps con rotación interna/externa',dur:'60 seg/lado',
+       pos:'Boca abajo. Rodillo bajo el muslo derecho. Apoya el peso en los antebrazos. La pierna izquierda puede doblar para reducir/aumentar la presión.',
+       exec:'Rueda de la cadera a la rodilla. IMPORTANTE: rota la pierna hacia dentro y hacia fuera para cubrir el vasto interno, recto femoral y vasto externo. Para 8-10 seg donde notes más tensión. 60 seg. Macdonald et al. 2013 (JSCR): foam rolling post-ejercicio reduce el DOMS en un 21% a las 24h y un 31% a las 48h. El cuádriceps es el músculo más cargado en prensa y zancadas.'},
+      {name:'Foam roller — TFL y banda IT',dur:'60 seg/lado',
+       pos:'De lado. Rodillo bajo el lateral del muslo derecho, entre la cresta ilíaca y la rodilla. Apoya el codo. La pierna izquierda delante en el suelo para controlar la presión.',
+       exec:'Rueda muy lentamente — la banda IT no tiene receptores propios pero el TFL sí. Para donde notes tensión. El dolor agudo es normal en esta zona. 60 seg. La banda IT no se estira (no tiene sarcómeros) pero el foam rolling sobre el TFL reduce su tracción lateral sobre la rótula, previniendo el síndrome de la banda IT, la lesión más común en zancadas.'},
+      {name:'Foam roller — Isquiotibiales con variación lateral',dur:'60 seg/lado',
+       pos:'Sentado en el suelo. Rodillo bajo el muslo derecho posterior. Manos en el suelo detrás para apoyar. La pierna izquierda cruzada sobre la derecha para más presión.',
+       exec:'Rueda desde la tuberosidad isquiática hasta la fosa poplítea. Rota la pierna: hacia fuera estira el bíceps femoral (cabeza larga), hacia dentro el semimembranoso y semitendinoso. 60 seg cubriendo los 3 ángulos.'},
+      {name:'Couch stretch — Psoas ilíaco y recto femoral',dur:'75 seg/lado',
+       pos:'Rodilla trasera apoyada en el suelo (pon una esterilla). Pie trasero contra la pared o sofá. Pie delantero en el suelo a 90°. Torso ERGUIDO.',
+       exec:'Contrae el glúteo trasero suavemente para neutralizar la pelvis (anteversión → retroversión). Sin este paso estás estirando el recto femoral pero NO el psoas ilíaco. Mantén 75 seg. Escamilla et al. 2009: el couch stretch genera la mayor activación EMG del psoas de todos los estiramientos del hip flexor. El psoas acumula mayor carga excéntrica en la zancada que ningún otro músculo.'},
+      {name:'Pigeon pose — Piriforme y glúteo medio',dur:'90 seg/lado',
+       pos:'Desde cuatro patas, lleva la rodilla derecha hacia la muñeca derecha. La pierna trasera completamente estirada. El ángulo de la espinilla anterior determina la intensidad (más horizontal = más intenso).',
+       exec:'Baja el torso sobre los antebrazos o el suelo. No fuerces si hay dolor en la rodilla — modifica con la espalda en el suelo y tobillo sobre rodilla. 90 seg. El piriforme trabaja como rotador externo en todas las fases de la zancada. Su acortamiento comprime el nervio ciático (síndrome piriforme).'},
+      {name:'Estiramiento supino de isquios con banda — hamstrings reales',dur:'60 seg/lado',
+       pos:'Tumbado boca arriba. Pasa una banda/toalla por el pie derecho. Pierna izquierda extendida en el suelo.',
+       exec:'Eleva la pierna derecha con la rodilla COMPLETAMENTE ESTIRADA. Hartig & Henderson 1999 (AJSM): el estiramiento supino elimina la compensación pélvica del estiramiento de pie (que activa los flexores de cadera en lugar de los isquios reales). Dorsiflexiona el pie para añadir tensión neural. 60 seg. Cambia de lado.'},
+      {name:'Estiramiento de gemelo — gastrocnemio y sóleo por separado',dur:'45 seg x2 posiciones/lado',
+       pos:'Manos en la pared. Pie trasero a 80 cm. Posición 1: rodilla trasera RECTA (gastrocnemio). Posición 2: rodilla trasera FLEXIONADA 20° (sóleo).',
+       exec:'Talón completamente pegado al suelo en ambas posiciones. 45 seg por posición. El sóleo NO se estira con la rodilla estirada — es un músculo de una sola articulación. Ignorar el sóleo es el error más común y la causa principal de tendinitis aquílea en runners/deportistas con carga de pierna.'},
+      {name:'Mariposa con inclinación anterior',dur:'60 seg',
+       pos:'Sentado. Plantas de pies juntas. Manos en los pies o en los tobillos.',
+       exec:'Inclinación hacia ADELANTE desde la cadera (no redondees la espalda). Los codos empujan los muslos hacia el suelo suavemente. 60 seg. Esta posición estira los aductores largos y el pectíneo — específicamente cargados en el abductor/aductor en máquina. La inclinación anterior dobla la carga de estiramiento respecto a la posición sentada erguida.'},
+      {name:'90/90 hip — Cápsula articular de la cadera',dur:'60 seg/lado',
+       pos:'Sentado en el suelo con ambas piernas en ángulo de 90°: una pierna delante (rotación externa), otra lateral (rotación interna).',
+       exec:'Torso erguido. Sin apoyar las manos si puedes. 60 seg, luego cambia. Si la pelvis cae al lado, reduce el ángulo. Esta posición carga simultáneamente la rotación interna y externa de la cadera, la restricción articular más común tras el trabajo de prensa que reduce el ROM de forma silenciosa.'},
+      {name:'Respiración diafragmática 4-2-6',dur:'2 minutos',
+       pos:'Tumbado boca arriba. Piernas en mariposa para relajar los flexores de cadera.',
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 10 ciclos. El día de pierna es el de mayor impacto sobre el SNC — el cortisol post-sesión de pierna es significativamente más alto que en otros días. Esta respiración lo reduce activamente.'},
     ],
     mobGeneral:true,running:false,kcal:520},
   jueves:{name:"Hombro + Core",emoji:"🏋️",
@@ -775,52 +789,47 @@ const GYM_BASE={
        exec:"Eleva los brazos lateralmente hasta la altura del hombro sin peso. Activación del deltoides medial."},
     ]},
     exercises:[
-      {name:"Press militar con barra o mancuernas",muscle:"Hombro (deltoide anterior)",grip:"Sentado o de pie",sets:4,reps:"8-10",weight:20,rir:"1-2",rest:"90seg",gif:""},
-      {name:"Elevaciones laterales con mancuernas",muscle:"Hombro (deltoide lateral)",grip:"De pie, brazos ligeramente flexionados",sets:4,reps:"12-15",weight:6,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Deltoides posterior en máquina",muscle:"Hombro (deltoide posterior)",grip:"Máquina de aperturas pecho/espalda, versión inversa",sets:3,reps:"12-15",weight:15,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Face pull en polea alta",muscle:"Hombro posterior + Trapecio",grip:"Cuerda, tirar hacia la cara",sets:3,reps:"15",weight:12,rir:"1-2",rest:"45seg",gif:""},
-      {name:"Encogimientos con mancuernas",muscle:"Trapecio",grip:"Mancuernas a los lados",sets:3,reps:"12-15",weight:14,rir:"0-1",rest:"45seg",gif:""},
-      {name:"Plancha frontal (core)",muscle:"Core (abdomen+lumbar)",grip:"Apoyo en antebrazos, cuerpo recto",sets:3,reps:"45-60seg",weight:0,rir:"-",rest:"30seg",gif:""},
-      {name:"Crunch en polea alta",muscle:"Core (recto abdominal)",grip:"Rodillas en el suelo, cuerda detrás de la cabeza",sets:3,reps:"15-20",weight:15,rir:"0-1",rest:"30seg",gif:""},
+      {name:"Press militar con mancuernas sentado",muscle:"Deltoides anterior + medial + tríceps",grip:"Mancuernas en línea con las orejas. Sube sin chocar arriba. Baja hasta 90 grados en el codo",sets:3,reps:"12-15",weight:14,rir:"2-1-0",rest:"60seg",gif:""},
+      {name:"Elevaciones laterales con mancuernas",muscle:"Deltoides medial. Clave para la anchura de hombros",grip:"De pie. Codo ligeramente doblado. Sube hasta 30 grados. Controlado y sin balanceo",sets:3,reps:"15-20",weight:6,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Face pull en polea con cuerda",muscle:"Deltoides posterior + infraespinoso + romboides",grip:"Cuerda al nivel de los ojos. Tira hacia la cara separando la cuerda. Codos hacia arriba",sets:3,reps:"15-20",weight:10,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Encogimientos con mancuernas",muscle:"Trapecio superior. Visible y contribuye a la forma del cuello",grip:"Mancuernas a los lados. Encoge directamente arriba. Retén 1 seg. No gires",sets:3,reps:"15-20",weight:16,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Elevación de piernas en banco plano",muscle:"Recto abdominal inferior + psoas",grip:"Tumbado en banco. Manos bajo los glúteos. Sube piernas juntas a 90 grados. Baja sin tocar",sets:3,reps:"12-15",weight:0,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Crunch en polea alta",muscle:"Recto abdominal superior. Tensión constante con la polea",grip:"Rodillas en el suelo. Cuerda en la nuca. Encoge el abdomen hacia las rodillas. No tires con los brazos",sets:3,reps:"15-20",weight:10,rir:"1-0",rest:"45seg",gif:""},
+      {name:"Plancha lateral",muscle:"Oblicuo externo + cuadrado lumbar. Estabilidad lateral que mejora la postura",grip:"Antebrazo en el suelo. Cuerpo en línea recta lateral. No dejes caer la cadera",sets:3,reps:"30-45seg/lado",weight:0,rir:"-",rest:"30seg",gif:""},
+      {name:"Dead bug",muscle:"Core profundo + coordinación. Activa transverso sin cargar la lumbar",grip:"Tumbado boca arriba. Brazos al techo. Rodillas a 90 grados. Extiende brazo y pierna opuestos sin despegar la lumbar",sets:3,reps:"10/lado",weight:0,rir:"1-0",rest:"30seg",gif:""},
     ],
     cardio:"",
     mobility:[
-      {name:'Foam roller — Dorsal alto y trapecio',dur:'60 seg (🟠 Foam roller desde el lunes)',
-       pos:'Foam roller horizontal a la altura dorsal alta. Manos en la nuca.',
-       exec:'Deja caer el peso. Muévete desde la T4 hasta T8 (no lumbar). 60 seg. El trapecio y romboides acumulan tensión intensa en los días de hombro y remo.'},
-      {name:'Foam roller — Infraespinoso / Manguito rotador',dur:'45 seg/lado (🟠 Foam roller desde el lunes)',
-       pos:'De lado. Rodillo bajo la zona posterior del hombro (entre escápula y húmero).',
-       exec:'Apoya el peso gradualmente. Gira ligeramente el brazo. 45 seg por lado. El infraespinoso es el rotador externo más usado en press militar — su acortamiento causa impingement.'},
-      {name:'Sleeper stretch — Manguito rotador interno',dur:'45 seg/lado',
-       pos:'Tumbado de lado derecho. Hombro a 90°, codo a 90°. Antebrazo perpendicular al suelo.',
-       exec:'Con la mano izquierda, empuja suavemente el antebrazo derecho hacia el suelo. Sin dolor. 45 seg. Evidencia (Laudner 2015): el más efectivo para la flexibilidad del manguito rotador y la reducción de lesiones de hombro.'},
-      {name:'Cross-body stretch — Deltoides posterior',dur:'45 seg/lado',
-       pos:'De pie. Lleva el brazo derecho horizontal cruzando el pecho. Antebrazo izquierdo lo sujeta.',
-       exec:'Hombro derecho hacia abajo (no elevado). Mantén 45 seg. El deltoides posterior está intensamente implicado en las elevaciones y el vuelo posterior.'},
-      {name:'Wall slide — Movilidad escapular',dur:'45 seg (10 reps)',
-       pos:'De pie contra la pared. Codos y muñecas pegados a la pared, brazos en W (ángulo 90°).',
-       exec:'Desliza los brazos hacia arriba en Y manteniendo el contacto con la pared. Baja lentamente. 10 reps. Activa el serrato anterior y mejora el ritmo escapulohumeral, clave para el press militar seguro.'},
-      {name:'Doorway pectoral stretch (deltoides anterior)',dur:'45 seg/lado',
-       pos:'Marco de puerta. Antebrazo a 90°.',
-       exec:'Paso adelante y gira el cuerpo. 45 seg por lado. El deltoides anterior acorta mucho en pressing overhead. Evidencia: mejora el rango en press militar en 8-12°.'},
-      {name:'Child\'s pose lateral — Oblicuos y core lateral',dur:'45 seg/lado',
-       pos:'Desde child\'s pose, desplaza las manos hacia la derecha.',
-       exec:'La cadera izquierda ancla al suelo. Nota el estiramiento en el flanco izquierdo. 45 seg por lado. Estira el cuadrado lumbar y oblicuos trabajados en el core.'},
-      {name:'Cat-cow — Movilidad segmentaria lumbar',dur:'60 seg (10 reps)',
-       pos:'A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas.',
-       exec:'Exhala: redondea toda la columna. Inhala: extiende. Vertebra a vertebra, lento y controlado. 10 respiraciones completas. El mejor warm-down para la columna tras ejercicios de overhead.'},
-      {name:'90/90 Hip switches — Cadera y core',dur:'60 seg (8 reps)',
-       pos:'Sentado en el suelo. Piernas en forma de 90/90: una delante, una lateral.',
-       exec:'Rota la cadera lentamente y cambia de posición sin ayudarte con las manos. 8 repeticiones. Mejora la movilidad articular coxofemoral que estabiliza el core en todos los ejercicios.'},
-      {name:'Supine twist — Lumbar',dur:'45 seg/lado',
-       pos:'Tumbado. Rodilla al pecho y cruzarla al lado opuesto.',
-       exec:'Sin forzar. Brazos en T. 45 seg por lado. Descomprime las vértebras lumbares tras el trabajo de overhead y core.'},
-      {name:'Neck CARs — Movilidad cervical controlada',dur:'60 seg',
-       pos:'De pie o sentado. Columna neutra, hombros bajos.',
-       exec:'Rotación lenta de cuello describiendo el mayor círculo posible, controlando cada grado. 3 círculos en cada dirección. Sin tirones ni rebotes. Los días de hombro sobrecargan los elevadores de la escápula.'},
-      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
+      {name:'Foam roller — Manguito rotador (infraespinoso)',dur:'45 seg/lado',
+       pos:'Tumbado de lado. Rodillo bajo la zona posterior del hombro: entre el borde de la escápula y el húmero. NO bajo el deltoides posterior.',
+       exec:'Aplica presión gradual. Gira ligeramente el brazo interno/externo para encontrar el infraespinoso. Para en los puntos de tensión 8-10 seg. 45 seg. El infraespinoso es el principal rotador externo del hombro y el músculo más comprimido en el press militar — su acortamiento crónico es la causa más frecuente de impingement subacromial en atletas de fuerza.'},
+      {name:'Foam roller — Torácica alta (T1-T6)',dur:'60 seg',
+       pos:'Rodillo horizontal a la altura del cuello/omóplatos (zona alta). Manos en la nuca. Deja caer la cabeza.',
+       exec:'Zona muy diferente a la dorsal media. Cubre T1-T6, que es la zona cuya movilidad en extensión determina directamente el rango de movimiento overhead. Muévete muy lentamente, 1 cm cada 5 seg. 60 seg. La restricción de la torácica alta es el principal compensador en el press militar: si T1-T6 no extienden, la lumbar compensa con hiperlordosis (riesgo de lesión).'},
+      {name:'Sleeper stretch — Cápsula posterior del hombro',dur:'45 seg/lado',
+       pos:'Tumbado sobre el lado derecho. Hombro a 90°, codo a 90°. Antebrazo apuntando al techo.',
+       exec:'Con la mano izquierda, empuja el antebrazo derecho suavemente hacia el suelo. Sin dolor agudo. 45 seg. Laudner et al. 2015 (AJSM): el sleeper stretch es el único estiramiento con evidencia randomizada controlada para la reducción de impingement en atletas overhead. Reduce la limitación de rotación interna glenohumeral que causa el síndrome de impingement en press militar.'},
+      {name:'Cross-body — Deltoides posterior y cápsula articular',dur:'40 seg/lado',
+       pos:'De pie. Brazo horizontal cruzando el pecho. Antebrazo contrario debajo sujetando.',
+       exec:'Hombro ABAJO, no elevado. 40 seg. El deltoides posterior trabaja como decelerador en la fase excéntrica del press militar. En elevaciones laterales también estabiliza la cabeza humeral. Su acortamiento altera la cinemática escapular.'},
+      {name:'Wall slide — Control escapular y serrato anterior',dur:'45 seg — 10 repeticiones',
+       pos:'De pie contra la pared. Codos y muñecas pegados a la pared. Brazos en W (ángulo de 90° en el codo).',
+       exec:'Desliza los brazos hacia arriba describiendo una Y, manteniendo el contacto completo de codo y muñeca con la pared. Baja lentamente. 10 reps. Kolber et al. 2017: el wall slide es el ejercicio que más activa el serrato anterior a baja carga. El serrato controla la rotación escapular ascendente — sin esta rotación, el acromion choca con el supraespinoso en el overhead.'},
+      {name:'Overhead lat stretch en pared',dur:'45 seg/lado',
+       pos:'De pie frente a la pared. Apoya el antebrazo derecho verticalmente en la pared a la altura de la cabeza.',
+       exec:'Inclínate hacia la pared girando el torso suavemente hasta notar el estiramiento en el lateral del torso. 45 seg. El lat (dorsal ancho) es el principal LIMITADOR del press militar — si no tiene movilidad en flexión completa, el húmero no puede llegar a la posición vertical sin compensar con la lumbar.'},
+      {name:'Neck CARs — Movilidad cervical controlada',dur:'60 seg — 3 ciclos/sentido',
+       pos:'Sentado o de pie. Columna neutra. Hombros abajo y atrás.',
+       exec:'Rotación lenta de cuello describiendo el mayor círculo posible. Cada movimiento debe ser completamente controlado, sin tirones ni zonas ciegas. 3 círculos en cada sentido. Especialmente importante: la zona de transición entre flexión lateral y extensión es donde se acumula la tensión del trapecio superior e infraespinoso cargados en encogimientos y elevaciones.'},
+      {name:'Child\'s pose lateral — Cuadrado lumbar y oblicuos',dur:'45 seg/lado',
+       pos:'Desde child\'s pose, desplaza AMBOS brazos hacia la derecha hasta que notes el estiramiento en el flanco izquierdo.',
+       exec:'La cadera izquierda ancla al suelo — si se eleva, has llegado al límite. 45 seg por lado. El cuadrado lumbar trabaja isométricamente durante el press militar para fijar la pelvis y en los crunchs para estabilizar el torso. Es el músculo lumbar que más sufre en el día de hombro.'},
+      {name:'90/90 hip con rotación activa',dur:'60 seg — 8 reps',
+       pos:'Sentado en el suelo. Piernas en 90/90: una delante, otra lateral.',
+       exec:'Rota la cadera lentamente y cambia de posición sin apoyar las manos. Si no puedes, apóyalas pero reduce el ángulo. 8 reps. La movilidad coxofemoral es el factor que más influye en la estabilidad lumbar durante el core — si la cadera no rota bien, la lumbar compensa.'},
+      {name:'Respiración diafragmática 4-2-6',dur:'2 minutos',
        pos:'Tumbado boca arriba.',
-       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 8-10 ciclos. Activa el parasimpático y baja el cortisol.'},
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 10 ciclos. El sistema nervioso simpático permanece activado entre 15-30 min tras el entrenamiento. La exhalación prolongada (>5 seg) es el único mecanismo voluntario para acelerar el retorno al parasimpático.'},
     ],
     mobGeneral:true,running:true,kcal:380},
   viernes:{name:"Full body funcional + Core",emoji:"🏋️",
@@ -833,63 +842,47 @@ const GYM_BASE={
        exec:"Pasos laterales con la banda, 10 a cada lado, manteniendo tensión constante."},
     ]},
     exercises:[
-      {name:"Burpees",muscle:"Full body explosivo",
-       grip:"De pie → agáchate → salta a plancha → flexión → salta al pecho → salta con brazos arriba",
-       sets:4,reps:"10",weight:0,rir:"1-2",rest:"75seg",gif:""},
-      {name:"Sentadillas con salto",muscle:"Potencia tren inferior + core",
-       grip:"Pies a la anchura de hombros. Sentadilla hasta 90° y salta explosivo. Aterriza suave flexionando las rodillas",
-       sets:3,reps:"12",weight:0,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Flexiones explosivas",muscle:"Pecho + tríceps + core — potencia tren superior",
-       grip:"Plancha alta. Flexión completa y empuja con fuerza hasta despegar las manos del suelo",
-       sets:3,reps:"8",weight:0,rir:"1-2",rest:"60seg",gif:""},
-      {name:"Snatch con mancuerna",muscle:"Full body explosivo — cadena posterior + core + hombro",
-       grip:"Mancuerna entre los pies. Tirón explosivo desde el suelo hasta overhead en un solo movimiento",
-       sets:3,reps:"8/lado",weight:12,rir:"1-2",rest:"75seg",gif:""},
-      {name:"Dead bug",muscle:"Core anti-extensión + coordinación",
-       grip:"Tumbado boca arriba. Brazos al techo, rodillas a 90°. Extiende brazo y pierna opuestos sin despegar la lumbar",
-       sets:3,reps:"10/lado",weight:0,rir:"0-1",rest:"45seg",gif:""},
-      {name:"Russian twists con mancuerna",muscle:"Core rotacional — oblicuos",
-       grip:"Sentado a 45°, rodillas flexionadas. Mancuerna con ambas manos. Rota de lado a lado tocando el suelo",
-       sets:3,reps:"16 toques",weight:8,rir:"0-1",rest:"45seg",gif:""},
-      {name:"Hollow body hold",muscle:"Core anti-extensión profundo",
-       grip:"Tumbado boca arriba. Brazos extendidos sobre la cabeza. Levanta hombros y piernas del suelo manteniendo la zona lumbar pegada al suelo",
-       sets:3,reps:"30 seg",weight:0,rir:"1-2",rest:"45seg",gif:""},
-      {name:"Mountain climbers",muscle:"Core + full body cardiovascular",
-       grip:"Plancha alta. Rodillas al pecho alternando rápido durante 30 segundos",
-       sets:3,reps:"30 seg",weight:0,rir:"0-1",rest:"30seg",gif:""},
+      {name:"Burpees",muscle:"Full body explosivo. Cardio + fuerza en un solo movimiento",grip:"De pie a plancha en 1 seg. Flexión. Salto al pecho. Salta con brazos arriba. Ritmo constante",sets:3,reps:"10",weight:0,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Push press con mancuernas",muscle:"Piernas + hombros + core. Impulso de piernas para lanzar overhead",grip:"Mancuernas al hombro. Ligera flexión de rodillas para impulsar. Sube explosivo. Baja controlado",sets:3,reps:"12",weight:12,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Sentadillas con salto",muscle:"Cuádriceps + glúteo explosivo. Potencia para el running y el deporte",grip:"Pies a la anchura de caderas. Sentadilla a 90 grados y salta explosivo. Aterriza suave flexionando",sets:3,reps:"12",weight:0,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Snatch con mancuerna",muscle:"Full body explosivo. Cadena posterior + core + hombro en un movimiento",grip:"Mancuerna entre los pies. Tirón explosivo desde el suelo hasta overhead en un solo movimiento",sets:3,reps:"8/lado",weight:12,rir:"1-0",rest:"60seg",gif:""},
+      {name:"Plancha frontal",muscle:"Core anti-extensión. Base de la postura y estabilidad lumbar",grip:"Antebrazos en el suelo. Cuerpo en línea recta. Contrae abdomen glúteos y cuádriceps a la vez",sets:3,reps:"45seg",weight:0,rir:"-",rest:"30seg",gif:""},
+      {name:"Russian twists con mancuerna",muscle:"Oblicuos + core rotacional. Define la cintura y la ingle",grip:"Sentado a 45 grados. Rodillas flexionadas. Mancuerna con ambas manos. Rota de lado a lado",sets:3,reps:"20 toques",weight:6,rir:"0",rest:"30seg",gif:""},
+      {name:"Hollow body hold",muscle:"Core anti-extensión profundo. El ejercicio más efectivo para abdomen plano",grip:"Tumbado boca arriba. Brazos sobre la cabeza. Levanta hombros y piernas. Lumbar pegada al suelo",sets:3,reps:"30seg",weight:0,rir:"-",rest:"30seg",gif:""},
+      {name:"Mountain climbers",muscle:"Core + full body cardiovascular. Finalizador de sesión",grip:"Plancha alta. Rodillas al pecho alternando rápido. Caderas bajas. 30 segundos sin parar",sets:3,reps:"30seg",weight:0,rir:"0",rest:"30seg",gif:""},
     ],
     cardio:"",
     mobility:[
-      {name:'Foam roller — Columna dorsal completa',dur:'90 seg',
-       pos:'Foam roller horizontal. De omóplatos hasta dorsal media.',
-       exec:'Manos en la nuca. Muy lento. Para 10 seg donde notes tensión. Los burpees, flexiones explosivas y snatch cargan toda la cadena posterior. Esta es la prioridad.'},
-      {name:'Extensión de muñeca y antebrazo',dur:'45 seg/lado',
-       pos:'De rodillas. Apoya la palma en el suelo con los dedos apuntando hacia atrás. Inclínate suavemente hacia adelante.',
-       exec:'30 seg. Luego cierra el puño y haz círculos de muñeca 10 en cada sentido. Las muñecas sufren compresión en ab wheel, flexiones explosivas y mountain climbers.'},
-      {name:"Child's pose → Upward dog flow",dur:'60 seg (6 ciclos)',
-       pos:'A cuatro patas.',
-       exec:"Child's pose: siéntate hacia talones con brazos extendidos. Upward dog: avanza y extiende la columna elevando el pecho. 6 ciclos. Los burpees y mountain climbers contraen repetidamente el hip flexor."},
-      {name:'Couch stretch — Psoas y cuádriceps',dur:'75 seg/lado',
-       pos:'Rodilla trasera contra la pared. Pie delantero en el suelo a 90°.',
-       exec:'El psoas es el músculo más cargado en sentadillas con salto, burpees y mountain climbers. 75 seg por lado. Contrae el glúteo trasero para neutralizar la pelvis.'},
-      {name:'Doorway pectoral stretch — 3 ángulos',dur:'30 seg x3',
-       pos:'Marco de puerta. Brazo a 60°, 90° y 120°.',
-       exec:'Las flexiones explosivas contraen el pectoral en todas sus fibras. 30 seg por ángulo. Cubre el pectoral superior, medio e inferior.'},
-      {name:'Shoulder CARs — Rotación articular controlada',dur:'45 seg/lado',
-       pos:'De pie. Fija la escápula con la otra mano.',
-       exec:'Rota el húmero describiendo el mayor círculo posible de forma lenta. 3 rotaciones por lado. El snatch y los burpees cargan la articulación del hombro en rangos extremos.'},
-      {name:'Thoracic rotation en cuadrupedia',dur:'45 seg/lado',
-       pos:'A cuatro patas. Una mano en la nuca.',
-       exec:'Rota el codo hacia el techo. Aguanta 2 seg en el punto máximo. 8 reps por lado. La movilidad torácica protege el hombro en el overhead del snatch.'},
-      {name:'Ankle CARs — Movilidad de tobillo',dur:'45 seg/lado',
-       pos:'De pie, apoyado en algo. Eleva el pie del suelo.',
-       exec:'Círculos lentos y completos del tobillo. 5 en cada dirección por lado. El tobillo absorbe el impacto en sentadillas con salto y burpees — su movilidad previene lesiones de rodilla.'},
-      {name:'Supine twist — Liberación lumbar',dur:'45 seg/lado',
-       pos:'Tumbado. Rodilla al pecho y crúzala al lado opuesto. Brazos en T.',
-       exec:'El hollow body y el dead bug trabajan la musculatura profunda lumbar. 45 seg por lado. Descomprime las carillas articulares lumbares.'},
-      {name:'Respiración diafragmática de cierre',dur:'2 minutos',
+      {name:'Foam roller — Barrido global de la cadena posterior',dur:'90 seg en total',
+       pos:'Pasa el rodillo por: cuádriceps (30 seg), isquios (30 seg) y dorsal (30 seg). 10 seg de transición entre zonas.',
+       exec:'El viernes de full body explosivo activa la cadena posterior completa. Este barrido rápido no es tan profundo como los días específicos, pero activa la circulación local antes del estiramiento. No te pares más de 10 seg en ningún punto — el objetivo es vascular, no terapéutico.'},
+      {name:'World\'s greatest stretch — Estiramiento global fundamental',dur:'45 seg/lado — 4 ciclos',
+       pos:'Zancada larga: pie derecho al frente, mano derecha al suelo al lado del pie. Rodilla trasera elevada.',
+       exec:'Ciclo por lado: (1) Abre el brazo derecho hacia el techo rotando el torso completamente. Aguanta 2 seg. (2) Lleva la mano derecha al suelo. (3) Estira la pierna delantera empujando las caderas hacia atrás. (4) Vuelve a la posición de zancada. 4 ciclos. Cubre psoas, dorsal, isquio, pectoral y columna torácica en un solo movimiento. Ningún otro estiramiento tiene esta transferencia funcional al movimiento explosivo.'},
+      {name:'Movilidad de tobillo en cuclilla asistida',dur:'30 seg/lado — 10 reps activas',
+       pos:'De cuclillas frente a la pared. Pie a 5 cm de la pared. Rodilla toca o casi toca la pared.',
+       exec:'Empuja la rodilla hacia la pared lentamente — el talón NUNCA se levanta. Si el talón se levanta, aleja el pie 1 cm. Luego vuelve. 10 reps, 30 seg por lado. Esta es la restricción más frecuente en sentadilla con salto y burpees — si el tobillo no dorsiflexiona, la rodilla se valgiza al aterrizar (riesgo de LCA). Nakamura 2014: la movilidad de tobillo mejora en 2-3 semanas con este protocolo diario.'},
+      {name:'Hip flexor — Variante de zancada baja dinámica',dur:'45 seg/lado',
+       pos:'Rodilla trasera en el suelo (con esterilla). Pie delantero a 90°. Manos en la rodilla delantera.',
+       exec:'Balancéate suavemente hacia adelante y atrás en rango pequeño (3-4 cm). No es un estiramiento estático — la dinámica activa el reflejo de inhibición recíproca, relajando el psoas más que el estático. 45 seg. El psoas trabaja excéntricamente en cada fase de vuelo del burpee y cada paso de mountain climber.'},
+      {name:'Extensión y círculos de muñeca',dur:'45 seg — secuencia completa',
+       pos:'Arrodillado. Primera posición: palmas en el suelo con dedos apuntando hacia ti. Segunda: puños cerrados, círculos activos.',
+       exec:'(1) 20 seg cargando progresivamente el estiramiento de palma al suelo. (2) Cierra los puños y describe 10 círculos lentos en cada sentido. (3) 15 seg estiramiento del dorso de la mano (mano al suelo, dorso en contacto). Las muñecas absorben el impacto en flexiones explosivas y soportan el peso en plancha de mountain climbers. La epicondilitis lateral está directamente correlacionada con acortamiento de extensores de muñeca.'},
+      {name:'Shoulder CARs — Rotación articular controlada',dur:'40 seg/lado',
+       pos:'De pie. La mano contraria se apoya firmemente en el hombro para fijar la escápula durante el movimiento.',
+       exec:'Rota el húmero describiendo el mayor arco articular posible sin compensar con el tronco. Muy lento y controlado — 1 círculo en 10 seg. 3 círculos por lado. Los CARs (Controlled Articular Rotations) son el método con mayor evidencia para el mantenimiento de la lubricación sinovial articular. El snatch coloca el hombro en posición overhead bajo carga — la salud articular es crítica.'},
+      {name:'Rotación torácica en cuadrupedia',dur:'45 seg/lado — 8 reps',
+       pos:'A cuatro patas. Una mano en la nuca. Codo apuntando al suelo.',
+       exec:'Rota el codo hacia el techo siguiendo con los ojos — el límite es donde el ojo deje de seguir al codo. Aguanta 2 seg en el punto máximo antes de bajar. 8 reps. La rotación torácica protege el hombro en el overhead del snatch: si no rota la torácica, el húmero compensa con rotación interna excesiva.'},
+      {name:'Supine twist — Descompresión lumbar post-esfuerzo',dur:'45 seg/lado',
+       pos:'Tumbado boca arriba. Lleva la rodilla derecha al pecho y crúzala completamente hacia la izquierda. Brazos en T. La cabeza mira hacia la derecha.',
+       exec:'No fuerces la rodilla al suelo — si no llega, está bien. 45 seg. Dead bug y hollow body body generan tensión en los multífidos y cuadrado lumbar. Este estiramiento descomprime las carillas articulares lumbares de forma pasiva.'},
+      {name:'Deep squat hold con resistencia en talones',dur:'60 seg',
+       pos:'Cuclillas completas con pies a la anchura de las caderas. Si los talones se levantan, coloca algo bajo ellos (toalla doblada, disco de 1,25 kg).',
+       exec:'Codos dentro de las rodillas empujando hacia afuera. Torso erguido. 60 seg. Este ejercicio diagnostica y mejora simultáneamente la movilidad de tobillo, cadera y columna. El objetivo a largo plazo es hacerlo sin nada bajo los talones. Es el mejor predictor de salud articular global en un solo movimiento.'},
+      {name:'Respiración diafragmática 4-2-6',dur:'2 minutos',
        pos:'Tumbado boca arriba.',
-       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 8-10 ciclos. El viernes cierra la semana de entreno — este protocolo señala al SNC que el trabajo ha terminado.'},
+       exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 10 ciclos. El viernes cierra la semana de entrenamiento. Estos 2 minutos de respiración controlada reducen el tiempo de recuperación de la variabilidad de la frecuencia cardíaca (HRV) — el mejor marcador de recuperación — en un 40% respecto a no hacer nada.'},
     ],
     mobGeneral:true,running:false,kcal:450},
   sabado:{name:"Running largo (sin gym)",emoji:"🏃",
@@ -957,6 +950,38 @@ const GYM_BASE={
     mobGeneral:true}
 };
 
+const GYM_WEEKS=[
+  {num:1,dates:'13-19 jul',title:'Adaptación híbrida',
+   sets:3,repsComp:'12-15',repsIsol:'15-20',rest:'60seg',rir:'2-3',weightMod:1.0,
+   focus:'Acostumbra al cuerpo al ritmo híbrido. Menos descanso del habitual. No busques el fallo.',
+   tip:'Si terminas sin apenas esfuerzo, reduce el descanso a 45 seg.'},
+  {num:2,dates:'20-26 jul',title:'Subida de intensidad',
+   sets:4,repsComp:'10-12',repsIsol:'12-15',rest:'45seg',rir:'1-2',weightMod:1.05,
+   focus:'Sube el peso un 5% respecto a la semana pasada. Empieza a notar la sesión exigente.',
+   tip:'La última serie de cada ejercicio debe costarte. Si no cuesta, sube el peso.'},
+  {num:3,dates:'27 jul-2 ago',title:'Intensidad máxima',
+   sets:4,repsComp:'10-12',repsIsol:'12-15',rest:'30-45seg',rir:'0-1',weightMod:1.10,
+   focus:'Última serie de cada ejercicio al fallo o cerca. Sudar, sentir el trabajo real.',
+   tip:'Semana clave. Aquí se construye el cuerpo. No hagas trampa con el peso.'},
+  {num:4,dates:'3-9 ago',title:'Descarga activa',
+   sets:3,repsComp:'15-20',repsIsol:'20',rest:'60seg',rir:'3',weightMod:0.90,
+   focus:'Baja el peso un 10%. Deja recuperar al cuerpo. Las adaptaciones ocurren en el descanso.',
+   tip:'Aunque se sienta fácil, es necesaria. Preparas el cuerpo para el sprint final.'},
+  {num:5,dates:'10-15 ago',title:'Sprint final',
+   sets:4,repsComp:'10-12',repsIsol:'12-15',rest:'30-45seg',rir:'0',weightMod:1.12,
+   focus:'Máxima intensidad. Últimas series al fallo absoluto. Todo lo que tienes.',
+   tip:'El 15 de agosto es el día de evaluación. Llega al máximo.'},
+];
+
+function getGymWeek(){
+  var start=new Date(2026,6,13); // July 13
+  var now=new Date();
+  var diff=Math.floor((now-start)/(7*86400000));
+  if(diff<0) return GYM_WEEKS[0];
+  if(diff>=GYM_WEEKS.length) return GYM_WEEKS[GYM_WEEKS.length-1];
+  return GYM_WEEKS[diff];
+}
+
 const MOB_GENERAL=[
   {name:'Cat-cow — Activación columna',dur:'60 seg (10 reps)',
    pos:'A cuatro patas. Muñecas bajo hombros, rodillas bajo caderas.',
@@ -988,6 +1013,16 @@ const MOB_GENERAL=[
   {name:'Respiración 4-6-8 diaria de cierre',dur:'2 minutos',
    pos:'Tumbado boca arriba.',
    exec:'Inhala 4 seg, aguanta 2 seg, exhala 6 seg. 8 ciclos. Realizado a las 21h tiene el mayor impacto en la calidad del sueño. Reduce el cortisol nocturno y mejora la recuperación muscular durante el sueño.'},
+  // ── PROTOCOLO ISQUIOS ACORTADOS (Hartig 1999 + Sharman 2006) ──
+  {name:'PNF isquiotibiales — contrae y relaja',dur:'3 series x 36 seg / pierna',
+   pos:'Tumbado boca arriba. Pasa una toalla por el pie derecho. Pierna izquierda extendida en el suelo. Eleva la pierna derecha hasta notar el tirón.',
+   exec:'CONTRAE: empuja el pie contra la toalla durante 6 seg (isométrico). RELAJA: suelta y lleva la pierna 2-3 cm más allá durante 30 seg. Repite 3 veces por pierna. Sharman 2006: mejora el ROM 2x más rápido que el estiramiento estático solo. Objetivo: elevar la pierna a 90 grados con rodilla completamente recta.'},
+  {name:'Isquios supino estático — sit and reach progresivo',dur:'60 seg / pierna',
+   pos:'Tumbado. Toalla en el pie. Pierna completamente recta. Eleva hasta el punto máximo sin doblar la rodilla.',
+   exec:'Mantén 60 seg sin moverse. Después baja y repite en la otra pierna. Este estiramiento elimina la compensación lumbar que aparece al hacerlo de pie. Hartig 1999: con este protocolo diario la flexibilidad mejora significativamente en 4-6 semanas.'},
+  {name:'L contra la pared — estiramiento pasivo profundo',dur:'90 seg / pierna',
+   pos:'Tumbado boca arriba junto a la pared. Siéntate de lado y gira colocando ambas piernas verticalmente apoyadas en la pared. Luego baja una pierna y mantén la otra arriba en L.',
+   exec:'El peso de la pierna hace el trabajo por gravedad — no fuerces. 90 seg por pierna. Hacer este justo antes de dormir da los mejores resultados ya que el sistema nervioso está más relajado y permite mayor rango de movimiento.'},
 ];
 
 const RUN_WEEKS=[
@@ -1029,12 +1064,12 @@ const RUN_WEEKS=[
       exec:"Empuja la cadera hacia delante. Nota el estiramiento en la ingle de la pierna trasera. 30 segundos cada lado."},
    ],
    tip:"El objetivo es que el cuerpo se acostumbre a salir. Si terminas sin estar agotado, lo has hecho bien.",
-   startDate:"2026-06-29"},
+   startDate:"2026-07-06"},
   {num:2,title:"45s trote / 90s caminata",sub:"Las 3 sesiones son idénticas",
    work:"8 × [ 45 seg trote + 90 seg caminata ]",
    workDetail:"15 segundos más de trote. Mismo ritmo conversacional.\n\n🏃 TROTE (45 seg): Igual de suave que la semana pasada. Si la semana 1 te costó, este ritmo te parecerá duro — no pasa nada, es normal.\n\n🚶 CAMINATA DE RECUPERACIÓN (90 seg): Paso LENTO. Aprovecha cada segundo para recuperar. No intentes recortar este tiempo.",
    warmup:null,cooldown:null,
-   tip:"Si la semana 1 fue dura, repítela. No hay prisa.",startDate:"2026-06-29"},
+   tip:"Si la semana 1 fue dura, repítela. No hay prisa.",startDate:"2026-07-06"},
   {num:3,title:"1 min trote / 1 min caminata",sub:"Ratio 1:1 — ya corres el 50%",
    work:"10 × [ 1 min trote + 1 min caminata ]",
    workDetail:"Los intervalos de 1 minuto ya son manejables.\n\n🏃 TROTE (1 min): Ritmo conversacional. Test: di una frase de 5 palabras mientras corres. Si no puedes, baja el ritmo.\n\n🚶 CAMINATA DE RECUPERACIÓN (1 min): Paso LENTO. Con solo 1 minuto entre trotadas necesitas bajar las pulsaciones rápido — no pasees, camina con intención pero LENTO.",
@@ -1063,7 +1098,7 @@ const RUN_WEEKS=[
 ];
 
 ;(function _seedData(){
-  var FLAG='miplan_seeded_v5';
+  var FLAG='miplan_seeded_v6';
   if(localStorage.getItem(FLAG)) return;
   try{
     // ── Seed gym history ──
@@ -1123,7 +1158,7 @@ const RUN_WEEKS=[
       {date:'2026-06-25',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,20,12.5,7.5)},
       {date:'2026-06-26',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(15,15,7.5,10,15,10)},
       // ── Semana nueva 29/06 — nuevo plan completo ──
-      {date:'2026-06-29',day:'lunes',name:'Espalda + Bíceps',exercises:[
+      {date:'2026-07-06',day:'lunes',name:'Espalda + Bíceps',exercises:[
         {name:'Jalón al pecho',blocks:[{s:4,r:'12',w:32.5}]},
         {name:'Remo con barra',blocks:[{s:4,r:'10',w:70}]},
         {name:'Remo en máquina',blocks:[{s:3,r:'12',w:35}]},
@@ -1180,10 +1215,15 @@ const RUN_WEEKS=[
     var wDates=wArr.map(function(w){return w.date;});
     [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},
      {date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},
-     {date:'2026-06-22',val:89.4},{date:'2026-06-29',val:90.6}
+     {date:'2026-06-22',val:89.4},{date:'2026-07-06',val:90.6}
     ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
     wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
     localStorage.setItem('weights',JSON.stringify(wArr));
+
+    // Set run start date to July 6 (week 2 starts July 13)
+    if(!localStorage.getItem('run_start_date')){
+      localStorage.setItem('run_start_date','2026-07-06');
+    }
 
     localStorage.setItem(FLAG,'1');
   }catch(e){console.warn('Seed error:',e);}
@@ -1236,8 +1276,8 @@ const ANALYTICS={
 // WATER SCHEDULES
 function getWaterSchedule(dow,temp15){
   var isWeekend=(dow===0||dow===6);
-  var isGymRun=(dow===2||dow===4||dow===6);
-  var isGym=!isWeekend;
+  var isGymRun=(dow===2||dow===4||dow===6);  // martes, jueves, sabado = gym+run
+  var isGym=!isWeekend;  // lunes-viernes = gym 11:00-12:30
   var extra=temp15>=35?600:temp15>=30?400:temp15>=25?200:0;
   
   if(isWeekend){
@@ -1249,14 +1289,14 @@ function getWaterSchedule(dow,temp15){
   } else if(isGymRun){
     return {
       total:3500+extra,
-      drops:[{ml:600,label:"Al levantarte",hour:8},{ml:250,label:"Con batido pre-gym",hour:9},{ml:600,label:"Durante el gym",hour:10},{ml:300,label:"Post-gym",hour:12},{ml:250,label:"Con la comida",hour:14},{ml:400,label:"Antes 17:00",hour:16},{ml:200,label:"Con merienda",hour:17},{ml:300,label:"Antes del running",hour:19},{ml:600,label:"Post-running",hour:21},{ml:250,label:"Con la cena",hour:22},{ml:200,label:"Post-cena",hour:23}],
-      schedule:"09:00 💧600ml · 10:00 💧250ml con batido · Gym 💧600ml en sorbos · Post-gym 💧300ml · Comida 💧250ml · Antes 17:00 💧400ml · Merienda 💧200ml · Antes 20:00 💧300ml · Pre-running 💧300ml · Post-running 💧600ml · Cena 💧250ml · Post-cena 💧200ml"
+      drops:[{ml:600,label:"Al levantarte",hour:8},{ml:250,label:"Batido pre-gym (10:30)",hour:10},{ml:600,label:"Durante el gym (11-12:30)",hour:11},{ml:300,label:"Post-gym",hour:13},{ml:250,label:"Con la comida",hour:14},{ml:400,label:"Antes 17:00",hour:16},{ml:200,label:"Con merienda",hour:17},{ml:300,label:"Pre-running (19:30)",hour:19},{ml:600,label:"Post-running",hour:21},{ml:250,label:"Con la cena",hour:22},{ml:200,label:"Post-cena",hour:23}],
+      schedule:"08:00 💧600ml · 10:30 💧250ml batido pre-gym · Gym 11-12:30 💧600ml · Post-gym 💧300ml · Comida 💧250ml · Antes 17:00 💧400ml · Merienda 💧200ml · 19:30 💧300ml pre-running · Post-running 💧600ml · Cena 💧250ml · Post-cena 💧200ml"
     };
   } else {
     return {
       total:3000+extra,
-      drops:[{ml:600,label:"Al levantarte",hour:8},{ml:250,label:"Con batido pre-gym",hour:9},{ml:600,label:"Durante el gym",hour:10},{ml:300,label:"Post-gym",hour:12},{ml:250,label:"Con la comida",hour:14},{ml:400,label:"Antes 17:00",hour:16},{ml:200,label:"Con merienda",hour:17},{ml:300,label:"Antes 20:00",hour:19},{ml:250,label:"Con la cena",hour:21},{ml:200,label:"Post-cena",hour:22}],
-      schedule:"09:00 💧600ml · 10:00 💧250ml con batido · Gym 💧600ml · Post-gym 💧300ml · Comida 💧250ml · Antes 17:00 💧400ml · Merienda 💧200ml · Antes 20:00 💧300ml · Cena 💧250ml · Post-cena 💧200ml"
+      drops:[{ml:600,label:"Al levantarte",hour:8},{ml:250,label:"Batido pre-gym (10:30)",hour:10},{ml:600,label:"Durante el gym (11-12:30)",hour:11},{ml:300,label:"Post-gym",hour:13},{ml:250,label:"Con la comida",hour:14},{ml:400,label:"Antes 17:00",hour:16},{ml:200,label:"Con merienda",hour:17},{ml:300,label:"Antes 20:00",hour:19},{ml:250,label:"Con la cena",hour:21},{ml:200,label:"Post-cena",hour:22}],
+      schedule:"08:00 💧600ml · 10:30 💧250ml batido pre-gym · Gym 11-12:30 💧600ml · Post-gym 💧300ml · Comida 💧250ml · Antes 17:00 💧400ml · Merienda 💧200ml · 20:00 💧300ml · Cena 💧250ml · Post-cena 💧200ml"
     };
   }
 }
@@ -1277,7 +1317,7 @@ function sd(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function getAutoMeal(){
   var h=new Date().getHours();
-  if(h>=9&&h<12) return 'pre-gym';
+  if(h>=10&&h<11) return 'pre-gym';
   if(h>=12&&h<14) return 'desayuno';
   if(h>=14&&h<18) return 'comida';
   if(h>=18&&h<21) return 'merienda';
@@ -1452,6 +1492,13 @@ function resetGymDate(){
   if(sel) sel.value='';
   renderGymSession();
 }
+function applyRunPlanStart(){
+  var val=document.getElementById('run-plan-start').value;
+  if(!val) return;
+  sd('run_start_date', val);
+  renderRunToday();
+}
+
 function applyRunDate(){
   var val=document.getElementById('run-log-date').value;
   if(!val) return;
@@ -1494,6 +1541,199 @@ function addHistSeries(exIdx){
 function removeHistSeries(exIdx, si){
   var el = document.getElementById('hist-series-'+exIdx+'-'+si);
   if(el) el.remove();
+}
+
+function getGTGTarget(){
+  // Week-based target from plan start July 6
+  var start=new Date(2026,6,6);
+  var now=new Date();
+  var week=Math.floor((now-start)/(7*86400000))+1;
+  if(week<=1) return 2;
+  if(week==2) return 3;
+  if(week==3) return 4;
+  if(week==4) return 3;
+  return 5;
+}
+function renderGTG(){
+  var done=ld('gtg_'+today(),[]);
+  var target=getGTGTarget();
+  var badge=document.getElementById('gtg-badge');
+  var tEl=document.getElementById('gtg-target');
+  var checks=document.getElementById('gtg-checks');
+  if(badge) badge.textContent=done.length+'/6';
+  if(tEl) tEl.textContent=target+' flexiones';
+  if(checks){
+    var h='';
+    for(var i=0;i<6;i++){
+      var isDone=i<done.length;
+      h+='<div style="width:32px;height:32px;border-radius:8px;border:2px solid '+(isDone?'var(--g)':'var(--b)')+';background:'+(isDone?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;font-size:14px">'+(isDone?'✅':'')+'</div>';
+    }
+    checks.innerHTML=h;
+  }
+}
+function logGTG(){
+  var done=ld('gtg_'+today(),[]);
+  if(done.length>=6){alert('¡Ya has completado las 6 series de hoy!');return;}
+  done.push(new Date().getHours()+':'+String(new Date().getMinutes()).padStart(2,'0'));
+  sd('gtg_'+today(),done);
+  renderGTG();
+  if(done.length===6) setTimeout(function(){alert('🎉 ¡6/6 completadas hoy! Mañana seguimos.');},200);
+}
+
+var MEAL_PLAN={"semana1": {"lunes": {"comida": "Pollo al ajillo", "cena": "Revuelto de champiñones y espárragos"}, "martes": {"comida": "Dorada a la espalda", "cena": "Ensalada con anchoas y huevo cocido"}, "miercoles": {"comida": "Carbonara casera", "cena": "Pechuga de pavo plancha con judías verdes"}, "jueves": {"comida": "Albóndigas en salsa de tomate", "cena": "Mejillones en conserva con ensalada"}, "viernes": {"comida": "Tallarines con salmón", "cena": "Libre"}, "sabado": {"comida": "Hamburguesa casera de ternera", "cena": "Tortilla francesa con ensalada"}, "domingo": {"comida": "Paella valenciana", "cena": "Caldo gallego con huevo poché"}}, "semana2": {"lunes": {"comida": "Macarrones con carne picada", "cena": "Poke bowl de atún"}, "martes": {"comida": "Merluza en salsa verde", "cena": "Huevos revueltos con espárragos"}, "miercoles": {"comida": "Pasta boloñesa casera", "cena": "Pollo plancha con ensalada mixta"}, "jueves": {"comida": "Pollo al curry casero", "cena": "Salpicón de marisco"}, "viernes": {"comida": "Espaguetis con almejas", "cena": "Libre"}, "sabado": {"comida": "Pollo asado al horno", "cena": "Ensalada mixta con agujas"}, "domingo": {"comida": "Arroz meloso de gambas", "cena": "Caldo gallego con huevo poché"}}};
+
+function getCurrentMenuWeek(){
+  // Alternates between semana1 and semana2 based on week number from July 6
+  var start=new Date(2026,6,6);
+  var week=Math.floor((new Date()-start)/(7*86400000));
+  return week%2===0?'semana1':'semana2';
+}
+
+function shopTab(t){
+  document.getElementById('shop-menu-panel').style.display=t==='menu'?'block':'none';
+  document.getElementById('shop-lista-panel').style.display=t==='lista'?'block':'none';
+  document.querySelectorAll('#pg-shop .tr .tb').forEach(function(b,i){
+    b.classList.toggle('active',i===(t==='menu'?0:1));
+  });
+  if(t==='menu') renderShopMenu();
+}
+
+function renderShopMenu(){
+  var el=document.getElementById('shop-menu-content');
+  if(!el) return;
+  var week=ld('shop_week',getCurrentMenuWeek());
+  var savedMenu=ld('shop_menu_'+week,null);
+  var menu=savedMenu||MEAL_PLAN[week];
+  var days=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+  var dayNames={'lunes':'Lunes','martes':'Martes','miercoles':'Miércoles','jueves':'Jueves','viernes':'Viernes','sabado':'Sábado','domingo':'Domingo'};
+  var dayEmojis={'lunes':'💪','martes':'🏋️+🏃','miercoles':'🦵','jueves':'🏋️+🏃','viernes':'⚡','sabado':'🏃','domingo':'😴'};
+
+  // Week selector
+  var h='<div style="display:flex;gap:8px;margin-bottom:12px">';
+  var cls1=week==='semana1'?'btg':'bth';
+  var cls2=week==='semana2'?'btg':'bth';
+  h+='<button class="btn '+cls1+' btn-sm" onclick="setShopWeek(\'semana1\')">Semana 1</button>';
+  h+='<button class="btn '+cls2+' btn-sm" onclick="setShopWeek(\'semana2\')">Semana 2</button>';
+  h+='</div>';
+
+  days.forEach(function(day){
+    var dayMenu=menu[day]||{comida:'',cena:''};
+    h+='<div class="card" style="margin:0 0 8px">';
+    h+='<div class="ch"><span class="ci">'+dayEmojis[day]+'</span><span class="ct">'+dayNames[day]+'</span></div>';
+    h+='<div class="cb">';
+    // Comida selector
+    h+='<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--m);margin-bottom:3px">🍝 Comida</div>';
+    h+='<select class="if" style="font-size:12px" onchange="updateMenuDay(\''+week+'\',\''+day+'\',\'comida\',this.value)">';
+    var allRecipes=RECIPES?Object.values(RECIPES).flat():[];
+    allRecipes.forEach(function(r){
+      h+='<option value="'+r+'"'+(dayMenu.comida===r?' selected':'')+'>'+r+'</option>';
+    });
+    h+='</select></div>';
+    // Cena selector
+    h+='<div><div style="font-size:11px;color:var(--m);margin-bottom:3px">🌙 Cena</div>';
+    h+='<select class="if" style="font-size:12px" onchange="updateMenuDay(\''+week+'\',\''+day+'\',\'cena\',this.value)">';
+    h+='<option value="Libre"'+(dayMenu.cena==='Libre'?' selected':'')+'>Libre</option>';
+    allRecipes.forEach(function(r){
+      h+='<option value="'+r+'"'+(dayMenu.cena===r?' selected':'')+'>'+r+'</option>';
+    });
+    h+='</select></div>';
+    h+='</div></div>';
+  });
+
+  el.innerHTML=h;
+}
+
+function setShopWeek(week){
+  sd('shop_week',week);
+  renderShopMenu();
+}
+
+function updateMenuDay(week,day,meal,value){
+  var menu=ld('shop_menu_'+week,JSON.parse(JSON.stringify(MEAL_PLAN[week]||{})));
+  if(!menu[day]) menu[day]={};
+  menu[day][meal]=value;
+  sd('shop_menu_'+week,menu);
+}
+
+function generateShoppingList(){
+  var week=ld('shop_week',getCurrentMenuWeek());
+  var menu=ld('shop_menu_'+week,MEAL_PLAN[week]);
+  var allIngredients={};
+
+  // Category mapping
+  var catMap={
+    '🥩 Carnes':['pollo','carne','ternera','cerdo','pavo','cordero','pato','conejo','lomo','filete','solomillo','pechuga','muslo','alita','costilla','albóndiga','hamburguesa','magro','secreto','chorizo'],
+    '🐟 Pescados y mariscos':['dorada','merluza','salmón','atún','almejas','mejillones','gambas','marisco','sepia','anchoa','bacalao','bonito','vieira','cigala','bogavante'],
+    '🥚 Lácteos y huevos':['huevo','queso','nata','mantequilla','yogur','leche','parmesano'],
+    '🥬 Verduras':['tomate','lechuga','espinaca','champiñón','espárrago','judía','brócoli','zanahoria','cebolla','ajo','pimiento','pepino','aguacate','calabacín'],
+    '🍝 Pasta y cereales':['pasta','macarrón','espagueti','tallarín','rigatoni','lasaña','arroz','quinoa','avena'],
+    '🫙 Conservas':['conserva','lata','mejillones en lata'],
+    '🧄 Despensa':['aceite','sal','pimienta','especias','caldo','vino','brandy','laurel','harina','pan','tomate frito'],
+    '🍋 Frutas':['limón','naranja','manzana','plátano','fresa','melocotón','fruta'],
+  };
+
+  Object.values(menu).forEach(function(dayMenu){
+    ['comida','cena'].forEach(function(meal){
+      var recipeName=dayMenu[meal];
+      if(!recipeName||recipeName==='Libre') return;
+      var details=RECIPE_DETAILS&&RECIPE_DETAILS[recipeName];
+      if(!details||!details.i) return;
+      details.i.forEach(function(ing){
+        var key=ing.n.toLowerCase().trim();
+        if(allIngredients[ing.n]){
+          allIngredients[ing.n].count++;
+        } else {
+          allIngredients[ing.n]={qty:ing.q,count:1,name:ing.n};
+        }
+      });
+    });
+  });
+
+  // Group by category
+  var grouped={};
+  Object.values(allIngredients).forEach(function(ing){
+    var cat='🛒 Otros';
+    var nameLower=ing.name.toLowerCase();
+    Object.keys(catMap).forEach(function(c){
+      if(catMap[c].some(function(k){return nameLower.includes(k);})) cat=c;
+    });
+    if(!grouped[cat]) grouped[cat]=[];
+    grouped[cat].push(ing);
+  });
+
+  var el=document.getElementById('shop-lista-content');
+  if(!el) return;
+  var h='<div style="font-size:12px;color:var(--m);margin-bottom:10px">Lista generada para la semana seleccionada</div>';
+  var cats=Object.keys(grouped).sort();
+  cats.forEach(function(cat){
+    h+='<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:6px">'+cat+'</div>';
+    grouped[cat].forEach(function(ing){
+      h+='<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--b);font-size:13px">';
+      h+='<span>'+ing.name+(ing.count>1?' ×'+ing.count:'')+'</span>';
+      h+='<span style="color:var(--m);font-size:12px">'+ing.qty+'</span></div>';
+    });
+    h+='</div>';
+  });
+  h+='<button class="btn bth" style="margin-top:8px;width:100%" onclick="shareShoppingList()">📤 Compartir lista</button>';
+  el.innerHTML=h;
+  shopTab('lista');
+}
+
+function shareShoppingList(){
+  var el=document.getElementById('shop-lista-content');
+  if(!el) return;
+  var text='Lista de la compra\n\n';
+  el.querySelectorAll('div[style*="margin-bottom:12px"]').forEach(function(section){
+    var title=section.querySelector('div[style*="font-weight:700"]');
+    if(title) text+=title.textContent+'\n';
+    section.querySelectorAll('div[style*="border-bottom"]').forEach(function(item){
+      var spans=item.querySelectorAll('span');
+      if(spans.length>=2) text+='• '+spans[0].textContent+' — '+spans[1].textContent+'\n';
+    });
+    text+='\n';
+  });
+  if(navigator.share){navigator.share({title:'Lista de la compra',text:text}).catch(function(){});}
+  else{navigator.clipboard&&navigator.clipboard.writeText(text);}
 }
 
 function exportData(){
@@ -1709,6 +1949,7 @@ function renderHome(){
   var rc=document.getElementById('h-run-card'); if(rc){ rc.style.display=(runStarted&&isRunDay&&wn>0)?'block':'none'; }
   // Food macros
   renderHomeMacros();
+  renderGTG();
 
   // Weather & water
   fetchWeather();
@@ -1757,7 +1998,7 @@ function getNextRunDay(now){
 function getRunStartDate(){
   var saved=ld('run_start_date',null);
   if(saved){var p=saved.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-  return new Date(2026,5,29);
+  return new Date(2026,6,6);
 }
 function resetRunPlan(){
   var btn=event.target;
@@ -1896,7 +2137,7 @@ function gymTab(t){
   document.querySelectorAll('#pg-gym .tr .tb').forEach(function(b,i){
     b.classList.toggle('active',['session','plan','history'][i]===t);
   });
-  if(t==='plan') planDay('lunes');
+  if(t==='plan'){planDay('lunes');renderGymProgression();}
   if(t==='history') renderGymHistory();
 }
 
@@ -1919,6 +2160,29 @@ function renderGymSession(){
   var gInp=document.getElementById('gym-log-date'); if(gInp) gInp.value=logDate;
   var gBtn=document.getElementById('gym-date-today-btn'); if(gBtn) gBtn.style.display=isYesterday?'block':'none';
   var gSel=document.getElementById('gym-routine-override'); if(gSel) gSel.value=override;
+  // Show weekly progression banner
+  var gWeek=getGymWeek();
+  var weekBanner=document.getElementById('gym-week-banner');
+  if(!weekBanner){
+    var banner=document.createElement('div');
+    banner.id='gym-week-banner';
+    banner.style.cssText='margin:4px 16px 0;padding:10px 12px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:12px';
+    var sc=document.getElementById('gym-session-content');
+    if(sc&&sc.parentNode) sc.parentNode.insertBefore(banner,sc);
+    weekBanner=banner;
+  }
+  if(weekBanner){
+    weekBanner.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+
+      '<span style="font-size:12px;font-weight:700;color:var(--p)">Semana '+gWeek.num+' · '+gWeek.title+'</span>'+
+      '<span style="font-size:10px;color:var(--m)">'+gWeek.dates+'</span></div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px">'+
+        '<span style="font-size:11px;background:var(--s2);padding:2px 7px;border-radius:6px">📊 '+gWeek.sets+' series</span>'+
+        '<span style="font-size:11px;background:var(--s2);padding:2px 7px;border-radius:6px">🔁 '+gWeek.repsComp+' reps</span>'+
+        '<span style="font-size:11px;background:var(--s2);padding:2px 7px;border-radius:6px">⏱ '+gWeek.rest+'</span>'+
+        '<span style="font-size:11px;background:var(--s2);padding:2px 7px;border-radius:6px">RIR '+gWeek.rir+'</span>'+
+      '</div>'+
+      '<div style="font-size:11px;color:var(--m)">'+gWeek.tip+'</div>';
+  }
   var toggleHtml='';
   if(isYesterday) toggleHtml+='<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDate)+'</span></div>';
   if(override) toggleHtml+='<div style="background:rgba(99,102,241,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--p)">🔄 Rutina: '+override.charAt(0).toUpperCase()+override.slice(1)+'</span></div>';
@@ -1995,8 +2259,10 @@ function renderGymDay(dk,container,isSession){
       var safeExName=ex.name.replace(/'/g,"\\'");
       html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadExerciseImage(this,\''+safeExName+'\',\''+dk+'\','+i+')">';
       html+='<span class="exbn">'+ex.name+'</span><span class="exbm">'+ex.muscle+'</span>';
-      if(isDoneEx) html+='<span style="font-size:14px;margin-right:4px">✅</span>';
-      else if(ex.weight>0) html+='<span style="font-size:12px;font-weight:700;color:var(--o);margin-right:4px">'+ex.weight+'kg</span>';
+      if(!isDoneEx) html+='<span style="font-size:12px;font-weight:700;color:var(--o);margin-right:4px">'+(ex.weight>0?ex.weight+'kg':ex.reps)+'</span>';
+      if(isSession){
+        html+='<div onclick="event.stopPropagation();quickSaveEx(\''+dk+'\','+i+')" style="width:26px;height:26px;border-radius:7px;border:2px solid '+(isDoneEx?'var(--g)':'var(--b)')+';background:'+(isDoneEx?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;margin-right:4px;flex-shrink:0">'+(isDoneEx?'✅':'')+'</div>';
+      }
       html+='<span class="exba">›</span></div>';
       html+='<div class="exbd">';
       // Exercise info block: image placeholder, grip, RIR, rest
@@ -2012,10 +2278,11 @@ function renderGymDay(dk,container,isSession){
       if(isSession){
         html+='<div id="exblocks-'+i+'">';
         blocks.forEach(function(bl,bi){
-          html+='<div class="log-row" style="margin-bottom:6px">';
+          html+='<div class="log-row" style="margin-bottom:6px;position:relative" id="exblock-'+i+'-'+bi+'">';
           html+='<div><div class="log-label">Series</div><input type="number" class="log-input" id="ls-'+i+'-'+bi+'" value="'+bl.s+'" placeholder="3" min="1" oninput="markExUnsaved(\''+dk+'\','+i+')"></div>';
           html+='<div><div class="log-label">Reps</div><input type="text" class="log-input" id="lr-'+i+'-'+bi+'" value="'+bl.r+'" placeholder="12" oninput="markExUnsaved(\''+dk+'\','+i+')"></div>';
           html+='<div><div class="log-label">Peso (kg)</div><input type="number" class="log-input" id="lw-'+i+'-'+bi+'" value="'+bl.w+'" placeholder="'+ex.weight+'" step="0.5" oninput="markExUnsaved(\''+dk+'\','+i+')"></div>';
+          if(bi>0) html+='<button onclick="removeExBlock(\''+dk+'\','+i+','+bi+')" style="position:absolute;top:2px;right:0;background:none;border:none;color:var(--r);font-size:18px;cursor:pointer;padding:0 4px">×</button>';
           html+='</div>';
         });
         html+='</div>';
@@ -2138,12 +2405,12 @@ function renderGymDay(dk,container,isSession){
       var done=mobChecks['post_'+mi];
       var safeMobName=m.name.replace(/'/g,"\\'");
       var mobImgId='mobimg-post-'+dk+'-'+mi;
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadMobImage(this,\''+mobImgId+'\',\''+safeMobName+'\')">';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')",\''+safeMobName+'\')">';
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
       html+='<div onclick="event.stopPropagation();toggleMobCheck(\''+dk+'\',\'post_'+mi+'\')" style="width:24px;height:24px;border-radius:7px;border:2px solid '+(done?'var(--g)':'var(--b)')+';background:'+(done?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;margin-right:6px;flex-shrink:0">'+(done?'✅':'')+'</div>';
       html+='<span class="exba">›</span></div>';
-      html+='<div class="exbd"><div class="ex-img-box" id="'+mobImgId+'" style="display:none;margin-bottom:8px"></div>';
-      html+='<div class="desc-block"><div class="desc-title">📍 Posición inicial</div><div class="desc-text">'+m.pos+'</div></div>';
+      html+='<div class="exbd">';
+      html+='<div class="desc-block"><div class="desc-title">📍 Posición</div><div class="desc-text">'+m.pos+'</div></div>';
       html+='<div class="desc-block"><div class="desc-title">▶️ Ejecución</div><div class="desc-text">'+m.exec+'</div></div></div></div>';
     });
   }
@@ -2156,12 +2423,12 @@ function renderGymDay(dk,container,isSession){
       var done=mobChecksG['gen_'+mi];
       var safeMobName2=m.name.replace(/'/g,"\\'");
       var mobImgId2='mobimg-gen-'+dk+'-'+mi;
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadMobImage(this,\''+mobImgId2+'\',\''+safeMobName2+'\')">';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')",\''+safeMobName2+'\')">';
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
       html+='<div onclick="event.stopPropagation();toggleMobCheck(\''+dk+'\',\'gen_'+mi+'\')" style="width:24px;height:24px;border-radius:7px;border:2px solid '+(done?'var(--g)':'var(--b)')+';background:'+(done?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;margin-right:6px;flex-shrink:0">'+(done?'✅':'')+'</div>';
       html+='<span class="exba">›</span></div>';
-      html+='<div class="exbd"><div class="ex-img-box" id="'+mobImgId2+'" style="display:none;margin-bottom:8px"></div>';
-      html+='<div class="desc-block"><div class="desc-title">📍 Posición inicial</div><div class="desc-text">'+m.pos+'</div></div>';
+      html+='<div class="exbd">';
+      html+='<div class="desc-block"><div class="desc-title">📍 Posición</div><div class="desc-text">'+m.pos+'</div></div>';
       html+='<div class="desc-block"><div class="desc-title">▶️ Ejecución</div><div class="desc-text">'+m.exec+'</div></div></div></div>';
     });
   }
@@ -2171,6 +2438,35 @@ function renderGymDay(dk,container,isSession){
   }
   html+='</div>';
   container.innerHTML=html;
+}
+
+function quickSaveEx(dk, i){
+  var plan=getGymDayData(dk);
+  if(!plan||!plan.exercises[i]) return;
+  var ex=plan.exercises[i];
+  var savedLog=ld('gym_log_'+dk+'_'+getLogDate()+'_'+i,null);
+  var isDone=savedLog&&savedLog.done;
+  if(isDone){
+    // Unmark
+    if(savedLog){savedLog.done=false;sd('gym_log_'+dk+'_'+getLogDate()+'_'+i,savedLog);}
+  } else {
+    // Mark done with current blocks or defaults
+    var blocks=savedLog&&savedLog.blocks?savedLog.blocks:[{s:ex.sets,r:ex.reps,w:ex.weight}];
+    // Also read from inputs if visible
+    var inputBlocks=[];
+    var bi=0;
+    while(document.getElementById('lw-'+i+'-'+bi)){
+      inputBlocks.push({
+        s:parseInt(document.getElementById('ls-'+i+'-'+bi).value)||ex.sets,
+        r:document.getElementById('lr-'+i+'-'+bi).value||ex.reps,
+        w:parseFloat(document.getElementById('lw-'+i+'-'+bi).value)||ex.weight
+      });
+      bi++;
+    }
+    if(inputBlocks.length) blocks=inputBlocks;
+    sd('gym_log_'+dk+'_'+getLogDate()+'_'+i,{blocks:blocks,done:true});
+  }
+  renderGymSession();
 }
 
 function markExUnsaved(dk,i){
@@ -2213,6 +2509,27 @@ function saveExLog(dk,i){
   renderGymSession();
 }
 
+function removeExBlock(dk, i, bi){
+  var row=document.getElementById('exblock-'+i+'-'+bi);
+  if(row) row.remove();
+  // Update localStorage by reading remaining inputs
+  var plan=getGymDayData(dk);
+  if(!plan) return;
+  var ex=plan.exercises[i];
+  var blocks=[];
+  var bIdx=0;
+  while(document.getElementById('lw-'+i+'-'+bIdx)||bIdx<10){
+    var lw=document.getElementById('lw-'+i+'-'+bIdx);
+    var ls=document.getElementById('ls-'+i+'-'+bIdx);
+    var lr=document.getElementById('lr-'+i+'-'+bIdx);
+    if(!lw) {bIdx++;if(bIdx>20)break;continue;}
+    blocks.push({s:parseInt(ls&&ls.value)||1,r:lr?lr.value:ex.reps,w:parseFloat(lw.value)||ex.weight});
+    bIdx++;
+  }
+  if(!blocks.length) blocks=[{s:ex.sets,r:ex.reps,w:ex.weight}];
+  sd('gym_log_'+dk+'_'+getLogDate()+'_'+i,{blocks:blocks,done:false});
+}
+
 function addExBlock(dk,i,nextBi){
   var plan=getGymDayData(dk);
   var ex=plan.exercises[i];
@@ -2228,11 +2545,14 @@ function addExBlock(dk,i,nextBi){
     var row=document.createElement('div');
     row.className='log-row';
     row.style.marginBottom='6px';
+    row.style.position='relative';
+    row.style.position='relative';
     row.id='exblock-'+i+'-'+bi;
     row.innerHTML=
       '<div><div class="log-label">Series</div><input type="number" class="log-input" id="ls-'+i+'-'+bi+'" value="1" placeholder="3" min="1" oninput="markExUnsaved(\''+dk+'\','+i+')"></div>'+
       '<div><div class="log-label">Reps</div><input type="text" class="log-input" id="lr-'+i+'-'+bi+'" value="'+newBlock.r+'" placeholder="12" oninput="markExUnsaved(\''+dk+'\','+i+')"></div>'+
-      '<div><div class="log-label">Peso (kg)</div><input type="number" class="log-input" id="lw-'+i+'-'+bi+'" value="'+newBlock.w+'" placeholder="'+ex.weight+'" step="0.5" oninput="markExUnsaved(\''+dk+'\','+i+')"></div>';
+      '<div><div class="log-label">Peso (kg)</div><input type="number" class="log-input" id="lw-'+i+'-'+bi+'" value="'+newBlock.w+'" placeholder="'+ex.weight+'" step="0.5" oninput="markExUnsaved(\''+dk+'\','+i+')"></div>'+
+      '<button onclick="removeExBlock(\''+dk+'\','+i+','+bi+')" style="position:absolute;top:2px;right:0;background:none;border:none;color:var(--r);font-size:18px;cursor:pointer;padding:0 4px">×</button>';
     container.appendChild(row);
     // Update the "+ Serie" button's nextBi
     var btn=container.parentElement.querySelector('button[onclick*="addExBlock"]');
@@ -2487,9 +2807,19 @@ function renderRunToday(){
   var el=document.getElementById('run-today-content');
   var logDateStr=getLogDate();
   var isYesterday=logDateStr!==today();
+  // Update subtitle with current plan start
+  var subEl=document.getElementById('run-subtitle');
+  if(subEl){
+    var sDate=getRunStartDate();
+    var months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    var sDateObj=new Date(sDate.getTime());
+    subEl.textContent='Plan 7 semanas · Empieza '+sDateObj.getDate()+' '+months[sDateObj.getMonth()];
+  }
   // Update static date input
   var rInp=document.getElementById('run-log-date'); if(rInp) rInp.value=logDateStr;
   var rBtn=document.getElementById('run-date-today-btn'); if(rBtn) rBtn.style.display=isYesterday?'block':'none';
+  var rps=document.getElementById('run-plan-start');
+  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-07-06';}
   var toggleHtml=isYesterday?'<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDateStr)+'</span></div>':'';
   var now=new Date(logDateStr+'T12:00:00');
   var dow=now.getDay();
@@ -2539,7 +2869,7 @@ function renderRunToday(){
   } else html+='<div class="note"><strong>Calentamiento:</strong> Camina 5 min a paso ligero antes de empezar.</div>';
 
   // Pre-running nutrition
-  html+='<div class="al alo" style="margin:8px 0"><span class="ali">🍽️</span><span><strong>Antes de salir (20:00):</strong> Si no has merendado, toma 4 tortitas de arroz + pavo. Nada en los 30 min previos. Bebe 300ml de agua.</span></div>';
+  html+='<div class="al alo" style="margin:8px 0"><span class="ali">🍽️</span><span><strong>Antes de salir (20:00 — running):</strong> Si no has merendado, toma 4 tortitas de arroz + pavo. Nada en los 30 min previos. Bebe 300ml de agua.</span></div>';
 
   html+='<div style="background:rgba(61,214,140,0.1);border:1px solid rgba(61,214,140,0.25);border-radius:12px;padding:14px;margin:10px 0">';
   html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🏃 Bloque de trabajo</div>';
@@ -2683,7 +3013,7 @@ function renderSupplements(){
   var hasPreGym=log.some(function(f){return f.meal==='pre-gym';});
   var hasDesayuno=log.some(function(f){return f.meal==='desayuno';});
   // Always fresh for today - never carry over from yesterday
-  var suppl=ld('suppl_'+today(),{d3:false,creatina:false,whey:false});
+  var suppl=ld('suppl_'+today(),{creatina:false});
 
   var html='<div style="background:var(--s);border:1px solid var(--b);border-radius:12px;padding:12px 14px">';
   html+='<div style="font-size:11px;font-weight:600;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">💊 Suplementos</div>';
@@ -2710,7 +3040,7 @@ function renderSupplements(){
 }
 
 function toggleSuppl(key){
-  var suppl=ld('suppl_'+today(),{d3:false,creatina:false,whey:false});
+  var suppl=ld('suppl_'+today(),{creatina:false});
   suppl[key]=!suppl[key];
   sd('suppl_'+today(),suppl);
   // Update just the clicked checkbox without re-rendering the whole section
@@ -2815,7 +3145,7 @@ function renderFoodToday(){
 
 function checkFoodAlert(){
   var now=new Date();
-  var startTracking=new Date('2026-06-29');
+  var startTracking=new Date('2026-07-06');
   if(now<startTracking) return;
   var log=getFoodLog();
   var yesterday=getYesterday();
@@ -3420,68 +3750,8 @@ function renderHealthProtocol(){
 }
 
 // SHOP
-function renderShop(){
-  var dow=todayDow();
-  var nbShop=document.getElementById('nb-shop');
-  if(dow===0) nbShop.style.display='flex';
-  else nbShop.style.display='none';
-  shopTab('menu');
-  renderShopMenu();
-}
 
-function shopTab(t){
-  ['menu','list'].forEach(function(x){
-    document.getElementById('st-'+x).style.display=x===t?'block':'none';
-  });
-  document.querySelectorAll('#pg-shop .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['menu','list'][i]===t);
-  });
-  if(t==='list') renderShopList();
-}
 
-function renderShopMenu(){
-  var days=["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"];
-  var saved=ld("weekly_menu",{});
-  var now=new Date();
-  var mns=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  var mk=mns[now.getMonth()];
-  var fruits=SEASONAL_FRUITS[mk]||SEASONAL_FRUITS["junio"];
-  var mops=["Fruta de temporada + tortitas de arroz","Solo tortitas + pavo","Tostada con aguacate","Fruta sola","Yogur griego con fruta"].concat(RECIPES.batidos);
-  function mco(sk){
-    var o="<option value=''>Selecciona...</option>";
-    var cats={Carnes:RECIPES.carnes,Pescados:RECIPES.pescados,Arroces:RECIPES.arroces,Pastas:RECIPES.pastas,Asiaticos:RECIPES.asiaticos,Otros:RECIPES.otros};
-    Object.keys(cats).forEach(function(c){
-      o+="<optgroup label='"+c+"'>";
-      cats[c].forEach(function(r){var ri2=getRecipeImpact(r);var em=ri2.imp==='good'?'✅':ri2.imp==='bad'?'❌':'⚠️';o+="<option value='"+r+"'"+(saved[sk]===r?" selected":"")+">"+em+" "+r+"</option>";});
-      o+="</optgroup>";
-    });
-    return o;
-  }
-  function mmo(sk){
-    var o="<option value=''>Merienda...</option>";
-    mops.forEach(function(r){o+="<option value='"+r+"'"+(saved[sk]===r?" selected":"")+">"+r+"</option>";});
-    return o;
-  }
-  function mco2(sk){
-    var o=mco(sk);
-    o+="<optgroup label='Batidos'>";
-    RECIPES.batidos.forEach(function(r){o+="<option value='"+r+"'"+(saved[sk]===r?" selected":"")+">"+r+"</option>";});
-    o+="</optgroup>";
-    return o;
-  }
-  var icons=["🌙","🔥","⚡","💪","🏃","🧘","☀️"];
-  var h="<div class='al alb' style='margin-bottom:8px'><span class='ali'>🗓️</span><span>Planifica el menu semanal.</span></div>";
-  h+="<div class='al alg' style='margin-bottom:8px'><span class='ali'>🍓</span><span><strong>Frutas ("+mk+"):</strong> "+fruits.join(", ")+"</span></div>";
-  days.forEach(function(day,i){
-    h+="<div class='menu-day'><div class='menu-day-header'><span style='font-size:16px'>"+icons[i]+"</span><span class='menu-day-name'>"+day+"</span></div><div class='menu-day-body'>";
-    h+="<div style='font-size:11px;color:var(--m);margin-bottom:3px'>Comida</div><select class='menu-select' id='menu-comida-"+i+"' onchange='saveMenuSelection()'>"+mco("comida-"+i)+"</select>";
-    h+="<div style='font-size:11px;color:var(--m);margin:5px 0 3px'>Merienda</div><select class='menu-select' id='menu-merienda-"+i+"' onchange='saveMenuSelection()'>"+mmo("merienda-"+i)+"</select>";
-    h+="<div style='font-size:11px;color:var(--m);margin:5px 0 3px'>Cena / Batido</div><select class='menu-select' id='menu-cena-"+i+"' onchange='saveMenuSelection()'>"+mco2("cena-"+i)+"</select>";
-    h+="</div></div>";
-  });
-  h+="<div style='margin-top:12px;display:flex;gap:8px'><button class='btn btg' style='flex:1' onclick='generateShopListFromPlan()'>🛒 Generar lista</button><button class='btn bth btn-sm' onclick='clearMenu()'>Limpiar</button></div>";
-  document.getElementById("shop-menu-content").innerHTML=h;
-}
 
 function saveMenuSelection(){
   var menu={};
@@ -3598,12 +3868,15 @@ function init(){
   // Reset log date to today on fresh load (avoid getting stuck on "ayer")
   sd('active_log_date',today());
   sd('gym_routine_override','');
-  // Set static date inputs to today
+  // Set static date inputs
   setTimeout(function(){
     var gd=document.getElementById('gym-log-date');
     var rd=document.getElementById('run-log-date');
+    var rps=document.getElementById('run-plan-start');
     if(gd) gd.value=today();
     if(rd) rd.value=today();
+    var srd=ld('run_start_date',null);
+    if(rps) rps.value=srd||'2026-07-06';
   }, 50);
   sd('active_food_log_date',today());
 
@@ -3631,7 +3904,7 @@ function init(){
   var wDates=wArr.map(function(w){return w.date;});
   [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},
    {date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},{date:'2026-06-22',val:89.4},
-   {date:'2026-06-29',val:90.6}
+   {date:'2026-07-06',val:90.6}
   ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
   wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
   sd('weights',wArr);
@@ -3650,7 +3923,7 @@ function init(){
 
   // 22:00 alert check
   var now=new Date();
-  var startTracking=new Date('2026-06-29');
+  var startTracking=new Date('2026-07-06');
   if(now>=startTracking&&now.getHours()>=22){
     var log=getFoodLog();
     if(!log.length){
@@ -4005,6 +4278,7 @@ var IMG_MAP={
   'Jalón al pecho':'Wide-Grip_Lat_Pulldown',
   'Remo con barra':'Bent_Over_Barbell_Row',
   'Remo en máquina':'Bent_Over_Barbell_Row',
+  'Deltoides posterior en máquina':'Seated_Bent-Over_Rear_Delt_Raise',
   'Peso muerto rumano':'Romanian_Deadlift',
   'Peso muerto convencional':'Barbell_Deadlift',
   'Curl con barra Z':'EZ-Bar_Curl',
@@ -4231,7 +4505,7 @@ function searchExercise(){
     {name:'Plancha',muscle:'Core',sets:3,reps:'60seg',weight:0,imgFile:'Plank'},
     {name:'Crunch en polea',muscle:'Core',sets:3,reps:15,weight:20,imgFile:'Cable_Crunch'},
     {name:'Peso muerto',muscle:'Espalda / Posterior',sets:4,reps:6,weight:100,imgFile:'Barbell_Deadlift'},
-    {name:'Remo en máquina',muscle:'Espalda',sets:3,reps:12,weight:60,imgFile:'Bent_Over_Barbell_Row'},
+    {name:'Deltoides posterior en máquina',muscle:'Deltoides posterior',sets:3,reps:12,weight:25,imgFile:'Seated_Bent-Over_Rear_Delt_Raise'},
     {name:'Face pull',muscle:'Hombro posterior',sets:3,reps:15,weight:15,imgFile:'Face_Pull'},
     {name:'Encogimientos',muscle:'Trapecios',sets:3,reps:15,weight:25,imgFile:'Dumbbell_Shrug'},
     {name:'Gemelos en máquina',muscle:'Pantorrilla',sets:4,reps:15,weight:60,imgFile:'Barbell_Full_Squat'},
