@@ -2257,7 +2257,7 @@ function renderGymDay(dk,container,isSession){
         blocks=lastBlocks||[{s:ex.sets,r:typeof ex.reps==='number'?ex.reps:ex.reps,w:ex.weight}];
       }
       var safeExName=ex.name.replace(/'/g,"\\'");
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\');loadExerciseImage(this,\''+safeExName+'\',\''+dk+'\','+i+')">';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
       html+='<span class="exbn">'+ex.name+'</span><span class="exbm">'+ex.muscle+'</span>';
       if(!isDoneEx) html+='<span style="font-size:12px;font-weight:700;color:var(--o);margin-right:4px">'+(ex.weight>0?ex.weight+'kg':ex.reps)+'</span>';
       if(isSession){
@@ -2268,8 +2268,7 @@ function renderGymDay(dk,container,isSession){
       // Exercise info block: image placeholder, grip, RIR, rest
       if(ex.grip||ex.rir||ex.rest){
         html+='<div class="desc-block" style="margin-bottom:8px">';
-        html+='<div class="ex-img-box" id="eximg-'+dk+'-'+i+'" style="display:none;margin-bottom:8px"></div>';
-        if(ex.grip) html+='<div class="desc-title">✋ Agarre / Posición</div><div class="desc-text">'+ex.grip+'</div>';
+          if(ex.grip) html+='<div class="desc-title">✋ Agarre / Posición</div><div class="desc-text">'+ex.grip+'</div>';
         html+='<div style="display:flex;gap:12px;margin-top:6px;font-size:11px;color:var(--m)">';
         if(ex.rir&&ex.rir!=='-') html+='<span>🎯 RIR '+ex.rir+'</span>';
         if(ex.rest) html+='<span>⏱️ Descanso '+ex.rest+'</span>';
@@ -2403,7 +2402,7 @@ function renderGymDay(dk,container,isSession){
 };
     plan.mobility.forEach(function(m,mi){
       var done=mobChecks['post_'+mi];
-      var safeMobName=m.name.replace(/'/g,"\\'");
+      
       var mobImgId='mobimg-post-'+dk+'-'+mi;
       html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')",\''+safeMobName+'\')">';
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
@@ -2421,7 +2420,7 @@ function renderGymDay(dk,container,isSession){
     html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:10px 0 7px">🌿 Movilidad general (flexibilidad)</div>';
     MOB_GENERAL.forEach(function(m,mi){
       var done=mobChecksG['gen_'+mi];
-      var safeMobName2=m.name.replace(/'/g,"\\'");
+      
       var mobImgId2='mobimg-gen-'+dk+'-'+mi;
       html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')",\''+safeMobName2+'\')">';
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
@@ -4274,192 +4273,6 @@ function searchFoodAPI(){
 }
 
 
-var IMG_MAP={
-  'Jalón al pecho':'Wide-Grip_Lat_Pulldown',
-  'Remo con barra':'Bent_Over_Barbell_Row',
-  'Remo en máquina':'Bent_Over_Barbell_Row',
-  'Deltoides posterior en máquina':'Seated_Bent-Over_Rear_Delt_Raise',
-  'Peso muerto rumano':'Romanian_Deadlift',
-  'Peso muerto convencional':'Barbell_Deadlift',
-  'Curl con barra Z':'EZ-Bar_Curl',
-  'Curl martillo':'EZ-Bar_Curl',
-  'Curl concentrado':'EZ-Bar_Curl',
-  'Press banca con barra':'Barbell_Bench_Press_-_Medium_Grip',
-  'Press inclinado con mancuernas':'Incline_Dumbbell_Press',
-  'Aperturas en máquina (pec deck)':'Butterfly',
-  'Fondos en paralelas':'Barbell_Bench_Press_-_Medium_Grip',
-  'Press francés con mancuernas':'Barbell_Bench_Press_-_Medium_Grip',
-  'Extensión de tríceps en polea alta':'Cable_Crunch',
-  'Tríceps con barra/goma en polea (atrás-adelante)':'Cable_Crunch',
-  'Sentadilla con barra o Smith':'Barbell_Full_Squat',
-  'Prensa de piernas':'Leg_Press',
-  'Zancadas con mancuernas':'Dumbbell_Lunges',
-  'Curl femoral en máquina':'Lying_Leg_Curls',
-  'Extensión de cuádriceps en máquina':'Leg_Extensions',
-  'Elevación de gemelos de pie':'Barbell_Full_Squat',
-  'Abductor en máquina':'Leg_Press',
-  'Aductor en máquina':'Leg_Press',
-  'Hip thrust con barra o máquina':'Barbell_Hip_Thrust',
-  'Press militar con barra o mancuernas':'Barbell_Shoulder_Press',
-  'Elevaciones laterales con mancuernas':'Side_Lateral_Raise',
-  'Deltoides posterior en máquina':'Seated_Bent-Over_Rear_Delt_Raise',
-  'Face pull en polea alta':'Face_Pull',
-  'Encogimientos con mancuernas':'Dumbbell_Shrug',
-  'Plancha frontal (core)':'Plank',
-  'Plancha lateral (core variado)':'Plank',
-  'Crunch en polea alta':'Cable_Crunch',
-  'Patada de glúteo en polea baja':'Glute_Kickback',
-  'Sentadilla goblet con mancuerna':'Goblet_Squat',
-  'Burpees':'Mountain_Climbers',
-  'Kettlebell swing (o mancuerna a dos manos)':'Barbell_Full_Squat',
-  'Elevación de piernas colgado':'Hanging_Leg_Raise',
-  'Mountain climbers':'Mountain_Climbers',
-  'Estiramiento de isquiotibiales':'Romanian_Deadlift',
-  'Estiramiento de cuádriceps':'Dumbbell_Lunges',
-  'Estiramiento de psoas / flexor de cadera':'Dumbbell_Lunges',
-  'Estiramiento de espalda baja (rodillas al pecho)':'Plank',
-  'Estiramiento de pecho y hombro en marco de puerta':'Barbell_Bench_Press_-_Medium_Grip',
-  'Estiramiento de cuello y trapecio':'Dumbbell_Shrug',
-  'Estiramiento de isquiotibiales de pie':'Romanian_Deadlift',
-  'Estiramiento de cuádriceps de pie':'Dumbbell_Lunges',
-  'Estiramiento de glúteo cruzado':'Glute_Kickback',
-  'Estiramiento de isquiotibiales con banda':'Romanian_Deadlift',
-  'Postura del niño (core/lumbar)':'Plank',
-  'Niño extendido (core/lumbar)':'Plank',
-};
-var MOB_IMG_MAP={
-    // Lunes - Espalda
-    'Foam roller — Columna dorsal (dorsal/romboides)':'Bent_Over_Barbell_Row',
-    'Foam roller — Lat / Dorsal ancho':'Wide-Grip_Lat_Pulldown',
-    "Child's pose extendido (dorsal bajo)":'Wide-Grip_Lat_Pulldown',
-    'Thread the needle — Rotación torácica':'Bent_Over_Barbell_Row',
-    'Puppy pose — Dorsal + hombros':'Wide-Grip_Lat_Pulldown',
-    'Distracción de hombro en marco de puerta':'Side_Lateral_Raise',
-    'Estiramiento dorsal diagonal en cuadrupedia':'Wide-Grip_Lat_Pulldown',
-    'Estiramiento de bíceps en pared':'EZ-Bar_Curl',
-    'Cat-cow — Movilidad segmentaria lumbar':'Plank',
-    'Estiramiento de trapecio lateral':'Dumbbell_Shrug',
-    'Supine spinal twist — Rotación lumbar':'Plank',
-    'Respiración diafragmática de cierre':'Plank',
-    // Martes - Pecho
-    'Foam roller — Columna dorsal alta (pectoral/serrato)':'Barbell_Bench_Press_-_Medium_Grip',
-    'Foam roller — Pectoral menor en esquina':'Barbell_Bench_Press_-_Medium_Grip',
-    'Apertura de pecho en foam roller longitudinal':'Barbell_Bench_Press_-_Medium_Grip',
-    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
-    'Estiramiento de tríceps sobre la cabeza':'Barbell_Bench_Press_-_Medium_Grip',
-    'Cross-body shoulder stretch (deltoides posterior)':'Side_Lateral_Raise',
-    'Thread the needle — Serrato anterior':'Barbell_Bench_Press_-_Medium_Grip',
-    'Eagle arms — Hombro posterior y trapecio medio':'Side_Lateral_Raise',
-    'Extensión de muñeca y antebrazo (flexores)':'EZ-Bar_Curl',
-    'Rotación torácica en suelo (book openings)':'Barbell_Bench_Press_-_Medium_Grip',
-    // Miercoles - Pierna
-    'Foam roller — Cuádriceps':'Barbell_Full_Squat',
-    'Foam roller — Isquiotibiales':'Lying_Leg_Curls',
-    'Foam roller — TFL / Banda IT':'Glute_Kickback',
-    'Foam roller — Gemelo + sóleo':'Barbell_Full_Squat',
-    'Couch stretch — Psoas y cuádriceps distal':'Dumbbell_Lunges',
-    'Pigeon pose — Glúteo profundo y piriforme':'Glute_Kickback',
-    'Mariposa — Aductores con oscilaciones':'Barbell_Full_Squat',
-    'Estiramiento de isquios supino con banda o toalla':'Lying_Leg_Curls',
-    'Gemelo en pared — gastrocnemio + sóleo':'Barbell_Full_Squat',
-    'Deep squat hold — Movilidad global cadera/tobillo':'Goblet_Squat',
-    'Supine twist — Liberación lumbar':'Plank',
-    // Jueves - Hombro
-    'Foam roller — Dorsal alto y trapecio':'Barbell_Shoulder_Press',
-    'Foam roller — Infraespinoso / Manguito rotador':'Side_Lateral_Raise',
-    'Sleeper stretch — Manguito rotador interno':'Side_Lateral_Raise',
-    'Cross-body stretch — Deltoides posterior':'Seated_Bent-Over_Rear_Delt_Raise',
-    'Wall slide — Movilidad escapular':'Barbell_Shoulder_Press',
-    'Doorway pectoral stretch (deltoides anterior)':'Barbell_Shoulder_Press',
-    "Child's pose lateral — Oblicuos y core lateral":'Plank',
-    'Cat-cow — Movilidad segmentaria lumbar':'Plank',
-    '90/90 Hip switches — Cadera y core':'Goblet_Squat',
-    'Supine twist — Lumbar':'Plank',
-    'Neck CARs — Movilidad cervical controlada':'Dumbbell_Shrug',
-    // Viernes - Full Body
-    'Foam roller — Full body sweep':'Plank',
-    "World's greatest stretch — Movilidad global":'Dumbbell_Lunges',
-    'Hip 90/90 con rotación activa':'Goblet_Squat',
-    'Thoracic rotation en cuadrupedia':'Bent_Over_Barbell_Row',
-    'Pigeon pose — Piriforme y cadera':'Glute_Kickback',
-    'Couch stretch — Psoas y cuádriceps':'Dumbbell_Lunges',
-    'Shoulder CARs — Rotación articular controlada':'Side_Lateral_Raise',
-    'Spiderman stretch con rotación':'Dumbbell_Lunges',
-    'Ankle CARs — Movilidad de tobillo':'Barbell_Full_Squat',
-    'Deep squat hold progresivo':'Goblet_Squat',
-    "Child's pose final":'Wide-Grip_Lat_Pulldown',
-    // Sábado - Post running
-    'Foam roller — Cuádriceps (post-running prioritario)':'Barbell_Full_Squat',
-    'Foam roller — Isquiotibiales':'Lying_Leg_Curls',
-    'Foam roller — Gemelo':'Barbell_Full_Squat',
-    'Foam roller — TFL / IT band lateral':'Glute_Kickback',
-    'Foam roller — Glúteo y piriforme':'Glute_Kickback',
-    'Calf stretch en pared — gastrocnemio + sóleo':'Barbell_Full_Squat',
-    'Estiramiento de isquios supino con banda':'Lying_Leg_Curls',
-    'Couch stretch — Psoas y flexores de cadera':'Dumbbell_Lunges',
-    'Pigeon pose — Glúteo y piriforme':'Glute_Kickback',
-    'Deep squat hold — Recuperación articular':'Goblet_Squat',
-    'Supine twist — Liberación lumbar':'Plank',
-    // Domingo
-    'Foam roller — Columna dorsal completa':'Plank',
-    'Foam roller — Cuádriceps y pierna completa':'Barbell_Full_Squat',
-    'Foam roller — Glúteo y piriforme':'Glute_Kickback',
-    "World's greatest stretch":'Dumbbell_Lunges',
-    'Pigeon pose prolongado':'Glute_Kickback',
-    'Couch stretch largo':'Dumbbell_Lunges',
-    'Estiramiento de isquios supino':'Lying_Leg_Curls',
-    'Mariposa profunda con tracción':'Barbell_Full_Squat',
-    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
-    'Neck y trapecio — liberación completa':'Dumbbell_Shrug',
-    'Respiración 4-7-8 de cierre semanal':'Plank',
-    // General (same keys for MOB_GENERAL)
-    'Cat-cow — Activación columna':'Plank',
-    'Thread the needle bilateral':'Bent_Over_Barbell_Row',
-    "Child's pose → Upward dog flow":'Wide-Grip_Lat_Pulldown',
-    'Pigeon pose':'Glute_Kickback',
-    'Couch stretch — Psoas':'Dumbbell_Lunges',
-    'Supine hamstring stretch':'Lying_Leg_Curls',
-    'Mariposa — Aductores':'Barbell_Full_Squat',
-    'Doorway pectoral stretch — 3 ángulos':'Butterfly',
-    'Supine twist bilateral':'Plank',
-    'Respiración 4-6-8 diaria de cierre':'Plank',
-};
-var IMG_BASE='https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
-
-function _loadTwoPhotos(box, fileName, exName){
-  if(!box||box.dataset.loaded==='1') return;
-  box.dataset.loaded='1';
-  if(!fileName) return;
-  var url0=IMG_BASE+fileName+'/0.jpg';
-  var url1=IMG_BASE+fileName+'/1.jpg';
-  box.style.display='block';
-  box.innerHTML=
-    '<div class="ex-photos">'+
-      '<div class="ex-photo-wrap">'+
-        '<img src="'+url0+'" alt="Inicio" style="width:100%;height:150px;object-fit:cover;border-radius:10px;background:var(--s2)">'+
-        '<div class="ex-photo-label">Inicio</div>'+
-      '</div>'+
-      '<div class="ex-photo-wrap">'+
-        '<img src="'+url1+'" alt="Fin" style="width:100%;height:150px;object-fit:cover;border-radius:10px;background:var(--s2)">'+
-        '<div class="ex-photo-label">Fin</div>'+
-      '</div>'+
-    '</div>';
-}
-function loadExerciseImage(headerEl,exName,dk,i){
-  var box=document.getElementById('eximg-'+dk+'-'+i);
-  _loadTwoPhotos(box, IMG_MAP[exName], exName);
-}
-
-function loadMobImage(headerEl,boxId,exName){
-  var box=document.getElementById(boxId);
-  // exName is the Spanish exercise name — look up in MOB_IMG_MAP
-  var fileName=MOB_IMG_MAP[exName]||'Plank';
-  _loadTwoPhotos(box, fileName, exName);
-}
-
-
-
-
 function toggleMobCheck(dk,key){
   var checks=ld('mob_check_'+dk+'_'+getLogDate(),{});
   checks[key]=!checks[key];
@@ -4479,36 +4292,36 @@ function searchExercise(){
 
   // Local exercise database (Spanish)
   var LOCAL_EX=[
-    {name:'Remo con barra',muscle:'Espalda',sets:4,reps:10,weight:60,imgFile:'Bent_Over_Barbell_Row'},
-    {name:'Remo con mancuerna',muscle:'Espalda',sets:3,reps:12,weight:25,imgFile:'Bent_Over_Barbell_Row'},
-    {name:'Dominadas',muscle:'Espalda',sets:4,reps:8,weight:0,imgFile:'Wide-Grip_Lat_Pulldown'},
-    {name:'Jalón al pecho',muscle:'Espalda',sets:4,reps:12,weight:55,imgFile:'Wide-Grip_Lat_Pulldown'},
-    {name:'Curl con barra',muscle:'Bíceps',sets:3,reps:12,weight:30,imgFile:'EZ-Bar_Curl'},
-    {name:'Curl martillo',muscle:'Bíceps',sets:3,reps:12,weight:14,imgFile:'EZ-Bar_Curl'},
-    {name:'Curl concentrado',muscle:'Bíceps',sets:3,reps:12,weight:12,imgFile:'EZ-Bar_Curl'},
-    {name:'Press banca',muscle:'Pecho',sets:4,reps:10,weight:70,imgFile:'Barbell_Bench_Press_-_Medium_Grip'},
-    {name:'Press inclinado',muscle:'Pecho',sets:3,reps:12,weight:50,imgFile:'Incline_Dumbbell_Press'},
-    {name:'Aperturas en polea',muscle:'Pecho',sets:3,reps:15,weight:12,imgFile:'Butterfly'},
-    {name:'Press militar',muscle:'Hombro',sets:4,reps:10,weight:40,imgFile:'Barbell_Shoulder_Press'},
-    {name:'Elevaciones laterales',muscle:'Hombro',sets:3,reps:15,weight:8,imgFile:'Side_Lateral_Raise'},
-    {name:'Pájaros',muscle:'Hombro',sets:3,reps:15,weight:8,imgFile:'Seated_Bent-Over_Rear_Delt_Raise'},
-    {name:'Fondos en paralelas',muscle:'Tríceps',sets:3,reps:12,weight:0,imgFile:'Barbell_Bench_Press_-_Medium_Grip'},
-    {name:'Press francés',muscle:'Tríceps',sets:3,reps:12,weight:25,imgFile:'Cable_Crunch'},
-    {name:'Extensión en polea',muscle:'Tríceps',sets:3,reps:15,weight:20,imgFile:'Cable_Crunch'},
-    {name:'Sentadilla',muscle:'Cuádriceps',sets:4,reps:10,weight:80,imgFile:'Barbell_Full_Squat'},
-    {name:'Prensa',muscle:'Cuádriceps',sets:4,reps:12,weight:120,imgFile:'Leg_Press'},
-    {name:'Zancadas',muscle:'Cuádriceps',sets:3,reps:12,weight:20,imgFile:'Dumbbell_Lunges'},
+    {name:'Remo con barra',muscle:'Espalda',sets:4,reps:10,weight:60},
+    {name:'Remo con mancuerna',muscle:'Espalda',sets:3,reps:12,weight:25},
+    {name:'Dominadas',muscle:'Espalda',sets:4,reps:8,weight:0},
+    {name:'Jalón al pecho',muscle:'Espalda',sets:4,reps:12,weight:55},
+    {name:'Curl con barra',muscle:'Bíceps',sets:3,reps:12,weight:30},
+    {name:'Curl martillo',muscle:'Bíceps',sets:3,reps:12,weight:14},
+    {name:'Curl concentrado',muscle:'Bíceps',sets:3,reps:12,weight:12},
+    {name:'Press banca',muscle:'Pecho',sets:4,reps:10,weight:70},
+    {name:'Press inclinado',muscle:'Pecho',sets:3,reps:12,weight:50},
+    {name:'Aperturas en polea',muscle:'Pecho',sets:3,reps:15,weight:12},
+    {name:'Press militar',muscle:'Hombro',sets:4,reps:10,weight:40},
+    {name:'Elevaciones laterales',muscle:'Hombro',sets:3,reps:15,weight:8},
+    {name:'Pájaros',muscle:'Hombro',sets:3,reps:15,weight:8},
+    {name:'Fondos en paralelas',muscle:'Tríceps',sets:3,reps:12,weight:0},
+    {name:'Press francés',muscle:'Tríceps',sets:3,reps:12,weight:25},
+    {name:'Extensión en polea',muscle:'Tríceps',sets:3,reps:15,weight:20},
+    {name:'Sentadilla',muscle:'Cuádriceps',sets:4,reps:10,weight:80},
+    {name:'Prensa',muscle:'Cuádriceps',sets:4,reps:12,weight:120},
+    {name:'Zancadas',muscle:'Cuádriceps',sets:3,reps:12,weight:20},
     {name:'Peso muerto rumano',muscle:'Isquiotibiales',sets:4,reps:10,weight:60,gif:'wQ2c4XD.gif'},
-    {name:'Curl femoral',muscle:'Isquiotibiales',sets:3,reps:12,weight:30,imgFile:'Lying_Leg_Curls'},
-    {name:'Hip thrust',muscle:'Glúteos',sets:4,reps:12,weight:80,imgFile:'Barbell_Hip_Thrust'},
-    {name:'Abdominales',muscle:'Core',sets:3,reps:20,weight:0,imgFile:'Cable_Crunch'},
-    {name:'Plancha',muscle:'Core',sets:3,reps:'60seg',weight:0,imgFile:'Plank'},
-    {name:'Crunch en polea',muscle:'Core',sets:3,reps:15,weight:20,imgFile:'Cable_Crunch'},
-    {name:'Peso muerto',muscle:'Espalda / Posterior',sets:4,reps:6,weight:100,imgFile:'Barbell_Deadlift'},
-    {name:'Deltoides posterior en máquina',muscle:'Deltoides posterior',sets:3,reps:12,weight:25,imgFile:'Seated_Bent-Over_Rear_Delt_Raise'},
-    {name:'Face pull',muscle:'Hombro posterior',sets:3,reps:15,weight:15,imgFile:'Face_Pull'},
-    {name:'Encogimientos',muscle:'Trapecios',sets:3,reps:15,weight:25,imgFile:'Dumbbell_Shrug'},
-    {name:'Gemelos en máquina',muscle:'Pantorrilla',sets:4,reps:15,weight:60,imgFile:'Barbell_Full_Squat'},
+    {name:'Curl femoral',muscle:'Isquiotibiales',sets:3,reps:12,weight:30},
+    {name:'Hip thrust',muscle:'Glúteos',sets:4,reps:12,weight:80},
+    {name:'Abdominales',muscle:'Core',sets:3,reps:20,weight:0},
+    {name:'Plancha',muscle:'Core',sets:3,reps:'60seg',weight:0},
+    {name:'Crunch en polea',muscle:'Core',sets:3,reps:15,weight:20},
+    {name:'Peso muerto',muscle:'Espalda / Posterior',sets:4,reps:6,weight:100},
+    {name:'Deltoides posterior en máquina',muscle:'Deltoides posterior',sets:3,reps:12,weight:25},
+    {name:'Face pull',muscle:'Hombro posterior',sets:3,reps:15,weight:15},
+    {name:'Encogimientos',muscle:'Trapecios',sets:3,reps:15,weight:25},
+    {name:'Gemelos en máquina',muscle:'Pantorrilla',sets:4,reps:15,weight:60},
   ];
 
   var ql=q.toLowerCase();
@@ -4520,7 +4333,7 @@ function searchExercise(){
   fetch('https://wger.de/api/v2/exercise/search/?term='+encodeURIComponent(q)+'&language=spanish&format=json')
   .then(function(r){return r.json();})
   .then(function(data){
-    var items=local.map(function(e){return {name:e.name,muscle:e.muscle,sets:e.sets,reps:e.reps,weight:e.weight,imgFile:e.imgFile,source:'local'};});
+    var items=local.map(function(e){return {name:e.name,muscle:e.muscle,sets:e.sets,reps:e.reps,weight:e.weight,source:'local'};});
     if(data.suggestions){
       data.suggestions.forEach(function(s){
         if(!items.find(function(it){return it.name.toLowerCase()===s.value.toLowerCase();})){
@@ -4543,14 +4356,7 @@ function renderExResults(items,q){
   }
   res.innerHTML=items.slice(0,8).map(function(ex){
     var safe=encodeURIComponent(JSON.stringify(ex));
-    var imgFile=ex.imgFile||(IMG_MAP&&IMG_MAP[ex.name]);
-    var thumbHtml=imgFile?
-      '<div style="display:flex;gap:2px;flex-shrink:0">'+
-        '<img src="'+IMG_BASE+imgFile+'/0.jpg" style="width:44px;height:44px;border-radius:6px;object-fit:cover" loading="lazy" onerror="this.style.display=\'none\'">'+
-        '<img src="'+IMG_BASE+imgFile+'/1.jpg" style="width:44px;height:44px;border-radius:6px;object-fit:cover" loading="lazy" onerror="this.style.display=\'none\'">'+
-      '</div>':
-      '<div style="font-size:20px;width:52px;text-align:center;flex-shrink:0">🏋️</div>';
-    return '<div class="sri" onclick="selectExercise(decodeURIComponent(this.dataset.ex))" data-ex="'+safe+'" style="cursor:pointer;align-items:flex-start">'+
+    var thumbHtml='<div style="font-size:20px;width:52px;text-align:center;flex-shrink:0">'+ex.emoji+'</div>';
       thumbHtml+
       '<div><div class="srn">'+ex.name+(ex.source==='local'?' ⭐':'')+'</div>'+
       '<div class="srm">'+ex.muscle+' · '+ex.sets+'×'+ex.reps+(ex.weight?' · '+ex.weight+'kg':'')+'</div></div></div>';
