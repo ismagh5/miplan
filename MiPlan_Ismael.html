@@ -278,6 +278,10 @@ select.if{cursor:pointer;}
   </div>
 
   <!-- HABITS -->
+  <div class="card" style="margin:8px 16px">
+    <div class="ch"><span class="ci">📋</span><span class="ct">Plan del día</span><span id="schedule-badge" class="cbadge bb">0/0</span></div>
+    <div class="cb" id="day-schedule-checks"></div>
+  </div>
   <div class="card" style="margin:8px 16px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25)">
     <div class="ch"><span class="ci">💪</span><span class="ct">Grease the Groove — Flexiones</span><span id="gtg-badge" class="cbadge bb">0/6</span></div>
     <div class="cb">
@@ -286,25 +290,7 @@ select.if{cursor:pointer;}
       <button class="btn bth btn-sm" style="margin-top:8px;width:100%" onclick="logGTG()">✓ Hecho</button>
     </div>
   </div>
-  <div id="hab-row" style="margin:0 16px 8px;display:flex;gap:14px;align-items:center;justify-content:center">
-    <div id="hab-read" onclick="toggleHabit('read')" style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer">
-      <div style="width:64px;height:64px;border-radius:50%;background:rgba(79,142,247,0.1);border:1.5px solid rgba(79,142,247,0.35);display:flex;align-items:center;justify-content:center;font-size:28px">📖</div>
-      <div style="font-size:11px;font-weight:600;color:var(--t)">Lectura</div>
-    </div>
-    <div id="hab-sun" onclick="toggleHabit('sun')" style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer">
-      <div style="width:56px;height:56px;border-radius:50%;background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;font-size:22px">☀️</div>
-      <div style="font-size:11px;font-weight:600;color:var(--m)">Sol</div>
-    </div>
-  </div>
-
-  <!-- GYM TODAY -->
-  <div class="today-card tc-gym" id="h-gym-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:600;color:var(--a)">💪 Gym hoy</div>
-      <span class="cbadge bb" id="h-gym-badge">—</span>
-    </div>
-    <div id="h-gym-detail" style="font-size:13px;color:var(--m);margin-bottom:10px"></div>
-    <button class="btn btg btn-sm" onclick="nav('gym')">Ver sesión →</button>
+  <div id="hab-row" style="display:none"></div>
   </div>
 
   <!-- RUN TODAY -->
@@ -1580,6 +1566,148 @@ function logGTG(){
   if(done.length===6) setTimeout(function(){alert('🎉 ¡6/6 completadas hoy! Mañana seguimos.');},200);
 }
 
+var DAILY_SCHEDULE={
+  // Items: {id, time, emoji, label, auto}
+  base:[
+    {id:'desayuno',time:'09:30',emoji:'🍌',label:'Desayuno + pre-gym'},
+    {id:'dj',time:'10:00',emoji:'🎧',label:'DJ 1 hora'},
+    {id:'gym',time:'11:00',emoji:'💪',label:'Gym 11:00-12:30'},
+    {id:'postgym',time:'12:45',emoji:'🥛',label:'Post-gym (yogur + creatina)'},
+    {id:'trabajo1',time:'13:00',emoji:'💻',label:'Trabajo bloque 1 (1h30)'},
+    {id:'comida',time:'14:30',emoji:'🍝',label:'Comida'},
+    {id:'digestion',time:'15:30',emoji:'🚶',label:'Paseo/sol digestivo'},
+    {id:'trabajo2',time:'16:00',emoji:'💻',label:'Trabajo bloque 2 (5h)'},
+    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad general 30 min'},
+    {id:'cena',time:'21:30',emoji:'🍽️',label:'Cena'},
+  ],
+  running:[
+    {id:'desayuno',time:'09:30',emoji:'🍌',label:'Desayuno + pre-gym'},
+    {id:'dj',time:'10:00',emoji:'🎧',label:'DJ 1 hora'},
+    {id:'gym',time:'11:00',emoji:'💪',label:'Gym 11:00-12:30'},
+    {id:'postgym',time:'12:45',emoji:'🥛',label:'Post-gym (yogur + creatina)'},
+    {id:'trabajo1',time:'13:00',emoji:'💻',label:'Trabajo bloque 1 (1h30)'},
+    {id:'comida',time:'14:30',emoji:'🍝',label:'Comida'},
+    {id:'digestion',time:'15:30',emoji:'🚶',label:'Paseo/sol digestivo'},
+    {id:'trabajo2',time:'16:00',emoji:'💻',label:'Trabajo bloque 2 (3h30)'},
+    {id:'running',time:'20:00',emoji:'🏃',label:'Running 20:00'},
+    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad general 30 min'},
+    {id:'cena',time:'21:30',emoji:'🍽️',label:'Cena'},
+  ],
+  sabado:[
+    {id:'desayuno',time:'11:00',emoji:'🍌',label:'Desayuno'},
+    {id:'dj',time:'12:00',emoji:'🎧',label:'DJ 1 hora'},
+    {id:'comida',time:'14:00',emoji:'🍝',label:'Comida (cheat meal)'},
+    {id:'piscina',time:'15:30',emoji:'🏊',label:'Piscina / tumbona'},
+    {id:'running',time:'20:00',emoji:'🏃',label:'Running 20:00'},
+    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad 35 min (rodillo)'},
+    {id:'cena',time:'22:00',emoji:'🍽️',label:'Cena + salida'},
+  ],
+  domingo:[
+    {id:'desayuno',time:'11:30',emoji:'🍌',label:'Desayuno + lectura'},
+    {id:'comida',time:'13:30',emoji:'🍝',label:'Comida (paella/domingo)'},
+    {id:'piscina',time:'15:00',emoji:'🏊',label:'Piscina toda la tarde'},
+    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad 35 min (rodillo)'},
+    {id:'cena',time:'21:30',emoji:'🍽️',label:'Cena ligera'},
+  ],
+};
+
+function getDaySchedule(){
+  var dow=new Date().getDay();
+  if(dow===0) return DAILY_SCHEDULE.domingo;
+  if(dow===6) return DAILY_SCHEDULE.sabado;
+  if(dow===2||dow===4) return DAILY_SCHEDULE.running; // martes y jueves
+  return DAILY_SCHEDULE.base; // lunes miercoles viernes
+}
+
+function timeToMins(t){
+  var p=t.split(':');return parseInt(p[0])*60+parseInt(p[1]);
+}
+
+function renderDaySchedule(){
+  var el=document.getElementById('day-schedule-checks');
+  if(!el) return;
+  var schedule=getDaySchedule();
+  var done=ld('schedule_'+today(),{});
+  var now=new Date();
+  var nowMins=now.getHours()*60+now.getMinutes();
+  var showAll=ld('schedule_show_all',false);
+
+  // Filter: show items up to nowMins + 30min ahead, always show done items
+  var visible=schedule.filter(function(item){
+    return showAll||done[item.id]||timeToMins(item.time)<=nowMins+30;
+  });
+  var next=schedule.find(function(item){
+    return !done[item.id]&&timeToMins(item.time)>nowMins;
+  });
+
+  var total=schedule.length;
+  var checked=schedule.filter(function(i){return done[i.id];}).length;
+  var badge=document.getElementById('schedule-badge');
+  if(badge) badge.textContent=checked+'/'+total;
+
+  var h='';
+  // Show all toggle
+  h+='<div style="display:flex;justify-content:flex-end;margin-bottom:6px">'+
+    '<button onclick="toggleShowAll()" style="font-size:11px;padding:3px 10px;background:var(--s2);border:1px solid var(--b);border-radius:8px;color:var(--m);cursor:pointer">'+
+    (showAll?'Solo hoy':'Ver todo')+'</button></div>';
+
+  if(visible.length===0){
+    h+='<div style="text-align:center;padding:12px;font-size:13px;color:var(--m)">⏰ El día empieza a las '+schedule[0].time+'</div>';
+  } else {
+    // Split visible into done and pending
+  var pendingItems=visible.filter(function(i){return !done[i.id];});
+  var doneItems=visible.filter(function(i){return done[i.id];});
+
+  // Render pending items full size
+  h+=pendingItems.map(function(item){
+    var isNext=next&&next.id===item.id;
+    var borderColor=isNext?'var(--a)':'var(--b)';
+    var bg=isNext?'rgba(99,102,241,0.08)':'var(--s2)';
+    return '<div onclick="toggleScheduleItem(\''+item.id+'\',this)" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--b);cursor:pointer">'+
+      '<div style="width:28px;height:28px;border-radius:8px;border:2px solid '+borderColor+';background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">'+(isNext?'▶':'')+'</div>'+
+      '<div style="flex:1">'+
+        '<div style="font-size:13px;font-weight:'+(isNext?'700':'600')+';color:var(--t)">'+item.emoji+' '+item.label+'</div>'+
+        '<div style="font-size:11px;color:'+(isNext?'var(--a)':'var(--m)')+'">'+item.time+(isNext?' ← siguiente':'')+'</div>'+
+      '</div></div>';
+  }).join('');
+
+  // Render done items as small pills at the bottom
+  if(doneItems.length>0){
+    h+='<div style="display:flex;flex-wrap:wrap;gap:5px;padding:8px 0;border-top:1px solid var(--b);margin-top:4px">';
+    h+=doneItems.map(function(item){
+      return '<div onclick="toggleScheduleItem(\''+item.id+'\',this)" style="display:flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(61,214,140,0.08);border:1px solid rgba(61,214,140,0.3);border-radius:20px;cursor:pointer">'+
+        '<span style="font-size:11px">✅</span>'+
+        '<span style="font-size:11px;color:var(--m);text-decoration:line-through">'+item.emoji+' '+item.label+'</span>'+
+      '</div>';
+    }).join('');
+    h+='</div>';
+  }
+  }
+
+  // Upcoming (hidden items)
+  var hidden=schedule.filter(function(item){
+    return !showAll&&!done[item.id]&&timeToMins(item.time)>nowMins+30;
+  });
+  if(hidden.length>0&&!showAll){
+    h+='<div style="padding:8px 0;font-size:12px;color:var(--m);text-align:center">'+
+      '⏳ '+hidden.length+' actividades más a partir de '+hidden[0].time+'</div>';
+  }
+
+  el.innerHTML=h;
+}
+
+function toggleShowAll(){
+  sd('schedule_show_all',!ld('schedule_show_all',false));
+  renderDaySchedule();
+}
+
+function toggleScheduleItem(id, el){
+  var done=ld('schedule_'+today(),{});
+  done[id]=!done[id];
+  sd('schedule_'+today(),done);
+  renderDaySchedule();
+}
+
 var MEAL_PLAN={"semana1": {"lunes": {"comida": "Pollo al ajillo", "cena": "Revuelto de champiñones y espárragos"}, "martes": {"comida": "Dorada a la espalda", "cena": "Ensalada con anchoas y huevo cocido"}, "miercoles": {"comida": "Carbonara casera", "cena": "Pechuga de pavo plancha con judías verdes"}, "jueves": {"comida": "Albóndigas en salsa de tomate", "cena": "Mejillones en conserva con ensalada"}, "viernes": {"comida": "Tallarines con salmón", "cena": "Libre"}, "sabado": {"comida": "Hamburguesa casera de ternera", "cena": "Tortilla francesa con ensalada"}, "domingo": {"comida": "Paella valenciana", "cena": "Caldo gallego con huevo poché"}}, "semana2": {"lunes": {"comida": "Macarrones con carne picada", "cena": "Poke bowl de atún"}, "martes": {"comida": "Merluza en salsa verde", "cena": "Huevos revueltos con espárragos"}, "miercoles": {"comida": "Pasta boloñesa casera", "cena": "Pollo plancha con ensalada mixta"}, "jueves": {"comida": "Pollo al curry casero", "cena": "Salpicón de marisco"}, "viernes": {"comida": "Espaguetis con almejas", "cena": "Libre"}, "sabado": {"comida": "Pollo asado al horno", "cena": "Ensalada mixta con agujas"}, "domingo": {"comida": "Arroz meloso de gambas", "cena": "Caldo gallego con huevo poché"}}};
 
 function getCurrentMenuWeek(){
@@ -1876,14 +2004,7 @@ function renderHome(){
 
   // Habits
   var habits=ld('habits_'+today(),{read:false,sun:false});
-  var habRead=document.getElementById('hab-read');
-  var habSun=document.getElementById('hab-sun');
-  var habRow=document.getElementById('hab-row');
-  // Hide individual buttons when done
-  if(habRead) habRead.style.display=habits.read?'none':'flex';
-  if(habSun) habSun.style.display=habits.sun?'none':'flex';
-  // Hide whole row if both done
-  if(habRow) habRow.style.display=(habits.read&&habits.sun)?'none':'flex';
+  // Hábitos sol/lectura eliminados — ver Plan del día
 
   // Photo state (Monday only)
   var photoState=ld('photo_done_'+today(),false);
@@ -1949,10 +2070,14 @@ function renderHome(){
   var rc=document.getElementById('h-run-card'); if(rc){ rc.style.display=(runStarted&&isRunDay&&wn>0)?'block':'none'; }
   // Food macros
   renderHomeMacros();
+  renderDaySchedule();
   renderGTG();
 
   // Weather & water
   fetchWeather();
+  // Refresh schedule every minute
+  if(window._schedInterval) clearInterval(window._schedInterval);
+  window._schedInterval=setInterval(renderDaySchedule, 60000);
 }
 
 function shouldCompensateSaturday(dow){
