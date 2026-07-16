@@ -291,6 +291,15 @@ select.if{cursor:pointer;}
     </div>
   </div>
   <div id="hab-row" style="display:none"></div>
+
+  <!-- GYM TODAY -->
+  <div class="today-card tc-gym" id="h-gym-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:600;color:var(--a)">💪 Gym hoy</div>
+      <span class="cbadge bb" id="h-gym-badge">—</span>
+    </div>
+    <div id="h-gym-detail" style="font-size:13px;color:var(--m);margin-bottom:10px"></div>
+    <button class="btn btg btn-sm" onclick="nav('gym')">Ver sesión →</button>
   </div>
 
   <!-- RUN TODAY -->
@@ -315,7 +324,7 @@ select.if{cursor:pointer;}
       </div>
     </div>
   </div>
-    <div id="hab-confirm" style="display:none;font-size:12px;color:var(--g);text-align:center;padding:10px 16px 4px;font-weight:500"></div>
+  <div id="hab-confirm" style="display:none;font-size:12px;color:var(--g);text-align:center;padding:10px 16px 4px;font-weight:500"></div>
 
 </div>
 
@@ -2382,13 +2391,21 @@ function renderGymDay(dk,container,isSession){
         blocks=lastBlocks||[{s:ex.sets,r:typeof ex.reps==='number'?ex.reps:ex.reps,w:ex.weight}];
       }
       var safeExName=ex.name.replace(/'/g,"\\'");
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">';
-      html+='<span class="exbn">'+ex.name+'</span><span class="exbm">'+ex.muscle+'</span>';
-      if(!isDoneEx) html+='<span style="font-size:12px;font-weight:700;color:var(--o);margin-right:4px">'+(ex.weight>0?ex.weight+'kg':ex.reps)+'</span>';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')" style="flex-direction:column;align-items:stretch;gap:6px;padding:11px 14px">';
+      // Row 1: name + check + arrow
+      html+='<div style="display:flex;align-items:center;gap:8px">';
+      html+='<span class="exbn" style="flex:1">'+ex.name+'</span>';
       if(isSession){
-        html+='<div onclick="event.stopPropagation();quickSaveEx(\''+dk+'\','+i+')" style="width:26px;height:26px;border-radius:7px;border:2px solid '+(isDoneEx?'var(--g)':'var(--b)')+';background:'+(isDoneEx?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;margin-right:4px;flex-shrink:0">'+(isDoneEx?'✅':'')+'</div>';
+        html+='<div onclick="event.stopPropagation();quickSaveEx(\''+dk+'\','+i+')" style="width:28px;height:28px;border-radius:8px;border:2px solid '+(isDoneEx?'var(--g)':'var(--b)')+';background:'+(isDoneEx?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0">'+(isDoneEx?'✅':'')+'</div>';
       }
-      html+='<span class="exba">›</span></div>';
+      html+='<span class="exba" style="flex-shrink:0">›</span>';
+      html+='</div>';
+      // Row 2: muscle badge + weight
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">';
+      html+='<span class="exbm" style="flex:1;white-space:normal;line-height:1.3">'+ex.muscle+'</span>';
+      if(!isDoneEx&&(ex.weight>0||ex.reps)) html+='<span style="font-size:12px;font-weight:700;color:var(--o);flex-shrink:0">'+(ex.weight>0?ex.weight+'kg':ex.reps)+'</span>';
+      html+='</div>';
+      html+='</div>';
       html+='<div class="exbd">';
       // Exercise info block: image placeholder, grip, RIR, rest
       if(ex.grip||ex.rir||ex.rest){
@@ -2528,8 +2545,7 @@ function renderGymDay(dk,container,isSession){
     plan.mobility.forEach(function(m,mi){
       var done=mobChecks['post_'+mi];
       
-      var mobImgId='mobimg-post-'+dk+'-'+mi;
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')",\''+safeMobName+'\')">';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">'; 
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
       html+='<div onclick="event.stopPropagation();toggleMobCheck(\''+dk+'\',\'post_'+mi+'\')" style="width:24px;height:24px;border-radius:7px;border:2px solid '+(done?'var(--g)':'var(--b)')+';background:'+(done?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;margin-right:6px;flex-shrink:0">'+(done?'✅':'')+'</div>';
       html+='<span class="exba">›</span></div>';
@@ -2547,7 +2563,7 @@ function renderGymDay(dk,container,isSession){
       var done=mobChecksG['gen_'+mi];
       
       var mobImgId2='mobimg-gen-'+dk+'-'+mi;
-      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')",\''+safeMobName2+'\')">';
+      html+='<div class="exb"><div class="exbh" onclick="this.parentElement.classList.toggle(\'open\')">'; 
       html+='<span class="exbn">'+m.name+'</span><span class="exbm">'+m.dur+'</span>';
       html+='<div onclick="event.stopPropagation();toggleMobCheck(\''+dk+'\',\'gen_'+mi+'\')" style="width:24px;height:24px;border-radius:7px;border:2px solid '+(done?'var(--g)':'var(--b)')+';background:'+(done?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;margin-right:6px;flex-shrink:0">'+(done?'✅':'')+'</div>';
       html+='<span class="exba">›</span></div>';
@@ -3142,23 +3158,10 @@ function renderSupplements(){
   var html='<div style="background:var(--s);border:1px solid var(--b);border-radius:12px;padding:12px 14px">';
   html+='<div style="font-size:11px;font-weight:600;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">💊 Suplementos</div>';
 
-  if(isWeekday){
-    html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b)">';
-    html+='<span style="font-size:13px;color:var(--t)">Whey + Colágeno</span>';
-    html+='<span style="font-size:11px;color:var(--m)">Con pre-gym</span>';
-    html+='<div style="width:28px;height:28px;border-radius:6px;border:2px solid '+(hasPreGym?'var(--g)':'var(--b)')+';background:'+(hasPreGym?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px" onclick="toggleSuppl(\'whey\')">'+(hasPreGym||suppl.whey?'✅':'')+'</div></div>';
-  }
-
-  html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b)">';
-  html+='<span style="font-size:13px;color:var(--t)">Creatina 3g</span>';
-  html+='<span style="font-size:11px;color:var(--m)">'+(isWeekday?'Con el desayuno':'Con la comida')+'</span>';
-  html+='<div style="width:28px;height:28px;border-radius:6px;border:2px solid '+(suppl.creatina?'var(--g)':'var(--b)')+';background:'+(suppl.creatina?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px" onclick="toggleSuppl(\'creatina\')">'+(suppl.creatina?'✅':'')+'</div></div>';
-
   html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0">';
-  html+='<span style="font-size:13px;color:var(--t)">Vitamina D3 2.000 UI</span>';
-  html+='<span style="font-size:11px;color:var(--m)">'+(isWeekday?'Con el desayuno':'Con la comida')+'</span>';
-  html+='<div style="width:28px;height:28px;border-radius:6px;border:2px solid '+(suppl.d3?'var(--g)':'var(--b)')+';background:'+(suppl.d3?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px" onclick="toggleSuppl(\'d3\')">'+(suppl.d3?'✅':'')+'</div></div>';
-
+  html+='<span style="font-size:13px;color:var(--t)">⚡ Creatina 5g</span>';
+  html+='<span style="font-size:11px;color:var(--m)">Post-gym con yogur</span>';
+  html+='<div style="width:28px;height:28px;border-radius:6px;border:2px solid '+(suppl.creatina?'var(--g)':'var(--b)')+';background:'+(suppl.creatina?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px" onclick="toggleSuppl(\'creatina\')">'+(suppl.creatina?'✅':'')+'</div></div>\n';
   html+='</div>';
   document.getElementById('suppl-section').innerHTML=html;
 }
@@ -4480,11 +4483,10 @@ function renderExResults(items,q){
     return;
   }
   res.innerHTML=items.slice(0,8).map(function(ex){
-    var safe=encodeURIComponent(JSON.stringify(ex));
-    var thumbHtml='<div style="font-size:20px;width:52px;text-align:center;flex-shrink:0">'+ex.emoji+'</div>';
-      thumbHtml+
-      '<div><div class="srn">'+ex.name+(ex.source==='local'?' ⭐':'')+'</div>'+
-      '<div class="srm">'+ex.muscle+' · '+ex.sets+'×'+ex.reps+(ex.weight?' · '+ex.weight+'kg':'')+'</div></div></div>';
+    var s=encodeURIComponent(JSON.stringify(ex));
+    var nm=ex.name+(ex.source==='local'?' ⭐':'');
+    var info=ex.muscle+' · '+ex.sets+'×'+ex.reps+(ex.weight?' · '+ex.weight+'kg':'');
+    return '<div onclick="selectExercise(decodeURIComponent(\''+s+'\'))" class="sr-item" style="display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid var(--b);cursor:pointer"><div style="flex:1"><div class="srn">'+nm+'</div><div class="srm">'+info+'</div></div></div>';
   }).join('');
 }
 
