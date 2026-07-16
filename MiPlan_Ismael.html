@@ -314,7 +314,7 @@ select.if{cursor:pointer;}
 
   <!-- KCAL -->
   <div class="card">
-    <div class="ch"><span class="ci">🍽️</span><span class="ct">Calorías hoy</span><span class="cbadge bo" id="h-kcal-badge">0 / 2.000</span></div>
+    <div class="ch"><span class="ci">🍽️</span><span class="ct">Calorías hoy</span><span class="cbadge bo" id="h-kcal-badge">0 / 1.800</span></div>
     <div class="cb">
       <div class="pw"><div class="pb pbo" id="h-kcal-bar" style="width:0%"></div></div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;text-align:center">
@@ -401,7 +401,7 @@ select.if{cursor:pointer;}
 
 <!-- FOOD -->
 <div class="page" id="pg-food">
-  <div class="ph"><div class="pt">🍽️ Alimentación</div><div class="ps" id="food-sub">2.000 kcal · 163g proteína</div></div>
+  <div class="ph"><div class="pt">🍽️ Alimentación</div><div class="ps" id="food-sub">1.800 kcal · 163g proteína</div></div>
   <div class="tr">
     <button class="tb active" onclick="foodTab('today')">Hoy</button>
     <button class="tb" onclick="foodTab('plan')">Plan</button>
@@ -1093,7 +1093,7 @@ const RUN_WEEKS=[
 ];
 
 ;(function _seedData(){
-  var FLAG='miplan_seeded_v6';
+  var FLAG='miplan_seeded_v7';
   if(localStorage.getItem(FLAG)) return;
   try{
     // ── Seed gym history ──
@@ -1219,6 +1219,16 @@ const RUN_WEEKS=[
     if(!localStorage.getItem('run_start_date')){
       localStorage.setItem('run_start_date','2026-07-06');
     }
+
+    // Seed martes 15 julio sesión (corregido)
+  if(!localStorage.getItem('gym_log_martes_2026-07-16_0')) localStorage.setItem('gym_log_martes_2026-07-16_0','{"blocks":[{"s":4,"r":"10-12","w":35}],"done":true}');
+  if(!localStorage.getItem('gym_log_martes_2026-07-16_1')) localStorage.setItem('gym_log_martes_2026-07-16_1','{"blocks":[{"s":2,"r":"12-15","w":35},{"s":1,"r":"12-15","w":40}],"done":true}');
+  if(!localStorage.getItem('gym_log_martes_2026-07-16_2')) localStorage.setItem('gym_log_martes_2026-07-16_2','{"blocks":[{"s":1,"r":"15-20","w":7.5},{"s":3,"r":"15-20","w":10}],"done":true}');
+  if(!localStorage.getItem('gym_log_martes_2026-07-16_4')) localStorage.setItem('gym_log_martes_2026-07-16_4','{"blocks":[{"s":3,"r":"15-20","w":15},{"s":1,"r":"15-20","w":20}],"done":true}');
+  if(!localStorage.getItem('gym_log_martes_2026-07-16_6')) localStorage.setItem('gym_log_martes_2026-07-16_6','{"blocks":[{"s":4,"r":"15-20","w":12.5}],"done":true}');
+  // gym_hist martes 15 julio
+  var gh15=ld('gym_hist',[]);
+  if(!gh15.find(function(h){return h.date==='2026-07-16'&&h.day==='martes';})){gh15.unshift({date:'2026-07-16',day:'martes',name:'Pecho + Tríceps',emoji:'🏋️',exercises:[{name:'Press banca con barra',blocks:[{s:4,r:'10-12',w:35}]},{name:'Press inclinado con mancuernas',blocks:[{s:2,r:'12-15',w:35},{s:1,r:'12-15',w:40}]},{name:'Aperturas en maquina pec deck',blocks:[{s:1,r:'15-20',w:7.5},{s:3,r:'15-20',w:10}]},{name:'Extension triceps polea alta con cuerda',blocks:[{s:3,r:'15-20',w:15},{s:1,r:'15-20',w:20}]},{name:'Triceps en polea baja con cuerda',blocks:[{s:4,r:'15-20',w:12.5}]}]});sd('gym_hist',gh15.slice(0,60));}
 
     localStorage.setItem(FLAG,'1');
   }catch(e){console.warn('Seed error:',e);}
@@ -1958,7 +1968,7 @@ function getCurrentWeight(){
   var ws=ld('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
   return ws.length?ws[ws.length-1].val:90.6;
 }
-function getTargetKcal(){return 2000;}
+function getTargetKcal(){return 1800;}
 function getTargetProt(){return Math.round(getCurrentWeight()*1.8);}
 
 // HOME
@@ -3266,6 +3276,19 @@ function renderFoodToday(){
   document.getElementById('f-meals').innerHTML=html;
   renderHomeMacros();
 
+  // Alert if below 1500 kcal at end of day (after 21:00)
+  var nowHour=new Date().getHours();
+  if(nowHour>=21){
+    var todayLog=ld('food_'+today(),[]);
+    var todayKcal=todayLog.reduce(function(s,f){return s+(f.kcal||0);},0);
+    if(todayKcal>0&&todayKcal<1500){
+      var alertEl=document.getElementById('h-alert-yesterday');
+      if(alertEl){
+        alertEl.style.display='block';
+        alertEl.innerHTML='<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 12px;font-size:12px;color:#ef4444">⚠️ <strong>Calorías bajas hoy ('+Math.round(todayKcal)+' kcal)</strong> — Por debajo de 1500 kcal hay riesgo de pérdida muscular. Añade algo de proteína antes de dormir.</div>';
+      }
+    }
+  }
   // Check 22:00 alert
   checkFoodAlert();
 }
@@ -3677,7 +3700,7 @@ function addWeight(){
   var d=new Date(date);
   if(d.getDay()===1){
     var newProt=Math.round(val*1.8);
-    setTimeout(function(){alert('🔄 Nuevo peso: '+val+' kg\nProteína actualizada: '+newProt+'g/día ('+val+' × 1,8)\nCalorías: 2.000 kcal sin cambios.');},200);
+    setTimeout(function(){alert('🔄 Nuevo peso: '+val+' kg\nProteína actualizada: '+newProt+'g/día ('+val+' × 1,8)\nCalorías: 1.800 kcal sin cambios.');},200);
   }
   document.getElementById('w-val').value='';
   renderWeight();
