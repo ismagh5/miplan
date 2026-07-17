@@ -342,7 +342,7 @@ select.if{cursor:pointer;}
       <div style="flex:1;min-width:120px"><label class="il">Día</label>
         <input type="date" class="if" id="gym-log-date" style="font-size:13px" onchange="applyGymDate()">
       </div>
-      <div style="flex:1;min-width:120px"><label class="il">Rutina</label>
+      <div style="flex:1;min-width:100px"><label class="il">Rutina</label>
         <select class="if" id="gym-routine-override" style="font-size:13px" onchange="applyRoutineOverride()">
           <option value="">📅 Del día</option>
           <option value="lunes">💪 Lunes — Espalda + Bíceps</option>
@@ -969,12 +969,28 @@ const GYM_WEEKS=[
 ];
 
 function getGymWeek(){
-  var start=new Date(2026,6,13); // July 13
+  var MIN_GYM=3; // minimum sessions to complete a week
+  var start=new Date(2026,6,13);
   var now=new Date();
-  var diff=Math.floor((now-start)/(7*86400000));
-  if(diff<0) return GYM_WEEKS[0];
-  if(diff>=GYM_WEEKS.length) return GYM_WEEKS[GYM_WEEKS.length-1];
-  return GYM_WEEKS[diff];
+  var hist=ld('gym_hist',[]);
+
+  // Find the highest week where user has >=MIN_GYM sessions
+  var calWeek=Math.floor((now-start)/(7*86400000));
+  calWeek=Math.max(0,Math.min(GYM_WEEKS.length-1,calWeek));
+
+  // Check weeks from current backwards to find the right one
+  for(var w=calWeek;w>=0;w--){
+    var count=hist.filter(function(s){
+      if(!s.date) return false;
+      var d=new Date(s.date+'T12:00:00');
+      var wk=Math.floor((d-start)/(7*86400000));
+      return wk===w;
+    }).length;
+    if(count>=MIN_GYM) return GYM_WEEKS[Math.min(w+1,GYM_WEEKS.length-1)];
+    // If it's the current calendar week with sessions but not yet MIN, stay here
+    if(w===calWeek&&count>0) return GYM_WEEKS[w];
+  }
+  return GYM_WEEKS[0];
 }
 
 const MOB_GENERAL=[
@@ -2153,12 +2169,29 @@ function resetRunPlan(){
   },'¿Reiniciar plan?');
 }
 function getCurrentRunWeek(){
+  var MIN_RUN=2; // minimum sessions to complete a running week
   var now=new Date();
   var nowDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   var startDate=getRunStartDate();
   if(nowDate<startDate) return 0;
+
   var diff=Math.floor((nowDate-startDate)/86400000);
-  return Math.min(Math.floor(diff/7)+1,7);
+  var calWeek=Math.min(Math.floor(diff/7)+1,7);
+  var runHist=ld('run_hist',[]);
+
+  // Find highest week with >=MIN_RUN sessions
+  for(var w=calWeek;w>=1;w--){
+    var count=runHist.filter(function(s){
+      if(!s.date) return false;
+      var sd=new Date(s.date+'T12:00:00');
+      var d=Math.floor((sd-startDate)/86400000);
+      return d>=0&&Math.floor(d/7)+1===w;
+    }).length;
+    if(count>=MIN_RUN) return Math.min(w+1,7);
+    // Current calendar week with at least 1 session but not yet MIN - stay here
+    if(w===calWeek&&count>0) return w;
+  }
+  return 1;
 }
 
 function toggleHabit(h){
@@ -2304,6 +2337,8 @@ function renderGymSession(){
   var gInp=document.getElementById('gym-log-date'); if(gInp) gInp.value=logDate;
   var gBtn=document.getElementById('gym-date-today-btn'); if(gBtn) gBtn.style.display=isYesterday?'block':'none';
   var gSel=document.getElementById('gym-routine-override'); if(gSel) gSel.value=override;
+  var gwSel=document.getElementById('gym-week-select');
+  if(gwSel){var gwo=ld('gym_week_override',null);gwSel.value=gwo||'';}
   // Show weekly progression banner
   var gWeek=getGymWeek();
   var weekBanner=document.getElementById('gym-week-banner');
