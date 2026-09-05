@@ -18,9 +18,10 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;font-size:14px;line-height:1.5;display:flex;flex-direction:column;}
-.page{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(70px + var(--safe-b));}
+.page{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(80px + var(--safe-b));}
 .page.active{display:block;}
 .bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(24,28,39,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b);display:flex;padding-bottom:var(--safe-b);z-index:1000;}
+.page{display:none;width:100%;min-height:calc(100vh - 120px);padding-bottom:80px}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;cursor:pointer;border:none;background:none;color:var(--m);font-size:10px;font-weight:500;transition:color 0.2s;}
 .nb.active{color:var(--a);}
 .nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
@@ -221,78 +222,202 @@ select.if{cursor:pointer;}
   <button class="nb" onclick="nav('food')" id="nb-food">
     <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3v7"/></svg>Comida
   </button>
-  <button class="nb" onclick="nav('weight')" id="nb-weight">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M6.7 8.5C3.5 9.6 2 12.3 2 15c0 3.9 4.5 7 10 7s10-3.1 10-7c0-2.7-1.5-5.4-4.7-6.5"/><path d="M12 12v4"/></svg>Peso
-  </button>
+  
   <button class="nb" onclick="nav('health')" id="nb-health">
     <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><path d="M9 12l2 2 4-4"/></svg>Salud</button>
   <button class="nb" onclick="nav('shop')" id="nb-shop" style="display:none">
     <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Compra
   </button>
 </nav>
+<div class="page" id="pg-home">
 
-<!-- HOME -->
-<div id="h-water-schedule" style="padding:2px 12px 10px;display:flex;flex-direction:column;gap:5px"></div>
+  <!-- HEADER -->
+  <div class="ph">
+    <div class="pt" id="h-date">Cargando...</div>
+    <div class="ps" id="h-weight"></div>
   </div>
 
-  <!-- HABITS -->
+  <!-- ALERTA -->
+  <div id="h-alert-yesterday" style="display:none;padding:0 16px 8px"></div>
+
+  <!-- OBJETIVO MAYO 2027 -->
+  <div class="card" style="margin:8px 16px;background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(61,214,140,0.06));border:1px solid rgba(99,102,241,0.25)" id="h-countdown-card">
+    <div class="cb" style="padding:12px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--a);letter-spacing:0.5px;margin-bottom:2px">OBJETIVO FÍSICO</div>
+          <div style="font-size:14px;font-weight:700;color:var(--t)">Físico híbrido · 5 mayo 2027</div>
+          <div style="font-size:11px;color:var(--m);margin-top:2px">184cm · 80-82 kg · ~12% grasa · Recomposición</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:32px;font-weight:800;color:var(--p);line-height:1" id="h-days-left">—</div>
+          <div style="font-size:10px;color:var(--m)">días</div>
+        </div>
+      </div>
+      <div style="background:var(--b);border-radius:4px;height:5px;margin-bottom:6px">
+        <div id="h-goal-bar" style="height:5px;border-radius:4px;background:linear-gradient(90deg,var(--p),var(--g));width:0%;transition:width 0.5s"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--m)">
+        <span>7 sep 2026</span>
+        <span id="h-pct-done">0% completado</span></div><div id="h-cheat-info" style="font-size:11px;color:var(--o);margin-top:6px"></div>
+        <span>5 may 2027</span>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--b);display:flex;gap:8px">
+        <div style="flex:1;background:rgba(61,214,140,0.08);border-radius:8px;padding:6px 8px;text-align:center">
+          <div style="font-size:10px;color:var(--g);font-weight:600">30 DIC 2026</div>
+          <div style="font-size:11px;color:var(--t);margin-top:2px">10km sub-50'</div>
+          <div style="font-size:10px;color:var(--m)">80-82 kg</div>
+        </div>
+        <div style="flex:1;background:rgba(167,139,250,0.08);border-radius:8px;padding:6px 8px;text-align:center">
+          <div style="font-size:10px;color:var(--p);font-weight:600">5 MAY 2027</div>
+          <div style="font-size:11px;color:var(--t);margin-top:2px">Físico híbrido</div>
+          <div style="font-size:10px;color:var(--m)">80-82 kg · ~12% grasa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALCOHOL STATUS -->
+  <div id="h-alcohol-card" class="card" style="margin:0 16px 8px;background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.2)">
+    <div class="cb" style="padding:10px 12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#ef4444">🚫 ALCOHOL — CERO</div>
+          <div style="font-size:12px;color:var(--m);margin-top:2px" id="h-alcohol-text">Cargando...</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:22px;font-weight:800;color:#ef4444;line-height:1" id="h-alcohol-days">—</div>
+          <div style="font-size:10px;color:var(--m)">días limpio</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LUNES CHECK-IN -->
+  <div id="h-monday-checkin" style="display:none;margin:0 16px 8px">
+    <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.35);border-radius:12px;padding:12px 14px">
+      <div style="font-size:13px;font-weight:700;color:var(--o);margin-bottom:4px">📸 Lunes — Check-in semanal</div>
+      <div style="font-size:12px;color:var(--m);margin-bottom:8px">Pésate en ayunas · 3 fotos (frontal, lateral, espalda) · Guárdalas con la fecha</div>
+      <button class="btn bth btn-sm" onclick="nav('health');healthTab('peso')">Ir a registrar peso →</button>
+    </div>
+  </div>
+
+  <!-- PESO HOY -->
+  <div class="card" style="margin:8px 16px" id="h-weight-card">
+    <div class="ch">
+      <span class="ci">⚖️</span>
+      <span class="ct">Peso</span>
+      <span class="cbadge bb" id="h-cur-kg">— kg</span>
+    </div>
+    <div class="cb" style="padding:10px 16px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:6px">
+        <span>Inicio: 93 kg</span>
+        <span id="h-weight-lost" style="color:var(--g)">—</span>
+        <span>Objetivo: 80-82 kg</span>
+      </div>
+      <div style="background:var(--b);border-radius:4px;height:6px;margin-bottom:8px">
+        <div id="h-pbar" style="height:6px;border-radius:4px;background:linear-gradient(90deg,var(--g),var(--a));width:0%;transition:width 0.6s"></div>
+      </div>
+      <canvas id="h-w-chart" height="90" style="width:100%"></canvas>
+      <div style="text-align:right;margin-top:4px">
+        <button class="btn bth btn-sm" style="font-size:11px" onclick="nav('health');healthTab('peso')">Registrar peso →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRASE DEL DÍA -->
+  <div class="card" style="margin:8px 16px;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2)" id="h-quote-card">
+    <div class="cb" style="padding:12px 14px">
+      <div style="font-size:13px;font-style:italic;color:var(--t);line-height:1.5;margin-bottom:6px" id="h-quote-text">—</div>
+      <div style="font-size:10px;color:var(--p)" id="h-quote-author">—</div>
+    </div>
+  </div>
+
+  <!-- TIEMPO (PALENCIA) -->
+  <div class="card" style="margin:8px 16px" id="h-weather-card">
+    <div class="ch"><span class="ci">🌤️</span><span class="ct">Palencia</span><span id="h-weather-badge" class="cbadge bp">—</span></div>
+    <div class="cb" style="padding:6px 16px 10px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:32px;font-weight:700;color:var(--t)" id="h-weather-temp">—</div>
+        <div style="text-align:right;font-size:11px;color:var(--m)" id="h-weather-desc">Cargando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTRENO HOY -->
+  <div class="today-card tc-gym" id="h-gym-card" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:13px;font-weight:600;color:var(--a)">💪 Entreno hoy</div>
+      <span class="cbadge bb" id="h-gym-badge">—</span>
+    </div>
+    <div id="h-gym-detail" style="font-size:12px;color:var(--m);margin-bottom:8px"></div>
+    <button class="btn btg btn-sm" onclick="nav('gym')">Ver sesión →</button>
+  </div>
+
+  <!-- RUNNING HOY -->
+  <div class="today-card tc-run" id="h-run-card" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:13px;font-weight:600;color:var(--g)">🏃 Running hoy</div>
+      <span class="cbadge bg" id="h-run-badge">—</span>
+    </div>
+    <div id="h-run-detail" style="font-size:12px;color:var(--m);margin-bottom:8px"></div>
+    <button class="btn btg btn-sm" onclick="nav('run')">Ver plan →</button>
+  </div>
+
+  <!-- COMIDA DEL MOMENTO -->
+  <div class="card" style="margin:8px 16px" id="h-meal-card">
+    <div class="ch">
+      <span class="ci" id="h-meal-emoji">🍽️</span>
+      <span class="ct" id="h-meal-title">Comida del momento</span>
+      <span class="cbadge" id="h-meal-badge" style="background:rgba(61,214,140,0.12);color:var(--g);display:none">✅ Hecho</span>
+    </div>
+    <div class="cb" id="h-meal-content"></div>
+  </div>
+
+
+  <!-- MOVILIDAD HOY -->
+  <div class="card" style="margin:8px 16px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.2)" id="h-mob-card">
+    <div class="cb" style="padding:10px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--p)">🧘 Movilidad · 8 min</div>
+          <div style="font-size:11px;color:var(--m);margin-top:1px">00:00 · Isquios + postura + vacuum · 8 min</div>
+        </div>
+        <div id="h-mob-done" style="font-size:20px">—</div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px"><button class="btn bth btn-sm" style="font-size:11px;flex:1" onclick="nav('health');healthTab('movilidad')">🧘 Movilidad →</button><button class="btn bth btn-sm" style="font-size:11px;flex:1" id="h-leer-btn" onclick="toggleLeer()">📚 Lectura</button></div>
+    </div>
+  </div>
+  <!-- PLAN DEL DÍA -->
   <div class="card" style="margin:8px 16px">
     <div class="ch"><span class="ci">📋</span><span class="ct">Plan del día</span><span id="schedule-badge" class="cbadge bb">0/0</span></div>
     <div class="cb" id="day-schedule-checks"></div>
   </div>
-  
+
   <div id="hab-row" style="display:none"></div>
-
-  <!-- GYM TODAY -->
-  <div class="today-card tc-gym" id="h-gym-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:600;color:var(--a)">💪 Gym hoy</div>
-      <span class="cbadge bb" id="h-gym-badge">—</span>
-    </div>
-    <div id="h-gym-detail" style="font-size:13px;color:var(--m);margin-bottom:10px"></div>
-    <button class="btn btg btn-sm" onclick="nav('gym')">Ver sesión →</button>
-  </div>
-
-  <!-- RUN TODAY -->
-  <div class="today-card tc-run" id="h-run-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:600;color:var(--g)">🏃 Running hoy</div>
-      <span class="cbadge bg" id="h-run-badge">—</span>
-    </div>
-    <div id="h-run-detail" style="font-size:13px;color:var(--m);margin-bottom:10px"></div>
-    <button class="btn btg btn-sm" onclick="nav('run')">Ver plan →</button>
-  </div>
-
-  <!-- KCAL -->
-  <div class="card">
-    <div class="ch"><span class="ci">🍽️</span><span class="ct">Calorías hoy</span><span class="cbadge bo" id="h-kcal-badge">0 / 1.800</span></div>
-    <div class="cb">
-      <div class="pw"><div class="pb pbo" id="h-kcal-bar" style="width:0%"></div></div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;text-align:center">
-        <div><div style="font-size:15px;font-weight:700;color:var(--a)" id="h-prot">0g</div><div style="font-size:10px;color:var(--m)">Proteína</div></div>
-        <div><div style="font-size:15px;font-weight:700;color:var(--o)" id="h-carb">0g</div><div style="font-size:10px;color:var(--m)">Carbos</div></div>
-        <div><div style="font-size:15px;font-weight:700;color:var(--p)" id="h-fat">0g</div><div style="font-size:10px;color:var(--m)">Grasa</div></div>
-      </div>
-    </div>
-  </div>
   <div id="hab-confirm" style="display:none;font-size:12px;color:var(--g);text-align:center;padding:10px 16px 4px;font-weight:500"></div>
 
 </div>
 
 <!-- GYM -->
-<div class="page" id="pg-gym">
-  <div class="ph"><div class="pt">💪 Entrenamiento</div></div>
-  <div class="tr">
-    <button class="tb active" onclick="gymTab('session')">Hoy</button>
+<div class="page" id="pg-gym" style="display:none">
+  <div class="ph">
+    <div class="pt">💪 Entrenamiento</div>
+    <div class="ps" id="gym-sub">Gym · Casa</div>
+  </div>
+  <!-- Tabs Sesión / Plan / Historial (only shown in gym mode) -->
+  <div class="tr" id="gym-tabs-row" style="display:none">
+    <button class="tb active" onclick="gymTab('session')">Sesión</button>
     <button class="tb" onclick="gymTab('plan')">Plan</button>
     <button class="tb" onclick="gymTab('history')">Historial</button>
   </div>
+  <!-- Mode toggle -->
   <div style="display:flex;gap:8px;padding:8px 16px 0">
-    <button id="mode-gym-btn" class="btn btg btn-sm" style="flex:1" onclick="setTrainingMode('gym')">🏋️ Gym</button>
-    <button id="mode-casa-btn" class="btn bth btn-sm" style="flex:1" onclick="setTrainingMode('casa')">🏠 Casa</button>
+    <button id="mode-gym-btn" class="btn btg btn-sm" style="flex:1" onclick="setTrainingMode('casa')">🏠 Casa</button>
+    <button id="mode-casa-btn" class="btn bth btn-sm" style="flex:1" onclick="setTrainingMode('gym')">🏋️ Gym</button>
   </div>
-  <!-- Date selector for gym — static in DOM like weight page -->
-  <div id="gt-session">
+  <!-- GYM: date + session -->
+  <div id="gt-session" style="display:none">
     <div style="display:flex;align-items:center;gap:6px;padding:8px 16px 4px;flex-wrap:wrap" id="gym-date-row">
       <div style="flex:1;min-width:120px"><label class="il">Día</label>
         <input type="date" class="if" id="gym-log-date" style="font-size:13px" onchange="applyGymDate()">
@@ -311,6 +436,7 @@ select.if{cursor:pointer;}
     </div>
     <div id="gym-session-content"></div>
   </div>
+  <!-- GYM: plan -->
   <div id="gt-plan" style="display:none">
     <div class="tr" style="padding-top:10px">
       <button class="tb active" onclick="planDay('lunes')">Lun</button>
@@ -325,12 +451,15 @@ select.if{cursor:pointer;}
     <div style="border-top:1px solid var(--b);padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--t)">📋 Ejercicios del día</div>
     <div id="gym-plan-content" style="padding:0 16px 12px"></div>
   </div>
-  <div id="gt-history" style="display:none"><div id="gym-history-content" style="padding:12px 16px"></div></div>
+  <!-- GYM: history -->
+  <div id="gt-history" style="display:none">
+    <div id="gym-history-content" style="padding:12px 16px"></div>
+  </div>
+  <!-- CASA: home training -->
+  <div id="gt-casa" style="display:block"></div>
 </div>
-
-<!-- RUNNING -->
-<div class="page" id="pg-run">
-  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">10km sub-50' · 30 Diciembre 2026</div></div>
+<div class="page" id="pg-run" style="display:none">
+  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">10km sub-50' · 30 diciembre 2026</div></div>
   <div class="tr">
     <button class="tb active" onclick="runTab('today')">Hoy</button>
     <button class="tb" onclick="runTab('plan')">Plan completo</button>
@@ -355,11 +484,12 @@ select.if{cursor:pointer;}
 </div>
 
 <!-- FOOD -->
-<div class="page" id="pg-food">
+<div class="page" id="pg-food" style="display:none">
   <div class="ph"><div class="pt">🍽️ Alimentación</div><div class="ps" id="food-sub">1.800 kcal · 163g proteína</div></div>
   <div class="tr">
     <button class="tb active" onclick="foodTab('today')">Hoy</button>
     <button class="tb" onclick="foodTab('plan')">Plan</button>
+    <button class="tb" onclick="foodTab('caseras')">🍪 Recetas</button>
     <button class="tb" onclick="foodTab('history')">Historial</button>
   </div>
 
@@ -394,6 +524,7 @@ select.if{cursor:pointer;}
     </div>
   </div>
 
+  <div id="ft-caseras" style="display:none"><div id="food-caseras-content" style="padding:12px 16px"></div></div>
   <div id="ft-plan" style="display:none"><div id="food-plan-content" style="padding:10px 16px"></div></div>
   <div id="ft-history" style="display:none"><div id="food-history-content" style="padding:10px 16px"></div></div>
 </div>
@@ -421,10 +552,23 @@ select.if{cursor:pointer;}
     </div>
   </div>
 
-<div class="page" id="pg-weight">
-  <div class="ph"><div class="pt">⚖️ Peso</div><div class="ps">Objetivo: 82–84 kg · 15 agosto</div></div>
+
+<div class="page" id="pg-health" style="display:none">
+  <div class="ph">
+    <div class="pt">❤️ Salud</div>
+    <div class="ps">Analítica · Impacto · Peso · Protocolo</div>
+  </div>
+  <div class="tr" style="padding:8px 16px 0">
+    <button class="tb active" onclick="healthTab('peso')">⚖️ Peso</button>
+    <button class="tb" onclick="healthTab('movilidad')">🧘 Mov.</button>
+    <button class="tb" onclick="healthTab('analytics')">🔬 Datos</button>
+    <button class="tb" onclick="healthTab('protocol')">💊 Proto.</button>
+  </div>
+  <div id="ht-peso" style="display:block">
+  <div class="ph"><div class="pt">⚖️ Peso</div><div class="ps">Objetivo: 80-82 kg · Menos grasa · Más músculo</div></div>
+  <div id="w-monday-banner" style="display:none"></div>
   <div class="card">
-    <div class="ch"><span class="ci">➕</span><span class="ct">Registrar peso</span></div>
+    <div class="ch"><span class="ci">➕</span><span class="ct">Registrar peso · Cada lunes en ayunas</span></div>
     <div class="cb">
       <div style="display:flex;gap:8px;align-items:flex-end">
         <div style="flex:1"><label class="il">Fecha</label><input type="date" class="if" id="w-date"></div>
@@ -445,23 +589,14 @@ select.if{cursor:pointer;}
       <button onclick="importData()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;color:var(--t);font-size:13px;font-weight:600;cursor:pointer">📥 Importar datos</button>
     </div>
   </div>
-</div>
 
-<!-- HEALTH -->
-<div class="page" id="pg-health">
-  <div class="ph"><div class="pt">🩺 Salud</div><div class="ps">Analítica 6 mayo 2026</div></div>
-  <div class="tr">
-    <button class="tb active" onclick="healthTab('analytics')">Analítica</button>
-    <button class="tb" onclick="healthTab('impact')">Impacto hoy</button>
-    <button class="tb" onclick="healthTab('protocol')">Post-fiesta</button>
   </div>
-  <div id="ht-analytics"><div id="health-analytics-content"></div></div>
-  <div id="ht-impact" style="display:none"><div id="health-impact-content" style="padding:12px 16px"></div></div>
-  <div id="ht-protocol" style="display:none"><div id="health-protocol-content" style="padding:12px 16px"></div></div>
+  <div id="ht-movilidad" style="display:none"><div id="mob-content" style="padding:12px 16px"></div></div>
+  <div id="ht-analytics" style="display:none"><div id="health-analytics-content"></div></div>
+  <div id="ht-impact" style="display:none"><div id="health-impact-content"></div></div>
+  <div id="ht-protocol" style="display:none"><div id="health-protocol-content"></div></div>
 </div>
-
-<!-- SHOP (solo domingo) -->
-<div class="page" id="pg-shop">
+<div class="page" id="pg-shop" style="display:none">
   <div class="ph"><div class="pt">🛒 Planificador semanal</div><div class="ps">Menú + lista de la compra</div></div>
   <div class="tr">
     <button class="tb active" onclick="shopTab('menu')">📅 Menú</button>
@@ -1668,66 +1803,366 @@ function setTrainingMode(mode){
   sd('training_mode',mode);
   var gbtn=document.getElementById('mode-gym-btn');
   var cbtn=document.getElementById('mode-casa-btn');
+  var tabsRow=document.getElementById('gym-tabs-row');
   if(gbtn){gbtn.className='btn '+(mode==='gym'?'btg':'bth')+' btn-sm';gbtn.style.flex='1';}
   if(cbtn){cbtn.className='btn '+(mode==='casa'?'btg':'bth')+' btn-sm';cbtn.style.flex='1';}
   if(mode==='gym'){
-    document.getElementById('gt-session').style.display='';
-    document.getElementById('gt-plan').style.display='';
-    document.getElementById('gt-history').style.display='';
-    var casaEl=document.getElementById('gt-casa');
-    if(casaEl) casaEl.style.display='none';
+    if(tabsRow) tabsRow.style.display='flex';
+    ['gt-session','gt-plan','gt-history'].forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
+    var casaEl=document.getElementById('gt-casa');if(casaEl)casaEl.style.display='none';
     gymTab('session');renderGymSession();
   } else {
+    if(tabsRow) tabsRow.style.display='none';
+    ['gt-session','gt-plan','gt-history'].forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
+    var casaEl2=document.getElementById('gt-casa');if(casaEl2)casaEl2.style.display='block';
     renderCasaPage();
   }
 }
 
+
+// ════════════════════════════════════════════
+// PLAN ENTRENAMIENTO EN CASA — HIIT 40s/20s
+// Pre · Circuito · Post con instrucciones completas
+// ════════════════════════════════════════════
+var CASA_BASE={
+  lunes:{
+    n:'Tren Inferior Completo',emoji:'🦵',
+    obj:'Glúteo · Cuádriceps · Isquios · Pantorrillas',
+    material:'Esterilla · Silla · Garrafa (lastre opcional)',
+    preNut:'No comer nada pesado en las 2h previas. Si tienes hambre, 1 plátano 30min antes.',
+    cal:[
+      {n:'Cat-Cow',dur:'90s',desc:'A cuatro patas, alterna arqueado (vaca) y redondeo (gato). Lento y controlado. Despierta la columna.'},
+      {n:'Hip Circles',dur:'30s/lado',desc:'De pie, manos en caderas. Círculos amplios con la cadera en cada dirección.'},
+      {n:'Sentadilla con pausa',dur:'12 reps',desc:'Baja en 3s, mantén 2s abajo, sube en 1s. Activa glúteo y cuádriceps antes de cargar.'},
+      {n:'Glute Bridge básico',dur:'15 reps',desc:'Tumbado, pies apoyados. Empuja con los talones, eleva cadera. Aprieta glúteo arriba.'},
+      {n:'Skipping suave',dur:'60s',desc:'Eleva rodillas al menos a la cadera. Ritmo moderado. Sube pulsaciones gradualmente.'},
+    ],
+    circ:[
+      {n:'Sentadilla básica',muscle:'Cuádriceps · Glúteo',rondas:4,t:'40s/20s',desc:'Pies a la anchura de hombros, puntas ligeramente fuera. Baja hasta muslos paralelos al suelo. Empuja con los talones al subir. Espalda recta siempre.'},
+      {n:'Sentadilla búlgara (pierna derecha)',muscle:'Cuádriceps · Glúteo · Equilibrio',rondas:4,t:'40s/20s',desc:'Pie trasero en la silla. Baja la rodilla trasera hacia el suelo sin tocar. Torso erguido. Añade garrafa en las manos cuando el bodyweight sea fácil.'},
+      {n:'Sentadilla búlgara (pierna izquierda)',muscle:'Cuádriceps · Glúteo · Equilibrio',rondas:4,t:'40s/20s',desc:'Mismo ejercicio, pierna contraria. Hacerlos por separado detecta asimetrías entre piernas.'},
+      {n:'Hip Thrust en silla',muscle:'Glúteo mayor · Isquios',rondas:4,t:'40s/20s',desc:'Hombros en el borde de la silla, pies en el suelo. Sube la cadera apretando el glúteo 1s arriba. Garrafa encima de las caderas para más carga.'},
+      {n:'Zancada alternante',muscle:'Cuádriceps · Glúteo · Equilibrio',rondas:4,t:'40s/20s',desc:'Paso largo adelante, baja rodilla trasera casi al suelo. Empuja con el pie delantero para volver. Alterna piernas de forma fluida.'},
+      {n:'Nordic Curl asistido',muscle:'Isquiotibiales (excéntrico)',rondas:4,t:'40s/20s',desc:'Pies anclados bajo el sofá o silla. Desde rodillas, baja el cuerpo controlando con los isquios. Las manos amortiguan la caída al principio. Progresión hacia el suelo.'},
+      {n:'Calf Raise unilateral',muscle:'Gemelos · Sóleo',rondas:4,t:'40s/20s',desc:'De pie en un escalón o borde. Una pierna. Baja el talón y sube de puntillas al máximo. Alterna cada 40s. Para cargar: garrafa en la mano.'},
+      {n:'Sentadilla isométrica en pared',muscle:'Cuádriceps · Glúteo (resistencia)',rondas:4,t:'40s/20s',desc:'Espalda en la pared, muslos paralelos al suelo, ángulo 90°. No te muevas. Avanzado: garrafa en el regazo.'},
+    ],
+    post:[
+      {n:'Estiramiento cuádriceps',dur:'45s/lado',desc:'De pie, dobla la rodilla y lleva el talón al glúteo. Alinea la rodilla con la otra. Apóyate en la pared si pierdes el equilibrio.'},
+      {n:'Estiramiento isquios con banda',dur:'60s/lado',desc:'Tumbado, banda en la planta del pie, estira la pierna hacia arriba sin doblar la rodilla. Aguanta en el máximo rango tolerable.'},
+      {n:'Pigeon Pose',dur:'60s/lado',desc:'Rodilla delantera en el suelo, pierna trasera estirada. Baja el pecho poco a poco. El mejor estiramiento para glúteo y piriforme.'},
+      {n:'Foam roller isquios',dur:'2 min',desc:'Sentado sobre el foam roller. Deslízate del pliegue glúteo a la rodilla. En puntos de tensión, mantén 10-15s sin moverte.'},
+      {n:'Foam roller glúteo',dur:'90s/lado',desc:'Cruza un tobillo sobre la rodilla contraria y rueda sobre el glúteo del lado cruzado. Muy efectivo para piriforme y glúteo medio.'},
+    ],
+    postNut:'Dentro de los 45-60 min: creatina 5g + yogur griego con plátano. Si entrenas antes de comer, haz la comida del día en esa ventana.',
+  },
+  martes:{
+    n:'Empuje — Pecho · Hombros · Tríceps',emoji:'💪',
+    obj:'Pectoral · Deltoides · Tríceps · Serrato anterior',
+    material:'Esterilla · Silla · Banda elástica · Guantes',
+    preNut:'Si hay running a las 20:00: cena ligera (proteína + verdura) 90 min antes de salir. Si no: come normal.',
+    cal:[
+      {n:'Rotaciones de hombro',dur:'30s/dirección',desc:'Brazos en cruz. Círculos hacia delante y hacia atrás. Empieza pequeño, ve aumentando el tamaño.'},
+      {n:'Flexión en pared',dur:'15 reps',desc:'Manos en la pared a la altura del pecho. Inclínate y empuja. Activa pecho y hombros suavemente.'},
+      {n:'Flexión inclinada',dur:'10 reps',desc:'Manos elevadas en la silla. Más fácil que la estándar. Prepara la articulación del hombro.'},
+      {n:'Shoulder tap en cuadrupedia',dur:'20 reps',desc:'A cuatro patas, lleva una mano al hombro contrario. Core estable, sin rotar las caderas.'},
+      {n:'Arm swings (cruces de brazos)',dur:'20 reps',desc:'De pie, extiende los brazos al frente y ábrelos en cruz repentinamente. Prepara el manguito rotador.'},
+    ],
+    circ:[
+      {n:'Flexión estándar',muscle:'Pectoral mayor · Tríceps · Hombros',rondas:5,t:'40s/20s',desc:'Manos a la anchura de hombros. Cuerpo recto de cabeza a talones. Baja hasta casi tocar el suelo. Si no puedes, apoya las rodillas — lo importante es el rango completo.'},
+      {n:'Flexión declinada',muscle:'Pectoral superior · Deltoides anterior',rondas:5,t:'40s/20s',desc:'Pies elevados en la silla, manos en el suelo. Más difícil que la estándar. Activa la parte alta del pecho y los hombros. Clave para el relleno superior del pecho.'},
+      {n:'Pike Push-up',muscle:'Deltoides · Trapecio · Tríceps',rondas:5,t:'40s/20s',desc:'Posición V invertida, cadera arriba. Baja la cabeza entre las manos flexionando los codos hacia fuera. Equivale a un press militar — es el ejercicio más importante para los hombros en calistenia.'},
+      {n:'Fondos en silla',muscle:'Tríceps · Pectoral inferior · Deltoides post.',rondas:5,t:'40s/20s',desc:'Manos en el borde de la silla, pies estirados al frente. Baja doblando los codos a 90° y sube empujando. Cuanto más estiradas las piernas, más difícil.'},
+      {n:'Flexión diamante',muscle:'Tríceps · Pectoral interno',rondas:5,t:'40s/20s',desc:'Manos juntas formando un rombo. Codos pegados al cuerpo al bajar. El más difícil — si no haces reps limpias, vuelve a la flexión estándar hasta ganar fuerza.'},
+      {n:'Elevaciones laterales con banda',muscle:'Deltoides medial (anchura hombros)',rondas:5,t:'40s/20s',desc:'Pisa la banda. Levanta los brazos en cruz hasta la altura de los hombros. Codos ligeramente doblados. Movimiento lento y controlado — sin impulso. CLAVE para los hombros anchos que buscas.'},
+      {n:'Face Pull con banda',muscle:'Deltoides posterior · Romboides',rondas:5,t:'40s/20s',desc:'Banda anclada en la puerta a la altura de la cara. Tira hacia la cara separando los codos. Al final, gira los antebrazos hacia arriba. Previene lesiones de hombro y mejora la postura.'},
+      {n:'Shoulder tap en posición de flexión',muscle:'Core · Estabilidad de hombro',rondas:5,t:'40s/20s',desc:'Desde la posición de flexión, lleva una mano al hombro contrario sin mover las caderas. Obliga al core a estabilizar mientras los hombros trabajan.'},
+    ],
+    post:[
+      {n:'Estiramiento pectoral en puerta',dur:'45s/lado',desc:'Antebrazo apoyado en el marco a 90°. Da un paso adelante y gira el cuerpo. Siente el pecho abrirse. Prueba diferentes alturas.'},
+      {n:'Estiramiento tríceps',dur:'30s/lado',desc:'Codo detrás de la cabeza, mano entre los omóplatos. La mano contraria empuja el codo suavemente hacia atrás.'},
+      {n:"Child's pose",dur:'60s',desc:'Arrodillado en los talones, brazos al frente. Relaja el pecho hacia el suelo. Estira dorsal y hombros.'},
+      {n:'Foam roller dorsales',dur:'2 min',desc:'Foam roller transversal a la espalda media. Apoya la cabeza con las manos. Deja que la espalda se abra sobre el rodillo. Abre la columna torácica.'},
+    ],
+    postNut:'Si hay running a las 20:00: cena ligera 90min antes (proteína magra + verdura). Si no: creatina + yogur dentro de 45min post-entreno.',
+  },
+  miercoles:{
+    n:'Power + Full Body',emoji:'⚡',
+    obj:'Potencia · Cardio · Sistema neuromuscular · Quema de grasa',
+    material:'Esterilla · Espacio libre (2m²)',
+    preNut:'La sesión más intensa de la semana. Asegúrate de haber comido bien la comida del día.',
+    cal:[
+      {n:'Jumping jacks',dur:'60s',desc:'Brazos y piernas se abren y cierran al unísono. Sube la intensidad progresivamente.'},
+      {n:'High knees lentos',dur:'30s',desc:'Eleva las rodillas a la cadera, ritmo lento. Brazos en bombo.'},
+      {n:'Arm circles + leg swings',dur:'30s',desc:'Círculos de hombro hacia delante y atrás. Luego balanceos de pierna adelante-atrás y lateral.'},
+      {n:'Squat jump suave × 5',dur:'5 reps',desc:'Baja a la sentadilla y salta con poca altura. Solo activa el sistema neuromuscular, no agotes.'},
+      {n:'Inchworm',dur:'5 reps',desc:'De pie, baja las manos al suelo y camina hasta posición de flexión. Vuelve andando con los pies y sube.'},
+    ],
+    circ:[
+      {n:'Burpee completo',muscle:'Cuerpo completo · Cardio máximo',rondas:4,t:'40s/20s',desc:'Desde de pie: agáchate, salta los pies atrás, baja al suelo (pecho toca), sube, salta los pies adelante, salta arriba con brazos extendidos. El rey del HIIT — más calorías por minuto que cualquier otro ejercicio.'},
+      {n:'Jump Squat',muscle:'Cuádriceps · Glúteo · Potencia',rondas:4,t:'40s/20s',desc:'Baja a la sentadilla y explota hacia arriba. Aterriza suavemente con rodillas ligeramente dobladas. Variante sin salto si hay molestia en rodilla.'},
+      {n:'Mountain Climbers',muscle:'Core · Hombros · Cardio',rondas:4,t:'40s/20s',desc:'Posición de flexión. Lleva las rodillas alternadamente hacia el pecho lo más rápido posible. Core activo — no dejes que la cadera suba o baje.'},
+      {n:'Bear Crawl',muscle:'Hombros · Core · Coordinación',rondas:4,t:'40s/20s',desc:'A cuatro patas, rodillas 5cm del suelo. Avanza moviendo brazo y pierna opuestos simultáneamente. 2 pasos adelante, 2 atrás. Uno de los mejores ejercicios de coordinación neuromuscular.'},
+      {n:'High Knees intenso',muscle:'Cardio · Flexores cadera',rondas:4,t:'40s/20s',desc:'Rodillas al máximo posible (idealmente a la cadera). Brazos en bomba. Ritmo máximo sostenible durante 40s. Torso erguido, no te inclines adelante.'},
+      {n:'Tuck Jump',muscle:'Potencia · Extensores rodilla',rondas:4,t:'40s/20s',desc:'Salta y lleva las rodillas al pecho en el aire. Aterriza suave. Variante más fácil: salto con palmada en los muslos.'},
+      {n:'Sprint en sitio',muscle:'Cardio máximo · EPOC',rondas:4,t:'40s/20s',desc:'Corre en el sitio a máxima velocidad. Pies que apenas se levantan pero rodillas y brazos van rápido. El esfuerzo máximo genera el mayor efecto postcombustión.'},
+      {n:'Lateral Shuffle',muscle:'Agilidad · Cuádriceps',rondas:4,t:'40s/20s',desc:'Posición atlética (ligeramente agachado). Desplázate de lado en lado tocando el suelo con la mano en cada extremo. Trabaja los mismos patrones que el deporte.'},
+    ],
+    post:[
+      {n:'Respiración diafragmática',dur:'2 min',desc:'Tumbado, mano en el abdomen. Inspira 4s por la nariz (abdomen sube), aguanta 2s, espira 6s por la boca. Activa el sistema parasimpático y baja las pulsaciones.'},
+      {n:"Cat-Cow fluido",dur:'60s',desc:'A cuatro patas, 10 repeticiones lentas. Deja que la columna se mueva libremente.'},
+      {n:"Child's pose con extensión lateral",dur:'45s/lado',desc:'Desde child pose, desplaza los brazos hacia un lado. Siente el estiramiento lateral de espalda y dorsal.'},
+      {n:'Estiramiento de cadera de corredor',dur:'45s/lado',desc:'Rodilla en el suelo, pie delantero al frente. Empuja la cadera hacia delante y abajo. Excelente para flexores de cadera que se acortan con el HIIT.'},
+    ],
+    postNut:'Sesión de alto estrés metabólico. La proteína dentro de 45min es más importante hoy. Yogur griego + plátano + creatina como mínimo.',
+  },
+  jueves:{
+    n:'Hombros + Core',emoji:'🔥',
+    obj:'Deltoides · Core profundo · Postura · Cintura definida',
+    material:'Esterilla · Banda elástica · Guantes',
+    preNut:'Running a las 20:00. Cena ligera al menos 90 min antes de salir.',
+    cal:[
+      {n:'Rotaciones cervicales lentas',dur:'30s',desc:'Cabeza al pecho, gira suavemente hacia los lados. Nunca hacia atrás completo. Libera la tensión cervical del día.'},
+      {n:'Rotaciones de hombro con banda',dur:'20 reps',desc:'Banda con agarre amplio. Lleva la banda de delante hacia atrás pasando por encima de la cabeza. Agranda el agarre si no llegas.'},
+      {n:'Dead bug básico',dur:'8 reps/lado',desc:'Tumbado, brazos arriba, rodillas a 90°. Baja brazo y pierna contraria sin que la lumbar pierda contacto con el suelo.'},
+      {n:'Plancha 30s',dur:'30s',desc:'Antebrazos en suelo, cuerpo recto. Aprieta abdomen, glúteos y cuádriceps. Prepara el core.'},
+      {n:'Superman',dur:'10 reps',desc:'Boca abajo, eleva brazos y piernas. Mantén 2s arriba. Activa la cadena posterior.'},
+    ],
+    circ:[
+      {n:'Pike Push-up',muscle:'Deltoides · Trapecio',rondas:5,t:'40s/20s',desc:'V invertida, baja la cabeza entre las manos. La variante más efectiva de calistenia para los deltoides. Progresión: Pike push-up con pies elevados en la silla.'},
+      {n:'Elevaciones laterales con banda',muscle:'Deltoides medial (anchura)',rondas:5,t:'40s/20s',desc:'Pisa la banda. Levanta los brazos en cruz a la altura de los hombros. Codos ligeramente doblados. Movimiento lento y controlado — el impulso anula el ejercicio.'},
+      {n:'Face Pull con banda',muscle:'Deltoides posterior · Romboides',rondas:5,t:'40s/20s',desc:'Banda anclada alta. Tira hacia la cara con codos en alto. Al final, rota los antebrazos hacia arriba. Esencial para la postura y la salud del manguito rotador.'},
+      {n:'Plancha frontal',muscle:'Recto abdominal · Transverso · Core',rondas:5,t:'40s/20s',desc:'Antebrazos apoyados. Cuerpo perfectamente recto. Aprieta todo: abdomen, glúteos, cuádriceps. Progresión: plancha con levantamiento de un brazo o una pierna.'},
+      {n:'Dead Bug',muscle:'Transverso abdominal · Coordinación',rondas:5,t:'40s/20s',desc:'El ejercicio más importante para la postura. Tumbado, baja brazo y pierna contrarios manteniendo la lumbar en el suelo. Exhala al bajar. Si la espalda se arquea, reduce el rango.'},
+      {n:'Hollow Body Hold',muscle:'Recto abdominal · Psoas · Core',rondas:5,t:'40s/20s',desc:'Tumbado, levanta hombros y piernas del suelo. Cuerpo en forma de banana. Brazos extendidos junto a la cabeza o en los costados (más fácil). Progresión hacia el V-sit.'},
+      {n:'Bird Dog',muscle:'Erector espinal · Glúteo · Core',rondas:5,t:'40s/20s',desc:'A cuatro patas, extiende brazo y pierna contrarios. Mantén 2s. Columna neutra — no rotes ni eleves la cadera. Alterna lados de forma continua.'},
+      {n:'Vacuum abdominal',muscle:'Transverso abdominal (V inguinal)',rondas:3,t:'30s/30s pausa',desc:'De pie. Vacía el aire completamente. Mete el abdomen al máximo como si intentaras tocar la columna con el ombligo. Mantén sin respirar. Practicado diariamente reduce la cintura 3-4cm en semanas.'},
+    ],
+    post:[
+      {n:'Estiramiento hombro cruzado',dur:'30s/lado',desc:'Brazo extendido cruzado hacia el hombro contrario. La mano contraria empuja desde el codo. Siente el deltoides posterior.'},
+      {n:'Estiramiento de cuello',dur:'30s/posición',desc:'Lleva la oreja al hombro suavemente. Mano contraria da tracción suave. No hagas círculos completos.'},
+      {n:'Cat-Cow',dur:'90s',desc:'Libera la tensión del core. Muévete lento y disfruta el rango completo.'},
+      {n:'Cobra pasiva',dur:'45s',desc:'Boca abajo, manos bajo los hombros. Eleva el pecho pasivamente. Excelente para la columna torácica.'},
+    ],
+    postNut:'Running a las 20:00: la cena post-running es la recuperación principal. Proteína magra + verdura dentro de los 45min post-carrera.',
+  },
+  viernes:{
+    n:'Posterior + Core Intensivo',emoji:'🏋️',
+    obj:'Isquiotibiales · Glúteo · Lumbar · Cierre de semana',
+    material:'Esterilla · Silla · Garrafa · Foam roller',
+    preNut:'Última sesión de la semana. Come bien la comida del día — la necesitas para cerrar fuerte.',
+    cal:[
+      {n:'Hip hinge bodyweight',dur:'10 reps',desc:'De pie. Inclina el torso hacia adelante empujando los glúteos atrás, espalda recta. Siente el tirón en los isquios. El patrón motor fundamental de todo lo que sigue.'},
+      {n:'Good morning con palo',dur:'10 reps',desc:'Palo en los hombros. Inclina el torso con espalda plana hasta casi paralela al suelo. Activa isquios y lumbar de forma segura.'},
+      {n:'Glute bridge básico',dur:'15 reps',desc:'Tumbado, rodillas dobladas. Empuja con los talones, eleva la cadera, aprieta el glúteo 1s arriba. El patrón que luego cargaremos.'},
+      {n:'Respiración de activación core',dur:'5 respiraciones',desc:'Inspira profundo (abdomen se expande). Al exhalar, aprieta el abdomen como si fuera a recibir un golpe. Activa el transverso antes de cargar la columna.'},
+    ],
+    circ:[
+      {n:'Hip Thrust con garrafa',muscle:'Glúteo mayor (ejercicio #1 para glúteo)',rondas:5,t:'40s/20s',desc:'Hombros en el borde de la silla, garrafa en las caderas. Sube hasta la extensión completa de cadera. Aprieta el glúteo 1s arriba. Progresión: aumentar el peso de la garrafa.'},
+      {n:'Good Morning bodyweight',muscle:'Isquiotibiales · Lumbar · Glúteo',rondas:5,t:'40s/20s',desc:'Pies a la anchura de hombros, manos en la nuca. Inclina el torso hacia adelante empujando los glúteos atrás. Espalda recta. La clave es sentir el tirón en la parte posterior del muslo.'},
+      {n:'Nordic Curl asistido',muscle:'Isquiotibiales (excéntrico — el más efectivo)',rondas:5,t:'40s/20s',desc:'Pies anclados bajo el sofá. Desde rodillas, baja el cuerpo de forma controlada. Las manos amortiguan la caída. Al principio baja solo hasta la mitad — irás llegando al suelo en semanas.'},
+      {n:'Superman con pausa',muscle:'Lumbar · Glúteo · Cadena posterior',rondas:5,t:'40s/20s',desc:'Boca abajo. Eleva brazos y piernas simultáneamente. Mantén 2s arriba apretando el glúteo. Variante avanzada: eleva un brazo y la pierna contraria.'},
+      {n:'Plancha lateral (derecha)',muscle:'Oblicuos · Glúteo medio',rondas:5,t:'40s/20s',desc:'Apoyo en antebrazo y borde del pie. Cadera elevada en línea recta. Progresión: levanta la pierna de arriba.'},
+      {n:'Plancha lateral (izquierda)',muscle:'Oblicuos · Glúteo medio',rondas:5,t:'40s/20s',desc:'Mismo ejercicio, lado contrario. Los dos lados por separado evita desequilibrios que causan lesiones de espalda.'},
+      {n:'Hollow Hold progresivo',muscle:'Recto abdominal · Core',rondas:5,t:'40s/20s',desc:'Levanta hombros y piernas del suelo. Brazos en los costados (más fácil) → brazos junto a las orejas (difícil). La espalda baja no debe despegarse del suelo.'},
+      {n:'Vacuum abdominal',muscle:'Transverso abdominal (V inguinal)',rondas:3,t:'30s/30s pausa',desc:'Cierra la semana con el ejercicio que más define la cintura. Vacía el aire, mete el abdomen al máximo, mantén 30s. Respira superficialmente mientras mantienes.'},
+    ],
+    post:[
+      {n:'Estiramiento isquios con banda',dur:'60s/lado',desc:'Tumbado. Banda en la planta del pie. Pierna estirada hacia arriba. Aguanta en el máximo rango. Los isquios necesitan 60s+ para relajarse de verdad.'},
+      {n:'Pigeon Pose profundo',dur:'75s/lado',desc:'Rodilla delantera doblada, pierna trasera estirada. Baja el pecho hacia el suelo progresivamente. El mejor estiramiento para glúteo y piriforme.'},
+      {n:"Child's pose",dur:'60s',desc:'Arrodillado en los talones, brazos al frente. Relaja la espalda completamente.'},
+      {n:'Foam roller isquios',dur:'2 min',desc:'Sentado sobre el foam roller. Deslízate del pliegue glúteo a detrás de la rodilla. Cuando encuentres tensión, mantén 15-20s. Esta recuperación determina tu rendimiento del lunes.'},
+      {n:'Foam roller glúteo',dur:'2 min',desc:'Cruza el tobillo sobre la rodilla contraria. Rueda sobre el glúteo. Busca los puntos de tensión y mantén.'},
+      {n:'Foam roller dorsal',dur:'90s',desc:'Foam roller transversal a la espalda media. Abre la columna torácica. Combinado con el core de hoy, protege la lumbar.'},
+    ],
+    postNut:'Fin de semana de descanso. Creatina post-entreno hoy. Aprovecha el sábado para preparar batch cooking de la semana siguiente.',
+  },
+};
+
+
+// ════════════════════════════════════════════════
+// PLAN MOVILIDAD — 8 min antes de dormir
+// Isquios + Postura + Apertura torácica + Vacuum
+// Obligatorio todos los días
+// ════════════════════════════════════════════════
+var MOBILITY_PLAN=[
+  {
+    n:'Chin Tuck contra la pared',dur:30,reps:'15 reps lentas',
+    muscle:'Cervicales · Postura cabeza adelantada',
+    desc:'De pie con la espalda en la pared. Empuja el mentón hacia atrás (doble papada) sin bajar la cabeza. Mantén 3s. Corrige la posición de la cabeza que el ordenador y el móvil destrozan. Sientes el estiramiento en la base del cráneo.',
+    timing:'cada día'
+  },
+  {
+    n:'Apertura torácica con foam roller',dur:90,reps:'90 segundos',
+    muscle:'Columna torácica · Pectoral · Postura',
+    desc:'Foam roller transversal a la espalda media (nivel omóplatos). Apoya la cabeza con las manos. Deja que la gravedad abra el pecho hacia el suelo. Muévelo 2-3cm hacia arriba y hacia abajo. La espalda redondeada del ordenador se revierte aquí. Puede doler al principio — es normal.',
+    timing:'cada día'
+  },
+  {
+    n:'Estiramiento isquios en pared (derecha)',dur:60,reps:'60 segundos',
+    muscle:'Isquiotibiales · Ciática · Movilidad cadera',
+    desc:'Tumbado cerca de la pared. Sube la pierna derecha apoyada en la pared, lo más cerca posible de 90°. La otra pierna estirada en el suelo. No dobres la rodilla. El objetivo es llegar a 90° sin doblar — puede tardar semanas, no fuerces. Es la clave para la longitud de zancada en el running.',
+    timing:'cada día'
+  },
+  {
+    n:'Estiramiento isquios en pared (izquierda)',dur:60,reps:'60 segundos',
+    muscle:'Isquiotibiales · Ciática · Movilidad cadera',
+    desc:'Misma posición, pierna izquierda. Mantén la zona lumbar pegada al suelo — si se despega, aleja un poco la cadera de la pared. La diferencia entre piernas es normal al principio.',
+    timing:'cada día'
+  },
+  {
+    n:'Doorway Stretch — apertura pectoral',dur:30,reps:'30 segundos por posición',
+    muscle:'Pectoral · Deltoides anterior · Postura hombros',
+    desc:'En el marco de una puerta. Antebrazo apoyado a 90°, da un paso adelante y gira el cuerpo hacia el lado contrario. Sientes el pecho y el hombro abrirse. Prueba con el brazo en alto (45°) y en horizontal — trabajan fibras distintas. Revierta los hombros redondeados.',
+    timing:'cada día'
+  },
+  {
+    n:'Couch Stretch — flexores de cadera',dur:45,reps:'45 segundos por lado',
+    muscle:'Psoas · Ilíaco · Anteversión pélvica',
+    desc:'Rodilla trasera en el suelo junto a la pared, pie apoyado en la pared. Pie delantero al frente. Empuja la cadera hacia adelante y abajo. Corrige la anteversión pélvica (barriga hacia adelante, lumbar exagerada) que visualmente aumenta el volumen abdominal. Sientes el tirón en la parte frontal de la cadera.',
+    timing:'cada día'
+  },
+  {
+    n:'Dead Bug lento',dur:60,reps:'8 reps/lado muy lentas',
+    muscle:'Transverso · Core profundo · Postura lumbar',
+    desc:'Tumbado, brazos arriba, rodillas a 90°. Baja brazo y pierna contraria en 4 segundos hasta casi tocar el suelo. Vuelve en 2s. La zona lumbar NO se despega del suelo en ningún momento. Es el ejercicio de postura más efectivo que existe — activa el corsé muscular profundo.',
+    timing:'cada día'
+  },
+  {
+    n:'Vacuum abdominal',dur:30,reps:'3 × 30s con 15s pausa',
+    muscle:'Transverso abdominal · Línea inguinal',
+    desc:'De pie o tumbado. Vacía todo el aire. Mete el abdomen al máximo como si intentaras tocar la columna vertebral con el ombligo. Mantén sin respirar 30s. Respira superficialmente si necesitas. Este ejercicio en 3-4 semanas diarias reduce la cintura visual 3-4cm y define la V inguinal que buscas.',
+    timing:'cada día'
+  },
+];
+
+var MOB_TIMER_STATE={running:false,exIdx:0,timeLeft:0,interval:null,done:false};
+
 function renderCasaPage(){
-  var gymTabs=['gt-session','gt-plan','gt-history'];
-  gymTabs.forEach(function(id){
-    var el=document.getElementById(id);
-    if(el) el.style.display='none';
-  });
-  var casaEl=document.getElementById('gt-casa');
-  if(!casaEl){
-    casaEl=document.createElement('div');
-    casaEl.id='gt-casa';
-    document.getElementById('gt-session').parentNode.appendChild(casaEl);
+  var el=document.getElementById('gt-casa');
+  if(!el) return;
+  var dow=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date().getDay()];
+  var dayKey=dow==='sabado'||dow==='domingo'?'':dow;
+  var plan=dayKey?CASA_BASE[dayKey]:null;
+  var today=new Date().toISOString().split('T')[0];
+  var done=ld('casa_done_'+today,false);
+  var weekStart=_weekStart();
+  var weekDone=parseInt(ld('casa_week_'+weekStart,0));
+
+  var h='';
+  // Header progreso semanal
+  h+='<div style="padding:10px 16px 0">';
+  h+='<div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+  h+='<div style="font-size:12px;font-weight:600;color:var(--a)">📊 Semana actual</div>';
+  h+='<div style="font-size:11px;color:var(--m)">Mínimo 4/5 para avanzar</div></div>';
+  h+='<div style="display:flex;gap:6px">';
+  var dias_s=['L','M','X','J','V'];
+  for(var d=0;d<5;d++){
+    var filled=d<weekDone;
+    h+='<div style="width:32px;height:32px;border-radius:8px;background:'+(filled?'var(--g)':'var(--b)')+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:'+(filled?'#0a1a0f':'var(--m)')+'">'+dias_s[d]+'</div>';
   }
-  casaEl.style.display='';
+  h+='</div></div></div>';
 
-  var dow=new Date().getDay();
-  var dayMap={1:'lunes',3:'miercoles',5:'viernes'};
-  var dk=dayMap[dow];
-  var hw=getHomeWeek();
-  var logDate=getLogDate();
+  if(!plan){
+    h+='<div style="padding:16px;text-align:center"><div style="font-size:40px;margin-bottom:8px">😴</div>';
+    if(dow==='sabado'||dow==='domingo'){
+      h+='<div style="font-size:15px;font-weight:600;color:var(--t)">Fin de semana</div>';
+      h+='<div style="font-size:12px;color:var(--m);margin-top:4px">Descanso activo · Running el sábado a las 20:00</div>';
+    } else {
+      h+='<div style="font-size:13px;color:var(--m)">No hay sesión hoy</div>';
+    }
+    h+='</div>';
+    el.innerHTML=h; return;
+  }
 
-  // Week banner
-  var banner='<div style="margin:4px 16px 0;padding:10px 12px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:12px">';
-  banner+='<div style="display:flex;justify-content:space-between;margin-bottom:4px">';
-  banner+='<span style="font-size:12px;font-weight:700;color:var(--p)">Semana '+hw.num+' · '+hw.title+'</span>';
-  banner+='<span style="font-size:10px;color:var(--m)">'+hw.dates+'</span></div>';
-  banner+='<div style="font-size:11px;color:var(--m)">'+hw.tip+'</div></div>';
+  h+='<div style="padding:0 16px">';
 
-  // Date row
-  var dateRow='<div style="display:flex;align-items:center;gap:6px;padding:8px 16px 4px;flex-wrap:wrap">';
-  dateRow+='<div style="flex:1;min-width:120px"><label class="il">Día</label>';
-  dateRow+='<input type="date" class="if" id="casa-log-date" style="font-size:13px" value="'+logDate+'" onchange="sd(\'active_log_date\',this.value);renderCasaPage()"></div>';
-  dateRow+='<div style="flex:1;min-width:120px"><label class="il">Rutina</label>';
-  dateRow+='<select class="if" id="casa-routine-select" style="font-size:13px" onchange="renderCasaDaySession(this.value)">';
-  dateRow+='<option value="">📅 Del día</option>';
-  dateRow+='<option value="lunes">🦵 Lunes — Pierna + Core</option>';
-  dateRow+='<option value="miercoles">💪 Miércoles — Empuje + Tracción</option>';
-  dateRow+='<option value="viernes">⚡ Viernes — Full Body</option>';
-  dateRow+='</select></div></div>';
+  // Hoy done badge
+  if(done) h+='<div style="background:rgba(61,214,140,0.1);border:1px solid rgba(61,214,140,0.3);border-radius:10px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">✅</span><div><div style="font-size:13px;font-weight:600;color:var(--g)">Sesión completada hoy</div><div style="font-size:11px;color:var(--m)">'+weekDone+'/5 sesiones esta semana</div></div></div>';
 
-  var sessionDiv='<div id="casa-session-content"></div>';
+  // Header sesión
+  h+='<div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:12px">';
+  h+='<div style="font-size:22px;margin-bottom:4px">'+plan.emoji+' <span style="font-size:16px;font-weight:700;color:var(--t)">'+plan.n+'</span></div>';
+  h+='<div style="font-size:11px;color:var(--o);margin-bottom:4px">🎯 '+plan.obj+'</div>';
+  h+='<div style="font-size:11px;color:var(--m)">🧰 '+plan.material+'</div>';
+  h+='</div>';
 
-  casaEl.innerHTML=banner+dateRow+sessionDiv;
+  // Secciones
+  h+=_renderSection('⚡ PRE — Calentamiento','var(--y)',_renderCal(plan.cal));
+  h+=_renderSection('🍎 PRE — Nutrición','var(--o)','<p style="font-size:12px;color:var(--m);line-height:1.6">'+plan.preNut+'</p>');
+  h+=_renderSection('💪 CIRCUITO PRINCIPAL (40s trabajo / 20s descanso)','var(--a)',_renderCirc(plan.circ));
+  h+=_renderSection('🧘 POST — Vuelta a la calma','var(--g)',_renderCal(plan.post));
+  h+=_renderSection('🥗 POST — Nutrición y recuperación','var(--p)','<p style="font-size:12px;color:var(--m);line-height:1.6">'+plan.postNut+'</p>');
 
-  // Render selected day or today
-  var selDk=dk||'lunes';
-  renderCasaDaySession(selDk);
+  // Botón completar
+  if(!done){
+    h+='<button class="btn btg" style="margin:10px 0" onclick="casaMarkDone()">✅ Marcar sesión completada</button>';
+  }
+
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+function _renderSection(title, color, content){
+  var id='sec_'+Math.random().toString(36).substr(2,6);
+  return '<div style="margin-bottom:10px;border:1px solid var(--b);border-radius:10px;overflow:hidden">'+
+    '<div style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--s2)" onclick="var b=document.getElementById(\''+id+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\'">'+
+    '<div style="font-size:12px;font-weight:700;color:'+color+'">'+title+'</div>'+
+    '<span style="color:var(--m);font-size:16px">›</span></div>'+
+    '<div id="'+id+'" style="padding:10px 12px;display:block">'+content+'</div></div>';
+}
+
+function _renderCal(items){
+  var h='';
+  items.forEach(function(item,i){
+    h+='<div style="margin-bottom:8px;padding:8px 10px;background:var(--s2);border-radius:8px">';
+    h+='<div style="display:flex;justify-content:space-between;margin-bottom:3px">';
+    h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+(i+1)+'. '+item.n+'</div>';
+    h+='<div style="font-size:10px;color:var(--a);font-weight:600">'+item.dur+'</div></div>';
+    h+='<div style="font-size:11px;color:var(--m);line-height:1.5">'+item.desc+'</div>';
+    h+='</div>';
+  });
+  return h;
+}
+
+function _renderCirc(items){
+  var h='<div style="background:rgba(79,142,247,0.06);border:1px solid rgba(79,142,247,0.15);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:var(--m)">Formato: <strong style="color:var(--a)">40s trabajo / 20s descanso</strong> · Completa todas las rondas de cada ejercicio antes de pasar al siguiente</div>';
+  items.forEach(function(item,i){
+    h+='<div style="margin-bottom:8px;border:1px solid var(--b);border-radius:10px;overflow:hidden">';
+    h+='<div style="padding:9px 12px;background:var(--s2);display:flex;justify-content:space-between;align-items:center">';
+    h+='<div>';
+    h+='<div style="font-size:12px;font-weight:700;color:var(--t)">'+(i+1)+'. '+item.n+'</div>';
+    h+='<div style="font-size:10px;color:var(--p)">💪 '+item.muscle+'</div>';
+    h+='</div>';
+    h+='<div style="text-align:right;flex-shrink:0">';
+    h+='<div style="font-size:12px;font-weight:700;color:var(--a)">'+item.rondas+' rondas</div>';
+    h+='<div style="font-size:10px;color:var(--m)">'+item.t+'</div>';
+    h+='</div></div>';
+    h+='<div style="padding:8px 12px;font-size:11px;color:var(--m);line-height:1.5;border-top:1px solid var(--b)">'+item.desc+'</div>';
+    h+='</div>';
+  });
+  return h;
+}
+
+function _weekStart(){
+  var d=new Date();
+  var day=d.getDay();
+  var diff=d.getDate()-(day===0?6:day-1);
+  var mon=new Date(d.setDate(diff));
+  return mon.toISOString().split('T')[0];
+}
+
+function casaMarkDone(){
+  var today=new Date().toISOString().split('T')[0];
+  if(ld('casa_done_'+today,false)) return;
+  sd('casa_done_'+today,true);
+  var ws=_weekStart();
+  var n=parseInt(ld('casa_week_'+ws,0))+1;
+  sd('casa_week_'+ws,n);
+  renderCasaPage();
+  // Check if home needs update
+  if(document.getElementById('h-gym-card')) renderHome();
 }
 
 function renderCasaDaySession(dk){
@@ -1919,11 +2354,21 @@ function nav(id){
     var cbtn=document.getElementById('mode-casa-btn');
     if(gbtn){gbtn.className='btn '+(mode==='gym'?'btg':'bth')+' btn-sm';gbtn.style.flex='1';}
     if(cbtn){cbtn.className='btn '+(mode==='casa'?'btg':'bth')+' btn-sm';cbtn.style.flex='1';}
-    if(mode==='casa'){renderCasaPage();}else{gymTab('session');renderGymSession();}
+    var tabsRowN=document.getElementById('gym-tabs-row');
+    if(mode==='casa'){
+      if(tabsRowN)tabsRowN.style.display='none';
+      ['gt-session','gt-plan','gt-history'].forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
+      var cdN=document.getElementById('gt-casa');if(cdN)cdN.style.display='block';
+      renderCasaPage();
+    }else{
+      if(tabsRowN)tabsRowN.style.display='flex';
+      var cdN2=document.getElementById('gt-casa');if(cdN2)cdN2.style.display='none';
+      gymTab('session');renderGymSession();
+    }
   }
   if(id==='run'){renderRunToday();}
   if(id==='food'){renderFoodToday();if(document.getElementById('diet-content')) renderDietPlan();}
-  if(id==='weight'){renderWeight();}
+  // weight merged into health
   if(id==='health'){var dow3=new Date().getDay();if(dow3!==0){nav('home');return;}healthTab('analytics');renderHealthAnalytics();}
   if(id==='shop'){shopTab('menu');renderShopMenu();}
 }
@@ -1951,6 +2396,331 @@ function getLogDate(){return ld('active_log_date',null)||today();}
 function getFoodLogDate(){return ld('active_food_log_date',null)||today();}
 function getYesterday(){var d=new Date();d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];}
 function fmtDate(d){var p=d.split('-');var ms=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];return parseInt(p[2])+' '+ms[parseInt(p[1])-1];}
+
+function getMealOfMoment(){
+  var h=new Date().getHours();
+  var mins=new Date().getMinutes();
+  var t=h*60+mins;
+  // Hasta 14:00 → Desayuno
+  // 14:00-17:00 → Comida
+  // 17:00-21:00 → Merienda
+  // Desde 21:00 → Cena
+  if(t<14*60) return {key:'desayuno',emoji:'🌅',title:'Desayuno',timeLabel:'hasta las 14:00'};
+  if(t<17*60) return {key:'comida',emoji:'🍽️',title:'Comida',timeLabel:'14:00–17:00'};
+  if(t<21*60) return {key:'merienda',emoji:'🍊',title:'Merienda',timeLabel:'17:00–21:00'};
+  return {key:'cena',emoji:'🌙',title:'Cena',timeLabel:'desde las 21:00'};
+}
+
+function renderMealOfMoment(){
+  var el=document.getElementById('h-meal-content');
+  var titleEl=document.getElementById('h-meal-title');
+  var emojiEl=document.getElementById('h-meal-emoji');
+  var badgeEl=document.getElementById('h-meal-badge');
+  if(!el) return;
+  var meal=getMealOfMoment();
+  var planStart=new Date(2026,8,7);
+  var now=new Date();
+  var dayIdx=Math.max(0,Math.floor((now-planStart)/86400000)%15);
+  var day=typeof DIETA15!=='undefined'?DIETA15[dayIdx]:null;
+  if(emojiEl) emojiEl.textContent=meal.emoji;
+  if(titleEl) titleEl.textContent=meal.title+' · '+meal.timeLabel;
+  var h='';
+  if(meal.key==='desayuno'){
+    var desText=day?day.des.desc:'Yogur griego 200g + plátano + frutos secos';
+    var desDone=ld('diet_des_done_'+today(),false);
+    if(badgeEl) badgeEl.style.display=desDone?'inline':'none';
+    h+='<div style="font-size:12px;color:var(--t);margin-bottom:8px">'+desText+'</div>';
+    if(day) h+=_macroBar(day.des.kcal,day.des.p,day.des.c,day.des.f);
+    h+='<div style="margin-top:8px"><button class="btn '+(desDone?'bth':'btg')+' btn-sm" onclick="toggleHomeMealDone(\'des\')">'+
+      (desDone?'↩ Desmarcar':'✅ Ya desayuné')+'</button></div>';
+  } else if(meal.key==='merienda'){
+    var merData=day?day.mer:null;
+    var merDone=ld('diet_mer_done_'+today(),false);
+    if(badgeEl) badgeEl.style.display=merDone?'inline':'none';
+    h+='<div style="font-size:12px;color:var(--t);margin-bottom:8px">'+(merData?merData.desc:'Fruta de temporada + frutos secos')+'</div>';
+    if(merData&&merData.kcal) h+=_macroBar(merData.kcal,merData.p,merData.c,merData.f);
+    h+='<div style="margin-top:8px"><button class="btn '+(merDone?'bth':'btg')+' btn-sm" onclick="toggleHomeMealDone(\'mer\')">'+
+      (merDone?'↩ Desmarcar':'✅ Ya merendé')+'</button></div>';
+  } else if(meal.key==='comida'||meal.key==='cena'){
+    var mk=meal.key==='comida'?'com':'cen';
+    var mData=day?(meal.key==='comida'?day.com:day.cen):null;
+    var dk2=_dietDate(dayIdx);
+    var chosen=ld('diet_'+mk+'_'+dk2,'');
+    var isDone=ld('diet_'+mk+'_done_'+today(),false);
+    if(badgeEl) badgeEl.style.display=isDone?'inline':'none';
+    if(mData&&mData.opts){
+      h+='<div style="font-size:11px;font-weight:600;color:var(--m);margin-bottom:8px">'+
+        (mData.kobj?'Objetivo: ~'+mData.kobj+' kcal · ':'')+'Elige una opción:</div>';
+      mData.opts.forEach(function(opt){
+        var isC=chosen===opt.id;
+        var color=meal.key==='comida'?'var(--g)':'var(--p)';
+        h+='<div style="border:1px solid '+(isC?color:'var(--b)')+';border-radius:8px;padding:8px 10px;margin-bottom:6px">';
+        h+='<div style="font-size:12px;font-weight:600;color:var(--t);margin-bottom:3px">'+opt.id+'. '+opt.n+'</div>';
+        if(opt.t&&opt.t.kcal>0) h+='<div style="font-size:10px;color:var(--m);margin-bottom:6px">'+
+          opt.t.kcal+' kcal · P:'+opt.t.p+'g C:'+opt.t.c+'g G:'+opt.t.f+'g</div>';
+        h+='<div style="display:flex;gap:6px">';
+        h+='<button class="btn '+(isC?'btg':'bth')+' btn-sm" style="flex:1;font-size:11px" onclick="homeMealChoose('+dayIdx+',\''+mk+'\',\''+opt.id+'\')">'+
+          (isC?'✅ Elegida':'Elegir')+'</button>';
+        if(isC) h+='<button class="btn bth btn-sm" style="font-size:11px" onclick="toggleHomeMealDone(\''+mk+'\')">'+
+          (isDone?'↩ Marcar':'✅ Comido')+'</button>';
+        h+='</div></div>';
+      });
+    }
+  }
+  el.innerHTML=h;
+}
+
+function toggleHomeMealDone(key){
+  var k='diet_'+key+'_done_'+today();
+  sd(k,!ld(k,false));
+  renderMealOfMoment();
+}
+
+function homeMealChoose(dayIdx,mealKey,optId){
+  sd('diet_'+mealKey+'_'+_dietDate(dayIdx),optId);
+  renderMealOfMoment();
+}
+
+
+function toggleMealDone(key){
+  var k='meal_done_'+today()+'_'+key;
+  sd(k,!ld(k,false));
+  // Also sync with diet plan marks
+  if(key==='comida'){var kc='diet_com_done_'+today();sd(kc,!ld(kc,false));}
+  if(key==='cena'){var kce='diet_cen_done_'+today();sd(kce,!ld(kce,false));}
+  renderMealOfMoment();
+}
+
+
+function drawHomeChart(ws, canvas){
+  if(!canvas||!ws.length) return;
+  var W=canvas.parentElement?canvas.parentElement.offsetWidth-32:300; var H=90;
+  canvas.width=W; canvas.height=H;
+  var ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
+  if(ws.length<2) return;
+  var vals=ws.map(function(w){return w.val;});
+  var minV=Math.min.apply(null,vals)-1; var maxV=Math.max.apply(null,vals)+1;
+  var pad={l:30,r:10,t:8,b:20};
+  var cW=W-pad.l-pad.r; var cH=H-pad.t-pad.b;
+  var dates=ws.map(function(w){return new Date(w.date).getTime();});
+  var minD=Math.min.apply(null,dates); var maxD=Math.max.apply(null,dates);
+  var hxS=function(d){return maxD===minD?pad.l+cW/2:pad.l+((new Date(d).getTime()-minD)/(maxD-minD))*cW;};
+  var hyS=function(v){return pad.t+((maxV-v)/(maxV-minV))*cH;};
+  // Grid lines
+  ctx.strokeStyle='rgba(42,47,66,0.8)'; ctx.lineWidth=1;
+  for(var gi=0;gi<=3;gi++){
+    var gy=pad.t+(cH/3)*gi; ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
+    var gv=maxV-((maxV-minV)/3)*gi; ctx.fillStyle='#8b91a8'; ctx.font='9px -apple-system'; ctx.textAlign='right'; ctx.fillText(gv.toFixed(0),pad.l-3,gy+3);
+  }
+  // Target zone 80-82kg
+  if(82<=maxV&&80>=minV){
+    // Fill zone
+    ctx.fillStyle='rgba(61,214,140,0.08)';
+    ctx.fillRect(pad.l,hyS(82),cW,hyS(80)-hyS(82));
+    // Zone lines
+    ctx.strokeStyle='rgba(61,214,140,0.5)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(pad.l,hyS(82)); ctx.lineTo(W-pad.r,hyS(82)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,hyS(80)); ctx.lineTo(W-pad.r,hyS(80)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(61,214,140,0.9)'; ctx.font='8px -apple-system'; ctx.textAlign='left';
+    ctx.fillText('82',pad.l+2,hyS(82)-2);
+    ctx.fillText('80',pad.l+2,hyS(80)+8);
+  }
+  // Line
+  ctx.strokeStyle='#4f8ef7'; ctx.lineWidth=2; ctx.beginPath();
+  ws.forEach(function(w,i){i===0?ctx.moveTo(hxS(w.date),hyS(w.val)):ctx.lineTo(hxS(w.date),hyS(w.val));});
+  ctx.stroke();
+  // Dots
+  ws.forEach(function(w){ctx.fillStyle='#4f8ef7'; ctx.beginPath(); ctx.arc(hxS(w.date),hyS(w.val),3,0,Math.PI*2); ctx.fill();});
+  // Last dot green
+  var lw=ws[ws.length-1]; ctx.fillStyle='#3dd68c'; ctx.beginPath(); ctx.arc(xS(lw.date),yS(lw.val),4,0,Math.PI*2); ctx.fill();
+}
+
+function fetchWeatherHome(){
+  var tempEl=document.getElementById('h-weather-temp');
+  var descEl=document.getElementById('h-weather-desc');
+  var badgeEl=document.getElementById('h-weather-badge');
+  if(!tempEl) return;
+  fetch('https://wttr.in/Palencia,Spain?format=j1')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var cur=d.current_condition&&d.current_condition[0];
+      if(!cur) return;
+      var temp=cur.temp_C; var feel=cur.FeelsLikeC;
+      var desc=cur.lang_es&&cur.lang_es[0]?cur.lang_es[0].value:cur.weatherDesc[0].value;
+      var humidity=cur.humidity;
+      if(tempEl) tempEl.textContent=temp+'°C';
+      if(descEl) descEl.innerHTML=desc+'<br><span style="color:var(--m)">Sensación '+feel+'°C · Humedad '+humidity+'%</span>';
+      if(badgeEl){
+        var ico='🌤️';
+        var code=parseInt(cur.weatherCode);
+        if(code===113) ico='☀️';
+        else if(code<=116) ico='🌤️';
+        else if(code<=122) ico='☁️';
+        else if(code<=200) ico='🌫️';
+        else if(code<=350) ico='🌧️';
+        else if(code<=395) ico='🌨️';
+        badgeEl.textContent=ico+' '+temp+'°C';
+      }
+    })
+    .catch(function(){
+      if(tempEl) tempEl.textContent='—';
+      if(descEl) descEl.textContent='Sin conexión';
+    });
+}
+
+
+function renderMobilityPage(){
+  var el=document.getElementById('mob-content');
+  if(!el) return;
+  var todayDone=ld('mob_done_'+today(),false);
+  var streak=getMobStreak();
+  var h='';
+
+  // Header
+  h+='<div style="background:linear-gradient(135deg,rgba(167,139,250,0.1),rgba(99,102,241,0.05));border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+  h+='<div>';
+  h+='<div style="font-size:12px;font-weight:700;color:var(--p)">🧘 MOVILIDAD · 8 min antes de dormir</div>';
+  h+='<div style="font-size:11px;color:var(--m);margin-top:2px">Isquios · Postura · Apertura torácica · Vacuum</div>';
+  h+='</div>';
+  h+='<div style="text-align:right">';
+  h+='<div style="font-size:26px;font-weight:800;color:var(--p)">'+streak+'</div>';
+  h+='<div style="font-size:10px;color:var(--m)">días racha</div>';
+  h+='</div></div>';
+  if(todayDone){
+    h+='<div style="background:rgba(61,214,140,0.1);border-radius:8px;padding:8px 10px;font-size:12px;font-weight:600;color:var(--g)">✅ Completada hoy — Sigue mañana</div>';
+  } else {
+    h+='<button class="btn btg" onclick="startMobSession()">▶ Iniciar sesión guiada (8 min)</button>';
+  }
+  h+='</div>';
+
+  // Timer section (hidden until started)
+  h+='<div id="mob-timer-section" style="display:none;margin-bottom:12px">';
+  h+='<div style="background:var(--s2);border-radius:12px;padding:16px;text-align:center">';
+  h+='<div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:4px" id="mob-ex-name">—</div>';
+  h+='<div style="font-size:11px;color:var(--m);margin-bottom:8px" id="mob-ex-muscle">—</div>';
+  h+='<div style="font-size:48px;font-weight:800;color:var(--t);line-height:1;margin-bottom:8px" id="mob-timer-display">—</div>';
+  h+='<div style="font-size:11px;color:var(--m);margin-bottom:12px" id="mob-ex-desc" style="line-height:1.5"></div>';
+  h+='<div style="display:flex;gap:8px;justify-content:center">';
+  h+='<button class="btn bth btn-sm" id="mob-pause-btn" onclick="pauseMobTimer()">⏸ Pausa</button>';
+  h+='<button class="btn bth btn-sm" onclick="skipMobEx()">⏭ Siguiente</button>';
+  h+='</div>';
+  h+='<div style="background:var(--b);border-radius:4px;height:4px;margin-top:12px">';
+  h+='<div id="mob-progress-bar" style="height:4px;border-radius:4px;background:var(--p);width:0%;transition:width 1s"></div>';
+  h+='</div>';
+  h+='<div style="font-size:10px;color:var(--m);margin-top:4px" id="mob-ex-counter">—</div>';
+  h+='</div></div>';
+
+  // Exercise list
+  h+='<div style="font-size:11px;font-weight:700;color:var(--m);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Ejercicios de hoy</div>';
+  MOBILITY_PLAN.forEach(function(ex,i){
+    h+='<div style="border:1px solid var(--b);border-radius:10px;margin-bottom:6px;overflow:hidden">';
+    h+='<div style="padding:9px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="mobToggle('+i+')">';
+    h+='<div>';
+    h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+(i+1)+'. '+ex.n+'</div>';
+    h+='<div style="font-size:10px;color:var(--p)">'+ex.muscle+'</div>';
+    h+='</div>';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--a)">'+ex.reps+'</div>';
+    h+='</div>';
+    h+='<div id="mob-ex-'+i+'" style="display:none;padding:8px 12px;border-top:1px solid var(--b);font-size:11px;color:var(--m);line-height:1.6">'+ex.desc+'</div>';
+    h+='</div>';
+  });
+
+  el.innerHTML=h;
+}
+
+function mobToggle(i){var b=document.getElementById('mob-ex-'+i);if(b)b.style.display=b.style.display==='none'?'block':'none';}
+
+function getMobStreak(){
+  var streak=0;
+  var d=new Date();
+  while(true){
+    var k='mob_done_'+d.toISOString().split('T')[0];
+    if(!ld(k,false)) break;
+    streak++;
+    d.setDate(d.getDate()-1);
+    if(streak>365) break;
+  }
+  return streak;
+}
+
+function startMobSession(){
+  var sec=document.getElementById('mob-timer-section');
+  if(sec) sec.style.display='block';
+  MOB_TIMER_STATE.exIdx=0;
+  MOB_TIMER_STATE.done=false;
+  startMobEx();
+}
+
+function startMobEx(){
+  var s=MOB_TIMER_STATE;
+  if(s.exIdx>=MOBILITY_PLAN.length){
+    finishMobSession(); return;
+  }
+  var ex=MOBILITY_PLAN[s.exIdx];
+  s.timeLeft=ex.dur;
+  s.running=true;
+  document.getElementById('mob-ex-name').textContent=ex.n;
+  document.getElementById('mob-ex-muscle').textContent=ex.muscle;
+  document.getElementById('mob-ex-desc').textContent=ex.desc;
+  document.getElementById('mob-ex-counter').textContent=(s.exIdx+1)+' de '+MOBILITY_PLAN.length+' · '+ex.reps;
+  updateMobDisplay();
+  if(s.interval) clearInterval(s.interval);
+  s.interval=setInterval(function(){
+    if(!s.running) return;
+    s.timeLeft--;
+    updateMobDisplay();
+    if(s.timeLeft<=0){
+      clearInterval(s.interval);
+      s.exIdx++;
+      setTimeout(startMobEx,800);
+    }
+  },1000);
+}
+
+function updateMobDisplay(){
+  var s=MOB_TIMER_STATE;
+  var el=document.getElementById('mob-timer-display');
+  var bar=document.getElementById('mob-progress-bar');
+  var ex=MOBILITY_PLAN[s.exIdx];
+  if(el) el.textContent=s.timeLeft>0?s.timeLeft+'s':'✅';
+  if(bar&&ex) bar.style.width=Math.round(((ex.dur-s.timeLeft)/ex.dur)*100)+'%';
+}
+
+function pauseMobTimer(){
+  var s=MOB_TIMER_STATE;
+  s.running=!s.running;
+  var btn=document.getElementById('mob-pause-btn');
+  if(btn) btn.textContent=s.running?'⏸ Pausa':'▶ Continuar';
+}
+
+function skipMobEx(){
+  var s=MOB_TIMER_STATE;
+  if(s.interval) clearInterval(s.interval);
+  s.exIdx++;
+  startMobEx();
+}
+
+function finishMobSession(){
+  sd('mob_done_'+today(),true);
+  var sec=document.getElementById('mob-timer-section');
+  if(sec){
+    sec.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:40px;margin-bottom:8px">✅</div><div style="font-size:16px;font-weight:700;color:var(--g)">Sesión completada</div><div style="font-size:12px;color:var(--m);margin-top:4px">+1 día de racha · Isquios, postura y vacuum trabajados</div></div>';
+  }
+  renderMobilityPage();
+  if(document.getElementById('h-mob-done')) renderHome();
+}
+
+
+function toggleLeer(){
+  var done=ld('schedule_'+today(),{});
+  done['leer']=!done['leer'];
+  sd('schedule_'+today(),done);
+  renderDaySchedule();
+  var btn=document.getElementById('h-leer-btn');
+  if(btn) btn.textContent=done['leer']?'📚 ✅ Leído':'📚 Lectura';
+}
 
 function renderHome(){
   var now=new Date();
@@ -1998,9 +2768,95 @@ function renderHome(){
       runCard.style.display='none';
     }
   }
-  renderHomeMacros();
+  renderMealOfMoment();
   renderDaySchedule();
-  renderSupplements();
+
+  // Mobility status on home
+  var mobDoneEl=document.getElementById('h-mob-done');
+  if(mobDoneEl){
+    var mobDoneToday=ld('mob_done_'+today(),false);
+    mobDoneEl.textContent=mobDoneToday?'✅':'⏰';
+  }
+  // Monday check-in reminder on home
+  var mondayHomeEl=document.getElementById('h-monday-checkin');
+  if(mondayHomeEl){
+    var isMon=new Date().getDay()===1;
+    var monDone=ld('monday_checkin_'+today(),false);
+    mondayHomeEl.style.display=(isMon&&!monDone)?'block':'none';
+  }
+
+  // Alcohol status
+  var alcoStart=new Date(2026,8,7); // Sept 7 2026 - plan start
+  var phase1End=new Date(2026,10,1); // Nov 1
+  var phase2End=new Date(2026,11,6); // Dec 6 (puente)
+  var phase3End=new Date(2026,11,25); // Dec 25
+  var daysSober=Math.floor((now-alcoStart)/86400000);
+  var alcoText='';
+  var alcoTarget=null;
+  if(now<phase1End){alcoTarget=phase1End;alcoText='Objetivo: 1 noviembre';}
+  else if(now<phase2End){alcoTarget=phase2End;alcoText='Objetivo: puente diciembre';}
+  else if(now<phase3End){alcoTarget=phase3End;alcoText='Objetivo: Navidad';}
+  else{alcoText='¡Etapa superada! Consulta el plan.';}
+  var alcoEl=document.getElementById('h-alcohol-text');
+  var alcoDaysEl=document.getElementById('h-alcohol-days');
+  if(alcoEl) alcoEl.textContent=alcoTarget?alcoText+' — '+Math.ceil((alcoTarget-now)/86400000)+' días más':alcoText;
+  if(alcoDaysEl) alcoDaysEl.textContent=Math.max(0,daysSober);
+
+  // Countdown
+  var goal=new Date(2027,4,5); // May 5 2027
+  var start=new Date(2026,8,7); // Sept 7 2026
+  var now=new Date();
+  var totalDays=Math.round((goal-start)/86400000);
+  var daysLeft=Math.max(0,Math.round((goal-now)/86400000));
+  var pct=Math.min(100,Math.round((totalDays-daysLeft)/totalDays*100));
+  var dlEl=document.getElementById('h-days-left');
+  var barEl=document.getElementById('h-goal-bar');
+  var pctEl=document.getElementById('h-pct-done');
+  if(dlEl) dlEl.textContent=daysLeft;
+  if(barEl) barEl.style.width=pct+'%';
+  if(pctEl) pctEl.textContent=pct+'% completado';
+  // Next cheat meal
+  var nextCheat=getNextCheat();
+  if(nextCheat){
+    var nc=new Date(nextCheat+'T12:00:00');
+    var ncDays=Math.ceil((nc-now)/86400000);
+    var ncCard=document.getElementById('h-cheat-info');
+    if(ncCard) ncCard.textContent='🍕 Próximo cheat: '+nextCheat.split('-').reverse().join('/')+(ncDays===0?' — ¡HOY!':(ncDays===1?' — mañana':' — en '+ncDays+' días'));
+  }
+
+  // Weight mini-chart on home
+  var wsHome=ld('weights',[]);
+  var curKgEl=document.getElementById('h-cur-kg');
+  var wLostEl=document.getElementById('h-weight-lost');
+  var hPbar=document.getElementById('h-pbar');
+  var hWChart=document.getElementById('h-w-chart');
+  if(wsHome.length>0){
+    var curW=wsHome[wsHome.length-1].val;
+    var startW=93;
+    var targetMin=80; var targetMax=82;
+    var lostW=startW-curW;
+    // In zone 80-82: 100% done. Progress toward 82 first.
+    var pctW=curW>targetMax?Math.min(100,Math.max(0,Math.round(((startW-curW)/(startW-targetMax))*100))):100;
+    if(curKgEl) curKgEl.textContent=curW.toFixed(1)+' kg';
+    var inZone=(curW>=targetMin&&curW<=targetMax);
+    if(wLostEl) wLostEl.textContent=inZone?'✅ En zona objetivo':'-'+lostW.toFixed(1)+' kg perdidos';
+    if(hPbar){hPbar.style.width=pctW+'%';hPbar.style.background=inZone?'var(--g)':'linear-gradient(90deg,var(--g),var(--a))';}
+    if(hWChart) drawHomeChart(wsHome,hWChart);
+  }
+
+  // Quote of the day
+  var qEl=document.getElementById('h-quote-text');
+  var qaEl=document.getElementById('h-quote-author');
+  if(qEl&&typeof QUOTES!=='undefined'){
+    var qi=Math.floor(new Date().getDate()*31/31)%QUOTES.length;
+    var q=QUOTES[qi];
+    qEl.textContent='"'+q.t+'"';
+    if(qaEl) qaEl.textContent='— '+q.a+(q.s?' · '+q.s:'');
+  }
+
+  // Weather Palencia
+  fetchWeatherHome();
+
 }
 
 function renderHomeMacros(){
@@ -2032,46 +2888,68 @@ function renderHomeMacros(){
 }
 
 var DAILY_SCHEDULE={
+  // L/X/V — HIIT + sin running
   base:[
-    {id:'desayuno',time:'09:30',emoji:'🍌',label:'Desayuno pre-entreno'},
-    {id:'dj',time:'10:00',emoji:'🎧',label:'DJ 1 hora'},
-    {id:'entreno',time:'11:00',emoji:'💪',label:'Entrenamiento 11:00'},
-    {id:'postgym',time:'12:45',emoji:'🥛',label:'Post-entreno (yogur + creatina)'},
-    {id:'trabajo1',time:'13:00',emoji:'💻',label:'Trabajo bloque 1 (1h30)'},
-    {id:'comida',time:'14:30',emoji:'🍝',label:'Comida'},
-    {id:'digestion',time:'15:30',emoji:'🚶',label:'Paseo digestivo'},
-    {id:'trabajo2',time:'16:00',emoji:'💻',label:'Trabajo bloque 2 (5h)'},
-    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad general 30 min'},
-    {id:'cena',time:'21:30',emoji:'🍽️',label:'Cena'},
+    {id:'levanta',  time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'desayuno', time:'09:30',emoji:'🍌',label:'Desayuno'},
+    {id:'estudio1', time:'10:00',emoji:'💻',label:'Estudio bloque 1 — 1h'},
+    {id:'entreno',  time:'11:00',emoji:'💪',label:'Entrenamiento HIIT'},
+    {id:'estudio2', time:'12:30',emoji:'💻',label:'Estudio bloque 2 — 2h'},
+    {id:'comida',   time:'14:30',emoji:'🍝',label:'Comida'},
+    {id:'estudio3', time:'15:30',emoji:'💻',label:'Estudio bloque 3 — 5h'},
+    {id:'descanso', time:'20:30',emoji:'🛋️',label:'Descanso'},
+    {id:'cena',     time:'21:00',emoji:'🍽️',label:'Cena'},
+    {id:'dj',       time:'23:00',emoji:'🎧',label:'DJ — 1h'},
+    {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
+    {id:'leer',     time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'dormir',   time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
+  // M/J — HIIT + Running 20:00
   running:[
-    {id:'desayuno',time:'09:30',emoji:'🍌',label:'Desayuno pre-entreno'},
-    {id:'dj',time:'10:00',emoji:'🎧',label:'DJ 1 hora'},
-    {id:'entreno',time:'11:00',emoji:'💪',label:'Entrenamiento 11:00'},
-    {id:'postgym',time:'12:45',emoji:'🥛',label:'Post-entreno (yogur + creatina)'},
-    {id:'trabajo1',time:'13:00',emoji:'💻',label:'Trabajo bloque 1 (1h30)'},
-    {id:'comida',time:'14:30',emoji:'🍝',label:'Comida'},
-    {id:'digestion',time:'15:30',emoji:'🚶',label:'Paseo digestivo'},
-    {id:'trabajo2',time:'16:00',emoji:'💻',label:'Trabajo bloque 2 (3h30)'},
-    {id:'running',time:'20:00',emoji:'🏃',label:'Running 20:00'},
-    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad general 30 min'},
-    {id:'cena',time:'21:30',emoji:'🍽️',label:'Cena'},
+    {id:'levanta',  time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'desayuno', time:'09:30',emoji:'🍌',label:'Desayuno'},
+    {id:'estudio1', time:'10:00',emoji:'💻',label:'Estudio bloque 1 — 1h'},
+    {id:'entreno',  time:'11:00',emoji:'💪',label:'Entrenamiento HIIT'},
+    {id:'estudio2', time:'12:30',emoji:'💻',label:'Estudio bloque 2 — 2h'},
+    {id:'comida',   time:'14:30',emoji:'🍝',label:'Comida'},
+    {id:'estudio3', time:'15:30',emoji:'💻',label:'Estudio bloque 3 — 4h'},
+    {id:'prep',     time:'19:30',emoji:'🔄',label:'Preparación running'},
+    {id:'running',  time:'20:00',emoji:'🏃',label:'Running — 20:00'},
+    {id:'ducha',    time:'20:45',emoji:'🚿',label:'Ducha post-running'},
+    {id:'cena',     time:'21:00',emoji:'🍽️',label:'Cena post-running'},
+    {id:'dj',       time:'23:00',emoji:'🎧',label:'DJ — 1h'},
+    {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
+    {id:'leer',     time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'dormir',   time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
+  // Sábado — Running 12:00 + día libre
   sabado:[
-    {id:'desayuno',time:'10:30',emoji:'🍌',label:'Desayuno'},
-    {id:'dj',time:'12:00',emoji:'🎧',label:'DJ 1 hora'},
-    {id:'comida',time:'14:00',emoji:'🍝',label:'Comida (cheat meal)'},
-    {id:'piscina',time:'15:30',emoji:'🏊',label:'Piscina / tumbona'},
-    {id:'running',time:'20:00',emoji:'🏃',label:'Running 20:00'},
-    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad 35 min (rodillo)'},
-    {id:'cena',time:'22:00',emoji:'🍽️',label:'Cena + salida'},
+    {id:'levanta',  time:'10:30',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'desayuno', time:'11:00',emoji:'🍌',label:'Desayuno'},
+    {id:'libre1',   time:'11:30',emoji:'🛋️',label:'Libre'},
+    {id:'running',  time:'12:00',emoji:'🏃',label:'Running — 12:00'},
+    {id:'ducha',    time:'12:45',emoji:'🚿',label:'Ducha post-running'},
+    {id:'libre2',   time:'13:00',emoji:'🛋️',label:'Libre'},
+    {id:'comida',   time:'14:00',emoji:'🍝',label:'Comida'},
+    {id:'tardelibre',time:'15:00',emoji:'🛋️',label:'Tarde libre'},
+    {id:'cena',     time:'21:00',emoji:'🍽️',label:'Cena'},
+    {id:'dj',       time:'23:00',emoji:'🎧',label:'DJ — 1h'},
+    {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
+    {id:'leer',     time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'dormir',   time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
+  // Domingo — Descanso total
   domingo:[
-    {id:'desayuno',time:'10:30',emoji:'🍌',label:'Desayuno tranquilo'},
-    {id:'comida',time:'13:30',emoji:'🍝',label:'Comida'},
-    {id:'piscina',time:'15:00',emoji:'🏊',label:'Piscina toda la tarde'},
-    {id:'movilidad',time:'21:00',emoji:'🧘',label:'Movilidad 35 min (rodillo)'},
-    {id:'cena',time:'21:30',emoji:'🍽️',label:'Cena ligera'},
+    {id:'levanta',  time:'10:30',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'desayuno', time:'11:00',emoji:'🍌',label:'Desayuno tranquilo'},
+    {id:'libre1',   time:'11:30',emoji:'🛋️',label:'Libre'},
+    {id:'comida',   time:'14:00',emoji:'🍝',label:'Comida'},
+    {id:'tardelibre',time:'15:00',emoji:'🛋️',label:'Tarde libre'},
+    {id:'cena',     time:'21:00',emoji:'🍽️',label:'Cena'},
+    {id:'dj',       time:'23:00',emoji:'🎧',label:'DJ — 1h'},
+    {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
+    {id:'leer',     time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'dormir',   time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
 };
 
@@ -2083,7 +2961,13 @@ function getDaySchedule(){
   return DAILY_SCHEDULE.base;
 }
 
-function timeToMins(t){var p=t.split(':');return parseInt(p[0])*60+parseInt(p[1]);}
+function timeToMins(t){
+  var p=t.split(':');
+  var h=parseInt(p[0]); var m=parseInt(p[1]);
+  // 00:xx and 01:xx are after midnight — treat as 24h+ for ordering
+  if(h<2) h+=24;
+  return h*60+m;
+}
 
 function renderDaySchedule(){
   var el=document.getElementById('day-schedule-checks');
@@ -2123,6 +3007,9 @@ function renderDaySchedule(){
 }
 
 function toggleScheduleItem(id){
+  // Special actions for key items
+  if(id==='movilidad'){nav('health');healthTab('movilidad');return;}
+  if(id==='leer'){var done2=ld('schedule_'+today(),{});done2['leer']=!done2['leer'];sd('schedule_'+today(),done2);renderDaySchedule();return;}
   var done=ld('schedule_'+today(),{});
   done[id]=!done[id];
   sd('schedule_'+today(),done);
@@ -2371,95 +3258,627 @@ function getCurrentRunWeek(){
 // Sin alcohol · Sin pan · Sin snacks · Creatina post-entreno
 // ════════════════════════════
 
-// 15 comidas + 15 cenas = 30 platos
-var COMIDAS=[
-  {n:'Pollo al ajillo con quinoa y brócoli',d:'Pollo (180g), quinoa cocida (80g), brócoli al vapor (200g), ajo, AOVE. Saltear el pollo con ajo, servir sobre la quinoa con el brócoli.'},
-  {n:'Salmón al horno con boniato y espinacas',d:'Salmón (180g), boniato asado (120g), espinacas salteadas con ajo (150g), limón, AOVE.'},
-  {n:'Merluza en salsa verde con arroz integral',d:'Merluza (200g), salsa verde (ajo, perejil, AOVE, caldo), arroz integral (70g), guisantes (50g).'},
-  {n:'Lentejas estofadas con zanahoria y pavo',d:'Lentejas (200g cocidas), pavo a la plancha (100g), zanahoria, cebolla, tomate, cúrcuma. Sin chorizo.'},
-  {n:'Dorada a la espalda con judías verdes',d:'Dorada (200g), judías verdes al vapor (200g), patata cocida pequeña (80g), AOVE y limón.'},
-  {n:'Pavo al curry con arroz basmati',d:'Pavo (180g), curry suave, leche de coco (50ml), arroz basmati integral (70g), brócoli (100g).'},
-  {n:'Caballa al horno con quinoa y ensalada',d:'Caballa (180g), quinoa (80g), ensalada de rúcula, tomate cherry, pepino, AOVE.'},
-  {n:'Pollo asado con boniato y ensalada verde',d:'Muslo/pechuga sin piel al horno (200g), boniato (100g), ensalada verde con tomate y pepino.'},
-  {n:'Lubina al limón con brócoli y quinoa',d:'Lubina (200g), brócoli (200g), quinoa (80g), limón, eneldo, AOVE.'},
-  {n:'Garbanzos con espinacas y atún',d:'Garbanzos (200g cocidos), atún al natural (1 lata), espinacas salteadas (150g), tomate natural, AOVE, comino.'},
-  {n:'Bacalao al horno con espárragos',d:'Bacalao desalado (200g), espárragos trigueros (200g), tomate cherry, ajo, AOVE.'},
-  {n:'Muslo de pollo con verduras asadas',d:'Muslo sin piel (200g), calabacín, berenjena, pimiento verde (300g total) al horno con AOVE y hierbas.'},
-  {n:'Pechuga de pollo con quinoa y rúcula',d:'Pechuga a la plancha (180g), quinoa (80g), rúcula, tomate, aguacate (1/4), limón, AOVE.'},
-  {n:'Boquerones al horno con boniato',d:'Boquerones frescos (200g), boniato (100g), ensalada de tomate y cebolla morada, AOVE, limón.'},
-  {n:'Estofado de pollo con verduras',d:'Pollo troceado (180g), zanahoria, cebolla, apio, tomate natural (300g verduras), caldo, laurel. Sin patata.'},
+
+// ════════════════════════════════════════════════════════
+// DIETA QUINCENAL — 2 opciones por comida y cena + macros
+// ════════════════════════════════════════════════════════
+var DIETA15=[
+  {dia:'Día 1',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Nueces 20g',kcal:380,p:22,c:34,f:21},
+   com:{kobj:580,pobj:50,cobj:57,fobj:16,opts:[
+     {id:'A',n:'Pollo al ajillo con arroz y brócoli',
+      i:[{n:'Pechuga de pollo',g:130,kcal:215,p:40,c:0,f:5},{n:'Arroz blanco cocido',g:160,kcal:208,p:4,c:45,f:0},{n:'Brócoli al vapor',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:581,p:50,c:59,f:16}},
+     {id:'B',n:'Albóndigas de ternera en salsa de champiñones',
+      i:[{n:'Carne picada de ternera',g:160,kcal:240,p:28,c:0,f:14},{n:'Champiñones',g:150,kcal:33,p:4.7,c:5,f:0.5},{n:'Arroz blanco cocido',g:120,kcal:156,p:3,c:34,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:519,p:36,c:39,f:25}}]},
+   mer:{desc:'Manzana 150g · Almendras 20g',kcal:194,p:4,c:25,f:10},
+   cen:{kobj:340,pobj:30,cobj:8,fobj:21,opts:[
+     {id:'A',n:'Tortilla francesa con champiñones salteados',
+      i:[{n:'Huevos enteros (2)',g:110,kcal:156,p:12,c:1,f:10.6},{n:'Claras de huevo (2)',g:70,kcal:32,p:7,c:0.4,f:0},{n:'Champiñones',g:200,kcal:44,p:6,c:6.6,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:322,p:25,c:8,f:21}},
+     {id:'B',n:'Pavo a la plancha con berenjena asada',
+      i:[{n:'Pechuga de pavo',g:150,kcal:203,p:43.5,c:0,f:1.5},{n:'Berenjena',g:200,kcal:50,p:2,c:12,f:0.4},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:343,p:46,c:12,f:12}}]}},
+
+  {dia:'Día 2',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Kiwi 100g · Almendras 15g',kcal:368,p:22,c:48,f:14},
+   com:{kobj:540,pobj:38,cobj:32,fobj:28,opts:[
+     {id:'A',n:'Salmón al horno con boniato y espinacas',
+      i:[{n:'Salmón fresco',g:150,kcal:312,p:30,c:0,f:19.5},{n:'Boniato asado',g:120,kcal:103,p:1.9,c:24,f:0.1},{n:'Espinacas salteadas',g:150,kcal:35,p:4.4,c:5.4,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:540,p:36,c:29,f:30}},
+     {id:'B',n:'Merluza en salsa verde con arroz',
+      i:[{n:'Merluza',g:200,kcal:164,p:36,c:0,f:2},{n:'Arroz blanco cocido',g:160,kcal:208,p:4,c:45,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10},{n:'Ajo, perejil, caldo',g:30,kcal:15,p:0.5,c:2,f:0}],
+      t:{kcal:477,p:41,c:47,f:12}}]},
+   mer:{desc:'Tortitas de avena y plátano (1 plátano · 2 huevos · avena 30g) — 4 tortitas',kcal:310,p:14,c:44,f:8},
+   cen:{kobj:355,pobj:36,cobj:11,fobj:18,opts:[
+     {id:'A',n:'Revuelto de gambas con espárragos',
+      i:[{n:'Gambas peladas',g:120,kcal:102,p:21.6,c:1.2,f:1.2},{n:'Espárragos',g:150,kcal:30,p:3.3,c:5.6,f:0.3},{n:'Huevos enteros (2)',g:110,kcal:156,p:12,c:1,f:10.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:378,p:37,c:8,f:22}},
+     {id:'B',n:'Merluza al vapor con brócoli y zanahoria',
+      i:[{n:'Merluza',g:160,kcal:131,p:28.8,c:0,f:1.6},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'Zanahoria',g:100,kcal:41,p:0.9,c:10,f:0.2},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:330,p:35,c:24,f:13}}]}},
+
+  {dia:'Día 3',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Almendras 15g',kcal:364,p:22,c:47,f:14},
+   com:{kobj:515,pobj:36,cobj:54,fobj:16,opts:[
+     {id:'A',n:'Pasta aglio e olio con gambas',
+      i:[{n:'Pasta integral cocida',g:220,kcal:273,p:11,c:50.6,f:2.2},{n:'Gambas peladas',g:130,kcal:111,p:23.4,c:1.3,f:1.3},{n:'AOVE',g:12,kcal:108,p:0,c:0,f:12},{n:'Ajo y guindilla',g:8,kcal:10,p:0.3,c:2,f:0}],
+      t:{kcal:502,p:35,c:54,f:16}},
+     {id:'B',n:'Secreto ibérico con judías verdes y zanahoria',
+      i:[{n:'Secreto ibérico',g:150,kcal:330,p:31.5,c:0,f:22.5},{n:'Judías verdes',g:200,kcal:62,p:3.6,c:14,f:0.2},{n:'Zanahoria',g:100,kcal:41,p:0.9,c:10,f:0.2},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:523,p:36,c:24,f:33}}]},
+   mer:{desc:'Muffins de arándanos caseros (avena 40g · yogur griego · arándanos · huevo · miel) — 2 unidades',kcal:300,p:12,c:42,f:8},
+   cen:{kobj:370,pobj:42,cobj:13,f_obj:17,opts:[
+     {id:'A',n:'Dorada al horno con judías verdes',
+      i:[{n:'Dorada',g:200,kcal:192,p:36,c:0,f:5},{n:'Judías verdes',g:150,kcal:47,p:2.7,c:10.5,f:0.2},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:329,p:39,c:11,f:15}},
+     {id:'B',n:'Steak tartar de ternera con brócoli al ajillo',
+      i:[{n:'Filete de ternera (crudo)',g:150,kcal:225,p:39,c:0,f:7.5},{n:'Brócoli salteado',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:383,p:45,c:14,f:18}}]}},
+
+  {dia:'Día 4',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Mango 100g · Almendras 15g',kcal:367,p:21,c:51,f:14},
+   com:{kobj:560,pobj:47,cobj:52,fobj:16,opts:[
+     {id:'A',n:'Pollo al curry con arroz basmati',
+      i:[{n:'Pechuga de pollo',g:130,kcal:215,p:40,c:0,f:5},{n:'Arroz basmati cocido',g:160,kcal:208,p:4,c:45,f:0},{n:'Leche de coco',g:50,kcal:90,p:0.9,c:1.5,f:9.2},{n:'Brócoli',g:100,kcal:34,p:2.8,c:7,f:0.4}],
+      t:{kcal:547,p:48,c:54,f:15}},
+     {id:'B',n:'Wok de ternera con champiñones y arroz',
+      i:[{n:'Filete de ternera en tiras',g:150,kcal:225,p:39,c:0,f:7.5},{n:'Champiñones',g:150,kcal:33,p:4.7,c:5,f:0.5},{n:'Zanahoria',g:100,kcal:41,p:0.9,c:10,f:0.2},{n:'Arroz blanco cocido',g:120,kcal:156,p:3,c:34,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:545,p:48,c:49,f:18}}]},
+   mer:{desc:'Kiwi 100g · Almendras 15g',kcal:119,p:3,c:19,f:8},
+   cen:{kobj:330,pobj:26,cobj:6,fobj:21,opts:[
+     {id:'A',n:'Salmón a la plancha con espinacas salteadas',
+      i:[{n:'Salmón',g:130,kcal:270,p:26,c:0,f:16.9},{n:'Espinacas',g:150,kcal:35,p:4.4,c:5.4,f:0.6},{n:'AOVE',g:5,kcal:45,p:0,c:0,f:5}],
+      t:{kcal:350,p:30,c:5,f:23}},
+     {id:'B',n:'Tortilla francesa con espárragos',
+      i:[{n:'Huevos enteros (2)',g:110,kcal:156,p:12,c:1,f:10.6},{n:'Claras (2)',g:70,kcal:32,p:7,c:0.4,f:0},{n:'Espárragos',g:150,kcal:30,p:3.3,c:5.6,f:0.3},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:308,p:22,c:7,f:21}}]}},
+
+  {dia:'Día 5',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Naranja 150g · Nueces 15g',kcal:388,p:22,c:58,f:17},
+   com:{kobj:590,pobj:50,cobj:52,fobj:19,opts:[
+     {id:'A',n:'Conejo al ajillo con arroz y brócoli',
+      i:[{n:'Conejo',g:180,kcal:311,p:52.2,c:0,f:10.8},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'Brócoli',g:150,kcal:51,p:4.2,c:10.5,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:647,p:60,c:53,f:21}},
+     {id:'B',n:'Pasta carbonara casera con pavo',
+      i:[{n:'Pasta integral cocida',g:220,kcal:273,p:11,c:50.6,f:2.2},{n:'Pechuga de pavo',g:80,kcal:108,p:23.2,c:0,f:0.8},{n:'Huevo entero (1)',g:55,kcal:78,p:6,c:0.6,f:5.3},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:531,p:40,c:51,f:16}}]},
+   mer:{desc:'Brownie de boniato y cacao (boniato 150g · cacao puro · huevos · miel · avena) — 1 ración',kcal:280,p:10,c:48,f:7},
+   cen:{kobj:342,pobj:34,cobj:10,fobj:19,opts:[
+     {id:'A',n:'Huevos revueltos con champiñones y espinacas',
+      i:[{n:'Huevos enteros (3)',g:165,kcal:234,p:18,c:1.5,f:15.9},{n:'Champiñones',g:150,kcal:33,p:4.7,c:5,f:0.5},{n:'Espinacas',g:100,kcal:23,p:2.9,c:3.6,f:0.4},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:362,p:26,c:10,f:25}},
+     {id:'B',n:'Bacalao al horno con brócoli',
+      i:[{n:'Bacalao',g:200,kcal:164,p:36,c:0,f:2},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:322,p:42,c:14,f:13}}]}},
+
+  {dia:'Día 6',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Pera 150g · Almendras 15g',kcal:392,p:22,c:62,f:14},
+   com:{kobj:590,pobj:48,cobj:50,fobj:19,opts:[
+     {id:'A',n:'Filete de ternera con brócoli y arroz',
+      i:[{n:'Filete de ternera',g:160,kcal:240,p:41.6,c:0,f:8},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:593,p:51,c:56,f:19}},
+     {id:'B',n:'Pollo en pepitoria con arroz',
+      i:[{n:'Muslo de pollo sin piel',g:160,kcal:288,p:40,c:0,f:14.4},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8},{n:'Caldo, azafrán, almendras',g:20,kcal:30,p:1,c:1,f:2}],
+      t:{kcal:585,p:45,c:43,f:24}}]},
+   mer:{desc:'Cookies de avena y chocolate negro 85% (avena · mantequilla cacahuete · cacao · miel) — 3 cookies',kcal:340,p:9,c:38,f:16},
+   cen:{kobj:360,pobj:42,cobj:11,fobj:15,opts:[
+     {id:'A',n:'Gambas a la plancha con brócoli al ajillo',
+      i:[{n:'Gambas',g:200,kcal:170,p:36,c:2,f:2},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:328,p:42,c:16,f:13}},
+     {id:'B',n:'Sardinas al horno con espinacas salteadas',
+      i:[{n:'Sardinas frescas',g:150,kcal:312,p:37.5,c:0,f:16.5},{n:'Espinacas',g:150,kcal:35,p:4.4,c:5.4,f:0.6},{n:'AOVE',g:5,kcal:45,p:0,c:0,f:5}],
+      t:{kcal:392,p:42,c:5,f:22}}]}},
+
+  {dia:'Día 7',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Nueces 20g',kcal:380,p:22,c:46,f:21},
+   com:{kobj:550,pobj:39,cobj:52,fobj:20,opts:[
+     {id:'A',n:'Arroz meloso de gambas',
+      i:[{n:'Gambas peladas',g:180,kcal:153,p:32.4,c:1.8,f:1.8},{n:'Arroz blanco cocido',g:200,kcal:260,p:5.4,c:56,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:503,p:38,c:58,f:12}},
+     {id:'B',n:'Costillas de cerdo con arroz y judías verdes',
+      i:[{n:'Costillas de cerdo',g:180,kcal:374,p:32.4,c:0,f:27},{n:'Arroz blanco cocido',g:120,kcal:156,p:3,c:34,f:0},{n:'Judías verdes',g:150,kcal:47,p:2.7,c:10.5,f:0.2}],
+      t:{kcal:577,p:38,c:45,f:27}}]},
+   mer:{desc:'Bizcocho de plátano y avena (plátano · avena 50g · huevos · miel · canela) — 1 porción',kcal:290,p:11,c:46,f:6},
+   cen:{kobj:320,pobj:42,cobj:11,fobj:12,opts:[
+     {id:'A',n:'Pavo a la plancha con judías verdes',
+      i:[{n:'Pechuga de pavo',g:150,kcal:203,p:43.5,c:0,f:1.5},{n:'Judías verdes',g:200,kcal:62,p:3.6,c:14,f:0.2},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:337,p:47,c:14,f:10}},
+     {id:'B',n:'Dorada al horno con espárragos',
+      i:[{n:'Dorada',g:180,kcal:173,p:32.4,c:0,f:4.5},{n:'Espárragos',g:200,kcal:40,p:4.4,c:7.4,f:0.4},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:303,p:37,c:7,f:15}}]}},
+
+  {dia:'Día 8',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Kiwi 100g · Nueces 15g',kcal:368,p:21,c:48,f:17},
+   com:{kobj:570,pobj:41,cobj:43,fobj:27,opts:[
+     {id:'A',n:'Pollo en pepitoria con arroz',
+      i:[{n:'Muslo de pollo sin piel',g:160,kcal:288,p:40,c:0,f:14.4},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8},{n:'Caldo, azafrán, almendras',g:20,kcal:30,p:1,c:1,f:2}],
+      t:{kcal:585,p:45,c:43,f:24}},
+     {id:'B',n:'Salmón al horno con boniato y brócoli',
+      i:[{n:'Salmón fresco',g:150,kcal:312,p:30,c:0,f:19.5},{n:'Boniato',g:120,kcal:103,p:1.9,c:24,f:0.1},{n:'Brócoli',g:150,kcal:51,p:4.2,c:10.5,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:556,p:36,c:35,f:30}}]},
+   mer:{desc:'Manzana 150g · Almendras 20g',kcal:194,p:4,c:25,f:10},
+   cen:{kobj:363,pobj:30,cobj:15,fobj:21,opts:[
+     {id:'A',n:'Tortilla francesa con berenjena a la plancha',
+      i:[{n:'Huevos enteros (2)',g:110,kcal:156,p:12,c:1,f:10.6},{n:'Claras (2)',g:70,kcal:32,p:7,c:0.4,f:0},{n:'Berenjena',g:200,kcal:50,p:2,c:12,f:0.4},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:328,p:21,c:13,f:21}},
+     {id:'B',n:'Revuelto de gambas con brócoli',
+      i:[{n:'Gambas',g:120,kcal:102,p:21.6,c:1.2,f:1.2},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'Huevos enteros (2)',g:110,kcal:156,p:12,c:1,f:10.6},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:398,p:39,c:16,f:21}}]}},
+
+  {dia:'Día 9',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Manzana 150g · Almendras 15g',kcal:387,p:22,c:58,f:14},
+   com:{kobj:513,pobj:32,cobj:60,fobj:18,opts:[
+     {id:'A',n:'Wok de ternera con verduras y arroz',
+      i:[{n:'Filete de ternera en tiras',g:150,kcal:225,p:39,c:0,f:7.5},{n:'Champiñones',g:100,kcal:22,p:3.1,c:3.3,f:0.3},{n:'Zanahoria',g:100,kcal:41,p:0.9,c:10,f:0.2},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:573,p:47,c:55,f:18}},
+     {id:'B',n:'Pasta alla norma con champiñones',
+      i:[{n:'Pasta integral cocida',g:220,kcal:273,p:11,c:50.6,f:2.2},{n:'Berenjena',g:150,kcal:38,p:1.5,c:9,f:0.3},{n:'Champiñones',g:150,kcal:33,p:4.7,c:5,f:0.5},{n:'AOVE',g:12,kcal:108,p:0,c:0,f:12}],
+      t:{kcal:452,p:17,c:65,f:15}}]},
+   mer:{desc:'Pera 150g · Nueces 15g',kcal:183,p:4,c:25,f:11},
+   cen:{kobj:325,pobj:39,cobj:9,f_obj:15,opts:[
+     {id:'A',n:'Merluza al vapor con judías verdes',
+      i:[{n:'Merluza',g:180,kcal:148,p:32.4,c:0,f:1.8},{n:'Judías verdes',g:200,kcal:62,p:3.6,c:14,f:0.2},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:300,p:36,c:14,f:12}},
+     {id:'B',n:'Filete de ternera a la plancha con espinacas',
+      i:[{n:'Filete de ternera',g:150,kcal:225,p:39,c:0,f:7.5},{n:'Espinacas',g:150,kcal:35,p:4.4,c:5.4,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:350,p:43,c:5,f:18}}]}},
+
+  {dia:'Día 10',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Almendras 15g',kcal:364,p:22,c:47,f:14},
+   com:{kobj:551,pobj:44,cobj:51,f_obj:20,opts:[
+     {id:'A',n:'Secreto ibérico con judías verdes y arroz',
+      i:[{n:'Secreto ibérico',g:150,kcal:330,p:31.5,c:0,f:22.5},{n:'Judías verdes',g:150,kcal:47,p:2.7,c:10.5,f:0.2},{n:'Arroz blanco cocido',g:120,kcal:156,p:3,c:34,f:0}],
+      t:{kcal:533,p:37,c:45,f:23}},
+     {id:'B',n:'Pollo al ajillo con brócoli y arroz',
+      i:[{n:'Pechuga de pollo',g:130,kcal:215,p:40,c:0,f:5},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:568,p:50,c:56,f:16}}]},
+   mer:{desc:'Naranja 150g · Almendras 20g',kcal:186,p:5,c:21,f:10},
+   cen:{kobj:380,pobj:44,cobj:10,fobj:18,opts:[
+     {id:'A',n:'Steak tartar de ternera con brócoli',
+      i:[{n:'Filete de ternera (crudo)',g:150,kcal:225,p:39,c:0,f:7.5},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:365,p:45,c:14,f:16}},
+     {id:'B',n:'Huevos revueltos con espárragos y champiñones',
+      i:[{n:'Huevos enteros (3)',g:165,kcal:234,p:18,c:1.5,f:15.9},{n:'Espárragos',g:150,kcal:30,p:3.3,c:5.6,f:0.3},{n:'Champiñones',g:100,kcal:22,p:3.1,c:3.3,f:0.3},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:358,p:24,c:10,f:25}}]}},
+
+  {dia:'Día 11',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Naranja 150g · Almendras 15g',kcal:387,p:22,c:57,f:14},
+   com:{kobj:534,pobj:49,cobj:35,fobj:17,opts:[
+     {id:'A',n:'Bacalao al horno con espárragos y arroz',
+      i:[{n:'Bacalao',g:200,kcal:164,p:36,c:0,f:2},{n:'Espárragos',g:150,kcal:30,p:3.3,c:5.6,f:0.3},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:479,p:43,c:48,f:12}},
+     {id:'B',n:'Conejo al horno con judías verdes y zanahoria',
+      i:[{n:'Conejo',g:180,kcal:311,p:52.2,c:0,f:10.8},{n:'Judías verdes',g:150,kcal:47,p:2.7,c:10.5,f:0.2},{n:'Zanahoria',g:100,kcal:41,p:0.9,c:10,f:0.2},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:489,p:56,c:21,f:21}}]},
+   mer:{desc:'Kiwi 100g · Almendras 15g',kcal:119,p:3,c:19,f:8},
+   cen:{kobj:342,pobj:27,cobj:11,fobj:22,opts:[
+     {id:'A',n:'Salmón a la plancha con judías verdes',
+      i:[{n:'Salmón',g:130,kcal:270,p:26,c:0,f:16.9},{n:'Judías verdes',g:150,kcal:47,p:2.7,c:10.5,f:0.2},{n:'AOVE',g:5,kcal:45,p:0,c:0,f:5}],
+      t:{kcal:362,p:29,c:11,f:22}},
+     {id:'B',n:'Tortilla francesa con champiñones',
+      i:[{n:'Huevos enteros (2)',g:110,kcal:156,p:12,c:1,f:10.6},{n:'Claras (2)',g:70,kcal:32,p:7,c:0.4,f:0},{n:'Champiñones',g:200,kcal:44,p:6,c:6.6,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:322,p:25,c:8,f:21}}]}},
+
+  {dia:'Día 12',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Pera 150g · Nueces 15g',kcal:372,p:21,c:59,f:17},
+   com:{kobj:523,pobj:42,cobj:51,fobj:17,opts:[
+     {id:'A',n:'Pasta aglio e olio con gambas',
+      i:[{n:'Pasta integral cocida',g:220,kcal:273,p:11,c:50.6,f:2.2},{n:'Gambas peladas',g:130,kcal:111,p:23.4,c:1.3,f:1.3},{n:'AOVE',g:12,kcal:108,p:0,c:0,f:12},{n:'Ajo y guindilla',g:8,kcal:10,p:0.3,c:2,f:0}],
+      t:{kcal:502,p:35,c:54,f:16}},
+     {id:'B',n:'Filete de ternera con champiñones y arroz',
+      i:[{n:'Filete de ternera',g:150,kcal:225,p:39,c:0,f:7.5},{n:'Champiñones',g:150,kcal:33,p:4.7,c:5,f:0.5},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:543,p:48,c:47,f:18}}]},
+   mer:{desc:'Frutos rojos 100g · Nueces 15g',kcal:155,p:3,c:17,f:11},
+   cen:{kobj:316,pobj:43,cobj:6,fobj:13,opts:[
+     {id:'A',n:'Bacalao al horno con espinacas',
+      i:[{n:'Bacalao',g:200,kcal:164,p:36,c:0,f:2},{n:'Espinacas',g:150,kcal:35,p:4.4,c:5.4,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:289,p:40,c:5,f:13}},
+     {id:'B',n:'Pavo a la plancha con berenjena asada',
+      i:[{n:'Pechuga de pavo',g:150,kcal:203,p:43.5,c:0,f:1.5},{n:'Berenjena',g:200,kcal:50,p:2,c:12,f:0.4},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:343,p:46,c:12,f:12}}]}},
+
+  {dia:'Día 13',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Mango 100g · Nueces 20g',kcal:389,p:22,c:55,f:21},
+   com:{kobj:555,pobj:43,cobj:53,fobj:23,opts:[
+     {id:'A',n:'Pollo a la cerveza con arroz y brócoli',
+      i:[{n:'Muslo de pollo sin piel',g:160,kcal:288,p:40,c:0,f:14.4},{n:'Arroz blanco cocido',g:150,kcal:195,p:4,c:42,f:0},{n:'Brócoli',g:150,kcal:51,p:4.2,c:10.5,f:0.6},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:606,p:48,c:53,f:23}},
+     {id:'B',n:'Arroz meloso de gambas',
+      i:[{n:'Gambas peladas',g:180,kcal:153,p:32.4,c:1.8,f:1.8},{n:'Arroz blanco cocido',g:200,kcal:260,p:5.4,c:56,f:0.6},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:503,p:38,c:58,f:12}}]},
+   mer:{desc:'Manzana 150g · Nueces 15g',kcal:177,p:3,c:24,f:10},
+   cen:{kobj:360,pobj:37,cobj:8,fobj:20,opts:[
+     {id:'A',n:'Revuelto de gambas con espárragos',
+      i:[{n:'Gambas',g:120,kcal:102,p:21.6,c:1.2,f:1.2},{n:'Espárragos',g:150,kcal:30,p:3.3,c:5.6,f:0.3},{n:'Huevos enteros (2)',g:110,kcal:156,p:12,c:1,f:10.6},{n:'AOVE',g:8,kcal:72,p:0,c:0,f:8}],
+      t:{kcal:360,p:37,c:8,f:20}},
+     {id:'B',n:'Dorada al horno con brócoli al ajillo',
+      i:[{n:'Dorada',g:200,kcal:192,p:36,c:0,f:5},{n:'Brócoli',g:200,kcal:68,p:5.6,c:14,f:0.8},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:350,p:42,c:14,f:16}}]}},
+
+  {dia:'Día 14',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Kiwi 100g · Almendras 15g',kcal:368,p:22,c:48,f:14},
+   com:{kobj:520,pobj:39,cobj:45,fobj:20,opts:[
+     {id:'A',n:'Costillas de cerdo con judías verdes y arroz',
+      i:[{n:'Costillas de cerdo',g:180,kcal:374,p:32.4,c:0,f:27},{n:'Judías verdes',g:150,kcal:47,p:2.7,c:10.5,f:0.2},{n:'Arroz blanco cocido',g:120,kcal:156,p:3,c:34,f:0}],
+      t:{kcal:577,p:38,c:45,f:27}},
+     {id:'B',n:'Merluza en salsa verde con arroz',
+      i:[{n:'Merluza',g:200,kcal:164,p:36,c:0,f:2},{n:'Arroz blanco cocido',g:160,kcal:208,p:4,c:45,f:0},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:462,p:40,c:45,f:12}}]},
+   mer:{desc:'Pera 150g · Almendras 15g',kcal:143,p:3,c:22,f:8},
+   cen:{kobj:380,pobj:43,cobj:6,fobj:21,opts:[
+     {id:'A',n:'Sardinas al horno con espinacas',
+      i:[{n:'Sardinas frescas',g:150,kcal:312,p:37.5,c:0,f:16.5},{n:'Espinacas',g:150,kcal:35,p:4.4,c:5.4,f:0.6},{n:'AOVE',g:5,kcal:45,p:0,c:0,f:5}],
+      t:{kcal:392,p:42,c:5,f:22}},
+     {id:'B',n:'Filete de ternera con champiñones y espárragos',
+      i:[{n:'Filete de ternera',g:150,kcal:225,p:39,c:0,f:7.5},{n:'Champiñones',g:100,kcal:22,p:3.1,c:3.3,f:0.3},{n:'Espárragos',g:100,kcal:20,p:2.2,c:3.7,f:0.2},{n:'AOVE',g:10,kcal:90,p:0,c:0,f:10}],
+      t:{kcal:357,p:44,c:7,f:18}}]}},
+
+  {dia:'Día 15 — 🍕 CHEAT MEAL',
+   des:{desc:'Yogur griego 200g · Plátano 100g · Lo que apetezca',kcal:249,p:19,c:31,f:8},
+   com:{kobj:0,pobj:0,cobj:0,fobj:0,opts:[
+     {id:'A',n:'🍕 CHEAT MEAL — Lo que apetezca',i:[],t:{kcal:0,p:0,c:0,f:0}},
+     {id:'B',n:'Sin restricciones — disfrútalo',i:[],t:{kcal:0,p:0,c:0,f:0}}]},
+   mer:{desc:'Lo que apetezca',kcal:0,p:0,c:0,f:0},
+   cen:{kobj:0,pobj:0,cobj:0,fobj:0,opts:[
+     {id:'A',n:'🍕 Cena libre',i:[],t:{kcal:0,p:0,c:0,f:0}},
+     {id:'B',n:'Sin restricciones',i:[],t:{kcal:0,p:0,c:0,f:0}}]}},
 ];
 
-var CENAS=[
-  {n:'Tortilla de espinacas y champiñones',d:'2 huevos + 2 claras, espinacas (100g), champiñones (150g), ajo, sal. Tortilla jugosa.'},
-  {n:'Revuelto de gambas con espárragos',d:'Gambas (150g), espárragos trigueros (150g), 2 huevos, ajo, AOVE.'},
-  {n:'Pavo a la plancha con ensalada verde',d:'Pavo (150g) a la plancha, ensalada verde completa (lechuga, tomate, pepino, zanahoria), AOVE y vinagre.'},
-  {n:'Salmón a la plancha con rúcula y tomate',d:'Salmón (150g), rúcula (100g), tomate cherry, cebolla morada, AOVE, limón.'},
-  {n:'Gazpacho andaluz + huevo poché',d:'Gazpacho casero sin pan (300ml), huevo poché, cebollino. Ligero y antiinflamatorio.'},
-  {n:'Tortilla francesa con tomate y aguacate',d:'2 huevos + 1 clara, tomate natural en rodajas, aguacate (1/4), AOVE, sal.'},
-  {n:'Sopa de verduras con pollo desmechado',d:'Caldo de verduras casero, zanahoria, apio, cebolla, pollo desmechado (100g), jengibre.'},
-  {n:'Atún a la plancha con tomate y aceitunas',d:'Atún fresco (150g), tomate natural (200g), aceitunas verdes (10), AOVE, orégano.'},
-  {n:'Huevos revueltos con champiñones',d:'3 huevos revueltos, champiñones (200g) salteados con ajo y perejil, pimienta negra.'},
-  {n:'Sardinas al horno con ensalada de canónigos',d:'Sardinas frescas (200g), canónigos (100g), tomate cherry, cebolla morada, AOVE y limón.'},
-  {n:'Merluza al vapor con brócoli',d:'Merluza (150g), brócoli (200g), zanahoria (100g), al vapor. Aliñar con AOVE y limón.'},
-  {n:'Revuelto de claras con verduras',d:'4 claras + 1 huevo, pimiento verde y rojo (100g), tomate (100g), cebolla, AOVE.'},
-  {n:'Ensalada con atún, huevo y aguacate',d:'Lechuga, tomate, pepino, atún natural (1 lata), huevo cocido, aguacate (1/4), AOVE y limón.'},
-  {n:'Caballa a la plancha con ensalada mediterránea',d:'Caballa (150g), ensalada mediterránea: tomate, pepino, aceitunas, cebolla morada, AOVE.'},
-  {n:'Sopa de pollo con jengibre y cúrcuma',d:'Caldo casero, pollo desmechado (100g), zanahoria, apio, jengibre fresco, cúrcuma. Muy antiinflamatorio.'},
+
+
+// ════════════════════════════════════════════════════
+// RECETAS CASERAS — Repostería sin azúcar refinado
+// ════════════════════════════════════════════════════
+var RECETAS_CASERAS=[
+  {
+    n:'Bizcocho de plátano y avena',
+    emoji:'🍌',
+    kcal_total:1160, raciones:4, kcal_racion:290,
+    macro:{p:11,c:46,f:6},
+    tiempo:'15 min prep · 35 min horno',
+    ingredientes:[
+      {n:'Plátanos maduros',g:200,nota:'Cuanto más maduros, más dulce'},
+      {n:'Avena en copos',g:120,nota:'Tritúralos en polvo para textura fina'},
+      {n:'Huevos',g:110,nota:'2 huevos medianos'},
+      {n:'Miel pura',g:30,nota:'O sirope de agave'},
+      {n:'Aceite de oliva suave',g:20,nota:'O aceite de coco'},
+      {n:'Levadura química',g:8,nota:'1 sobre'},
+      {n:'Canela',g:3,nota:'Al gusto'},
+      {n:'Pizca de sal',g:2,nota:''},
+    ],
+    pasos:[
+      'Precalienta el horno a 180°C. Engrasa un molde rectangular.',
+      'Tritura la avena hasta obtener harina. Mezcla con levadura, canela y sal.',
+      'Aplasta los plátanos con un tenedor hasta hacerlos puré.',
+      'Bate los huevos con la miel y el aceite. Añade el puré de plátano.',
+      'Incorpora la mezcla de avena poco a poco. Remueve hasta integrar.',
+      'Vierte en el molde y hornea 30-35 min. Comprueba con un palillo.',
+      'Deja enfriar 10 min antes de desmoldar. Aguanta 4-5 días en nevera.',
+    ]
+  },
+  {
+    n:'Muffins de arándanos con avena',
+    emoji:'🫐',
+    kcal_total:600, raciones:4, kcal_racion:150,
+    macro:{p:12,c:42,f:8},
+    tiempo:'10 min prep · 20 min horno',
+    ingredientes:[
+      {n:'Avena en copos',g:100,nota:'Tritúralos en polvo'},
+      {n:'Yogur griego',g:120,nota:'Aporta humedad y proteína'},
+      {n:'Arándanos frescos',g:100,nota:'O congelados'},
+      {n:'Huevo',g:55,nota:'1 unidad'},
+      {n:'Miel',g:25,nota:''},
+      {n:'Aceite de oliva suave',g:15,nota:''},
+      {n:'Levadura química',g:5,nota:'1/2 sobre'},
+    ],
+    pasos:[
+      'Precalienta el horno a 180°C. Prepara molde de muffins.',
+      'Tritura la avena hasta obtener harina.',
+      'Mezcla ingredientes húmedos: yogur, huevo, miel, aceite.',
+      'Incorpora la harina de avena y levadura. Mezcla suave.',
+      'Añade los arándanos con movimientos envolventes.',
+      'Rellena los moldes 3/4. Hornea 18-20 min.',
+      'Deja enfriar. Aguantan 3 días en nevera o 2 meses congelados.',
+    ]
+  },
+  {
+    n:'Tortitas de avena y plátano',
+    emoji:'🥞',
+    kcal_total:310, raciones:1, kcal_racion:310,
+    macro:{p:14,c:44,f:8},
+    tiempo:'5 min prep · 10 min plancha',
+    ingredientes:[
+      {n:'Plátano maduro',g:100,nota:'1 unidad mediana'},
+      {n:'Huevos',g:110,nota:'2 unidades'},
+      {n:'Avena en copos',g:30,nota:''},
+      {n:'Canela',g:2,nota:'Al gusto'},
+    ],
+    pasos:[
+      'Aplasta el plátano hasta hacerlo puré.',
+      'Bate los huevos y mézclalos con el plátano.',
+      'Añade la avena y la canela. Mezcla bien.',
+      'Calienta una sartén antiadherente a fuego medio-bajo. Sin aceite.',
+      'Vierte pequeñas porciones (2-3 cucharadas). Cocina 2 min por lado.',
+      'Sirve con arándanos o frutos rojos por encima.',
+    ]
+  },
+  {
+    n:'Cookies de avena y chocolate negro',
+    emoji:'🍪',
+    kcal_total:680, raciones:5, kcal_racion:136,
+    macro:{p:5,c:16,f:7},
+    tiempo:'10 min prep · 12 min horno',
+    ingredientes:[
+      {n:'Avena en copos',g:120,nota:''},
+      {n:'Mantequilla de cacahuete natural',g:60,nota:'Sin azúcar añadido'},
+      {n:'Chocolate negro 85%',g:40,nota:'Picado grueso'},
+      {n:'Miel',g:30,nota:''},
+      {n:'Huevo',g:55,nota:'1 unidad'},
+      {n:'Bicarbonato',g:3,nota:'1/2 cucharadita'},
+    ],
+    pasos:[
+      'Precalienta el horno a 175°C. Forra la bandeja con papel vegetal.',
+      'Mezcla mantequilla de cacahuete, miel y huevo hasta homogéneo.',
+      'Incorpora la avena y el bicarbonato. Mezcla bien.',
+      'Añade el chocolate picado.',
+      'Forma bolas y aplánalas en la bandeja (quedan planas al hornear).',
+      'Hornea 10-12 min. Sacan blandas — endurecen al enfriar.',
+      'Aguantan 1 semana en bote hermético.',
+    ]
+  },
+  {
+    n:'Brownie de boniato y cacao',
+    emoji:'🍫',
+    kcal_total:1120, raciones:4, kcal_racion:280,
+    macro:{p:10,c:48,f:7},
+    tiempo:'20 min prep · 25 min horno',
+    ingredientes:[
+      {n:'Boniato cocido',g:300,nota:'Asado o hervido y triturado'},
+      {n:'Cacao puro en polvo',g:40,nota:'Sin azúcar'},
+      {n:'Huevos',g:110,nota:'2 unidades'},
+      {n:'Miel',g:50,nota:''},
+      {n:'Avena en polvo',g:40,nota:'Tritúrala'},
+      {n:'Aceite de coco',g:20,nota:'O aceite de oliva suave'},
+      {n:'Chocolate negro 85%',g:30,nota:'Troceado para mezclar'},
+    ],
+    pasos:[
+      'Precalienta el horno a 180°C. Engrasa un molde cuadrado.',
+      'Tritura el boniato cocido hasta obtener puré suave.',
+      'Mezcla puré con huevos, miel y aceite. Bate bien.',
+      'Incorpora cacao, avena en polvo. Mezcla hasta homogéneo.',
+      'Añade el chocolate troceado.',
+      'Vierte en el molde y hornea 22-25 min. El centro puede quedar algo húmedo.',
+      'Deja enfriar completamente antes de cortar. Mejor de un día para otro.',
+    ]
+  },
+  {
+    n:'Energy balls de dátiles y cacao',
+    emoji:'⚡',
+    kcal_total:720, raciones:6, kcal_racion:120,
+    macro:{p:3,c:18,f:5},
+    tiempo:'10 min · Sin horno',
+    ingredientes:[
+      {n:'Dátiles sin hueso',g:120,nota:'Remoja 10 min si están secos'},
+      {n:'Avena en copos',g:60,nota:''},
+      {n:'Mantequilla de cacahuete',g:40,nota:''},
+      {n:'Cacao puro',g:15,nota:''},
+      {n:'Coco rallado',g:20,nota:'Para rebozar'},
+    ],
+    pasos:[
+      'Tritura los dátiles en el procesador hasta pasta.',
+      'Añade mantequilla de cacahuete, cacao y avena. Tritura hasta integrar.',
+      'La masa debe ser moldeable — si está seca añade 1 cdt agua.',
+      'Forma bolas del tamaño de una nuez.',
+      'Reboza en coco rallado.',
+      'Refrigera 30 min antes de comer. Aguantan 2 semanas en nevera.',
+    ]
+  },
 ];
 
-// 15-day plan: day i → comida COMIDAS[i-1], cena CENAS[i-1]
-var DIET_15_DAYS=[
-  {dia:'Día 1 — Lunes',desayuno:'Yogur griego natural (200g) + frutos rojos (100g) + nueces (20g) · Té verde',manana:'Manzana + 10 almendras',comida:0,merienda:'Fruta de temporada',cena:0},
-  {dia:'Día 2 — Martes',desayuno:'Yogur griego (200g) + plátano troceado + semillas de chía (10g) · Té verde',manana:'Kiwi + 5 nueces',comida:1,merienda:'Fruta de temporada',cena:1},
-  {dia:'Día 3 — Miércoles',desayuno:'Porridge de avena (50g) + leche de almendras + frutos rojos + semillas de lino · Té verde',manana:'Naranja + 10 avellanas',comida:2,merienda:'Fruta de temporada',cena:2},
-  {dia:'Día 4 — Jueves',desayuno:'Yogur griego (200g) + frutos rojos + nueces (20g) + canela · Café solo',manana:'Manzana + 10 almendras',comida:3,merienda:'Fruta de temporada',cena:3},
-  {dia:'Día 5 — Viernes',desayuno:'Porridge de avena (50g) + frutos rojos + semillas de chía · Té verde',manana:'Pera + 10 pistachos',comida:4,merienda:'Fruta de temporada',cena:4},
-  {dia:'Día 6 — Sábado',desayuno:'2 huevos revueltos con tomate + aguacate (1/2) · Café',manana:'Manzana + 10 almendras',comida:5,merienda:'Yogur griego + frutos rojos',cena:5},
-  {dia:'Día 7 — Domingo',desayuno:'Bowl de quinoa (50g) + leche almendras + frutos rojos + nueces · Té verde',manana:'Naranja + 5 nueces',comida:6,merienda:'Fruta de temporada',cena:6},
-  {dia:'Día 8 — Lunes',desayuno:'Yogur griego (200g) + frutos rojos + semillas de chía + nueces · Café',manana:'Kiwi + 10 almendras',comida:7,merienda:'Fruta de temporada',cena:7},
-  {dia:'Día 9 — Martes',desayuno:'Porridge de avena (50g) + leche almendras + plátano + nueces (20g) · Té verde',manana:'Manzana + 10 avellanas',comida:8,merienda:'Fruta de temporada',cena:8},
-  {dia:'Día 10 — Miércoles',desayuno:'Yogur griego (200g) + frutos rojos + frutos secos (20g) + canela · Café',manana:'Naranja + 5 nueces',comida:9,merienda:'Fruta de temporada',cena:9},
-  {dia:'Día 11 — Jueves',desayuno:'2 huevos revueltos con espinacas + tomate natural · Té verde',manana:'Pera + 10 pistachos',comida:10,merienda:'Yogur griego + canela',cena:10},
-  {dia:'Día 12 — Viernes',desayuno:'Porridge de avena (50g) + leche almendras + frutos rojos + lino · Café',manana:'Manzana + 10 almendras',comida:11,merienda:'Fruta de temporada',cena:11},
-  {dia:'Día 13 — Sábado',desayuno:'Bowl de yogur griego + frutos rojos + granola casera (sin azúcar) · Café',manana:'Kiwi + 5 nueces',comida:12,merienda:'Yogur griego + frutos rojos',cena:12},
-  {dia:'Día 14 — Domingo',desayuno:'Porridge de avena (50g) + leche almendras + plátano + canela · Té verde',manana:'Naranja + 10 avellanas',comida:13,merienda:'Fruta de temporada',cena:13},
-  {dia:'Día 15 — Lunes',desayuno:'Yogur griego (200g) + frutos rojos + nueces + semillas de chía · Café',manana:'Manzana + 10 almendras',comida:14,merienda:'Fruta de temporada',cena:14},
-];
+
+function renderRecetasCaseras(){
+  var el=document.getElementById('food-caseras-content');
+  if(!el) return;
+  var h='<div style="font-size:11px;color:var(--m);margin-bottom:12px">Repostería casera · Sin azúcar refinado · Sin harina blanca</div>';
+  RECETAS_CASERAS.forEach(function(r,idx){
+    h+='<div style="border:1px solid var(--b);border-radius:10px;margin-bottom:8px;overflow:hidden">';
+    h+='<div style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="casToggle('+idx+')">';
+    h+='<div>';
+    h+='<div style="font-size:13px;font-weight:600;color:var(--t)">'+r.emoji+' '+r.n+'</div>';
+    h+='<div style="font-size:10px;color:var(--m);margin-top:2px">'+r.kcal_racion+' kcal/ración · '+r.tiempo+'</div>';
+    h+='</div>';
+    h+='<div style="text-align:right;flex-shrink:0">';
+    h+='<div style="font-size:11px;color:var(--a)">P:'+r.macro.p+'g C:'+r.macro.c+'g G:'+r.macro.f+'g</div>';
+    h+='<div style="font-size:10px;color:var(--m)">'+r.raciones+' raciones</div>';
+    h+='</div></div>';
+    h+='<div id="cas-'+idx+'" style="display:none;padding:10px 12px;border-top:1px solid var(--b)">';
+    // Ingredientes
+    h+='<div style="font-size:11px;font-weight:700;color:var(--o);margin-bottom:6px">🛒 Ingredientes</div>';
+    r.ingredientes.forEach(function(ing){
+      h+='<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--b);font-size:11px">';
+      h+='<span style="color:var(--t)">'+ing.n+'</span>';
+      h+='<span style="color:var(--m)">'+ing.g+'g'+(ing.nota?' · <em>'+ing.nota+'</em>':'')+'</span>';
+      h+='</div>';
+    });
+    // Pasos
+    h+='<div style="font-size:11px;font-weight:700;color:var(--g);margin:10px 0 6px">📋 Elaboración</div>';
+    r.pasos.forEach(function(paso,pi){
+      h+='<div style="display:flex;gap:8px;margin-bottom:6px">';
+      h+='<div style="flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--a);color:#0a1a2f;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">'+(pi+1)+'</div>';
+      h+='<div style="font-size:11px;color:var(--m);line-height:1.5">'+paso+'</div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  el.innerHTML=h;
+}
+function casToggle(i){var b=document.getElementById('cas-'+i);if(b)b.style.display=b.style.display==='none'?'block':'none';}
 
 function renderDietPlan(){
   var el=document.getElementById('diet-content');
   if(!el) return;
-  // Find current day in 15-day cycle
-  var start=new Date(2026,6,28); // July 28
+  var start=new Date(2026,8,7);
   var now=new Date();
-  var dayNum=Math.floor((now-start)/86400000)%15;
-  if(dayNum<0) dayNum=0;
+  var todayIdx=Math.floor((now-start)/86400000)%15;
+  if(todayIdx<0) todayIdx=0;
 
-  var h='<div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:var(--m)">📅 Hoy: <strong style="color:var(--t)">'+DIET_15_DAYS[dayNum].dia+'</strong></div>';
+  var h='<div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:8px 10px;margin-bottom:10px">';
+  h+='<div style="font-size:12px;color:var(--m)">Hoy: <strong style="color:var(--t)">'+DIETA15[todayIdx].dia+'</strong> · Ciclo 15 días · Marca lo que comes</div>';
+  h+='</div>';
 
-  DIET_15_DAYS.forEach(function(day,idx){
-    var isToday=idx===dayNum;
-    var c=COMIDAS[day.comida];
-    var ce=CENAS[day.cena];
-    h+='<div style="border:1px solid '+(isToday?'var(--a)':'var(--b)')+';border-radius:10px;margin-bottom:6px;overflow:hidden;background:'+(isToday?'rgba(99,102,241,0.03)':'transparent')+'">';
-    h+='<div style="padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="var n=this.nextElementSibling;n.style.display=n.style.display===\'none\'?\'block\':\'none\'">';
-    h+='<div><strong style="font-size:13px;color:var(--t)">'+day.dia+'</strong>'+(isToday?' <span style="font-size:10px;background:var(--a);color:#fff;padding:1px 6px;border-radius:10px">Hoy</span>':'')+'</div>';
-    h+='<span style="color:var(--m);font-size:12px">'+c.n.split(' con ')[0]+' · '+ce.n.split(' con ')[0]+'</span></div>';
-    h+='<div style="display:'+(isToday?'block':'none')+';padding:10px 12px;border-top:1px solid var(--b)">';
-    // Desayuno
-    h+='<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--a)">🌅 Desayuno (9:30)</div><div style="font-size:12px;color:var(--m)">'+day.desayuno+'</div></div>';
-    // Media mañana
-    h+='<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--a)">🍎 Media mañana (11:00)</div><div style="font-size:12px;color:var(--m)">'+day.manana+'</div></div>';
-    // Comida
-    h+='<div style="margin-bottom:8px;background:rgba(61,214,140,0.04);border-radius:8px;padding:7px 9px"><div style="font-size:11px;font-weight:700;color:var(--g)">🍽️ Comida (14:30)</div><div style="font-size:13px;font-weight:600;color:var(--t);margin:2px 0">'+c.n+'</div><div style="font-size:11px;color:var(--m)">'+c.d+'</div></div>';
-    // Merienda
-    h+='<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--a)">🍊 Merienda (17:00)</div><div style="font-size:12px;color:var(--m)">'+day.merienda+'</div></div>';
-    // Cena
-    h+='<div style="background:rgba(99,102,241,0.04);border-radius:8px;padding:7px 9px"><div style="font-size:11px;font-weight:700;color:var(--p)">🌙 Cena (21:30)</div><div style="font-size:13px;font-weight:600;color:var(--t);margin:2px 0">'+ce.n+'</div><div style="font-size:11px;color:var(--m)">'+ce.d+'</div></div>';
+  DIETA15.forEach(function(day,i){
+    var isT=i===todayIdx;
+    var isCheat=i===14;
+    var dateKey=_dietDate(i);
+    var comChoice=ld('diet_com_'+dateKey,'');
+    var cenChoice=ld('diet_cen_'+dateKey,'');
+    var comDone=ld('diet_com_done_'+dateKey,false);
+    var cenDone=ld('diet_cen_done_'+dateKey,false);
+
+    var totalKcal=day.des.kcal+day.mer.kcal+
+      (comChoice==='B'?day.com.opts[1].t.kcal:day.com.opts[0].t.kcal)+
+      (cenChoice==='B'?day.cen.opts[1].t.kcal:day.cen.opts[0].t.kcal);
+
+    h+='<div style="border:1px solid '+(isT?'var(--a)':isCheat?'rgba(245,158,11,0.4)':'var(--b)')+';border-radius:10px;margin-bottom:6px;overflow:hidden">';
+    // Header
+    h+='<div style="padding:9px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="dietToggle('+i+')">';
+    h+='<div>';
+    h+='<div style="font-size:13px;font-weight:'+(isT?'700':'500')+';color:var(--t)">'+day.dia+(isT?' ◀ Hoy':'')+'</div>';
+    if(!isCheat) h+='<div style="font-size:10px;color:var(--m)">~'+totalKcal+' kcal del día</div>';
+    h+='</div>';
+    h+='<div style="display:flex;gap:6px;align-items:center">';
+    if(comDone) h+='<span style="font-size:10px;background:rgba(61,214,140,0.15);color:var(--g);padding:2px 6px;border-radius:5px">🍽✅</span>';
+    if(cenDone) h+='<span style="font-size:10px;background:rgba(99,102,241,0.15);color:var(--p);padding:2px 6px;border-radius:5px">🌙✅</span>';
+    h+='<span style="font-size:16px;color:var(--m)">›</span></div>';
+    h+='</div>';
+
+    // Body
+    h+='<div id="diet-b-'+i+'" style="display:'+(isT?'block':'none')+';padding:10px 12px;border-top:1px solid var(--b)">';
+
+    if(isCheat){
+      h+='<div style="background:rgba(245,158,11,0.08);border-radius:10px;padding:14px;text-align:center">';
+      h+='<div style="font-size:28px;margin-bottom:6px">🍕</div>';
+      h+='<div style="font-size:16px;font-weight:700;color:var(--o)">CHEAT MEAL</div>';
+      h+='<div style="font-size:12px;color:var(--m);margin-top:4px">Lo que apetezca. Sin restricciones.<br>Lo has ganado con trabajo duro.</div>';
+      h+='</div>';
+      h+='</div></div>'; return;
+    }
+
+    // 🌅 Desayuno
+    h+='<div style="margin-bottom:10px;background:rgba(249,115,22,0.05);border-radius:8px;padding:8px 10px">';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--o);margin-bottom:3px">🌅 DESAYUNO · ~9:30</div>';
+    h+='<div style="font-size:12px;color:var(--t);margin-bottom:4px">'+day.des.desc+'</div>';
+    h+=_macroBar(day.des.kcal,day.des.p,day.des.c,day.des.f);
+    h+='</div>';
+
+    // 🍽️ Comida — 2 opciones
+    h+='<div style="margin-bottom:10px">';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:5px">🍽️ COMIDA · ~14:30 · Objetivo: ~'+day.com.kobj+' kcal</div>';
+    day.com.opts.forEach(function(opt){
+      var chosen=comChoice===opt.id;
+      var otherChosen=comChoice!==''&&comChoice!==opt.id;
+      h+='<div style="border:1px solid '+(chosen?'var(--g)':'var(--b)')+';border-radius:8px;padding:8px 10px;margin-bottom:5px;background:'+(chosen?'rgba(61,214,140,0.05)':'transparent')+'">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">';
+      h+='<div style="flex:1">';
+      h+='<div style="font-size:12px;font-weight:600;color:var(--t);margin-bottom:4px">'+opt.id+'. '+opt.n+'</div>';
+      if(opt.i.length>0){
+        h+='<div style="font-size:10px;color:var(--m)">';
+        opt.i.forEach(function(ing){h+='<span style="display:inline-block;margin:1px 4px 1px 0">'+ing.n+' <strong>'+ing.g+'g</strong></span>';});
+        h+='</div>';
+      }
+      h+='</div>';
+      h+='<div style="text-align:right;flex-shrink:0">';
+      if(opt.t.kcal>0){h+='<div style="font-size:13px;font-weight:700;color:var(--o)">'+opt.t.kcal+'kcal</div>';}
+      h+='</div></div>';
+      if(opt.t.kcal>0) h+=_macroRow(opt.t.p,opt.t.c,opt.t.f);
+      h+='<div style="display:flex;gap:6px;margin-top:8px">';
+      h+='<button class="btn '+(chosen?'btg':'bth')+' btn-sm" style="flex:1;font-size:11px" onclick="dietChoose('+i+',\'com\',\''+opt.id+'\')">'+
+        (chosen?'✅ Elegido':'Elegir'+(otherChosen?' (cambiar)':''))+'</button>';
+      if(chosen) h+='<button class="btn bth btn-sm" style="font-size:11px;flex:1" onclick="dietMarkDone('+i+',\'com\')">'+
+        (comDone?'✅ Comido':'Marcar comido')+'</button>';
+      h+='</div></div>';
+    });
+    h+='</div>';
+
+    // 🍊 Merienda
+    h+='<div style="margin-bottom:10px;background:rgba(249,115,22,0.05);border-radius:8px;padding:8px 10px">';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--o);margin-bottom:3px">🍊 MERIENDA · ~17:00</div>';
+    h+='<div style="font-size:12px;color:var(--t);margin-bottom:4px">'+day.mer.desc+'</div>';
+    if(day.mer.kcal>0) h+=_macroBar(day.mer.kcal,day.mer.p,day.mer.c,day.mer.f);
+    h+='</div>';
+
+    // 🌙 Cena — 2 opciones
+    h+='<div>';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:5px">🌙 CENA · ~21:30 · Objetivo: ~'+day.cen.kobj+' kcal</div>';
+    day.cen.opts.forEach(function(opt){
+      var chosen=cenChoice===opt.id;
+      var otherChosen=cenChoice!==''&&cenChoice!==opt.id;
+      h+='<div style="border:1px solid '+(chosen?'var(--p)':'var(--b)')+';border-radius:8px;padding:8px 10px;margin-bottom:5px;background:'+(chosen?'rgba(99,102,241,0.05)':'transparent')+'">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">';
+      h+='<div style="flex:1">';
+      h+='<div style="font-size:12px;font-weight:600;color:var(--t);margin-bottom:4px">'+opt.id+'. '+opt.n+'</div>';
+      if(opt.i.length>0){
+        h+='<div style="font-size:10px;color:var(--m)">';
+        opt.i.forEach(function(ing){h+='<span style="display:inline-block;margin:1px 4px 1px 0">'+ing.n+' <strong>'+ing.g+'g</strong></span>';});
+        h+='</div>';
+      }
+      h+='</div>';
+      h+='<div style="text-align:right;flex-shrink:0">';
+      if(opt.t.kcal>0){h+='<div style="font-size:13px;font-weight:700;color:var(--o)">'+opt.t.kcal+'kcal</div>';}
+      h+='</div></div>';
+      if(opt.t.kcal>0) h+=_macroRow(opt.t.p,opt.t.c,opt.t.f);
+      h+='<div style="display:flex;gap:6px;margin-top:8px">';
+      h+='<button class="btn '+(chosen?'btg':'bth')+' btn-sm" style="flex:1;font-size:11px" onclick="dietChoose('+i+',\'cen\',\''+opt.id+'\')">'+
+        (chosen?'✅ Elegido':'Elegir'+(otherChosen?' (cambiar)':''))+'</button>';
+      if(chosen) h+='<button class="btn bth btn-sm" style="font-size:11px;flex:1" onclick="dietMarkDone('+i+',\'cen\')">'+
+        (cenDone?'✅ Cenado':'Marcar cenado')+'</button>';
+      h+='</div></div>';
+    });
+    h+='</div>';
+
     h+='</div></div>';
   });
   el.innerHTML=h;
+}
+
+function _dietDate(idx){
+  var start=new Date(2026,8,7);
+  var d=new Date(start.getTime()+idx*86400000);
+  return d.toISOString().split('T')[0];
+}
+
+function _macroBar(kcal,p,c,f){
+  return '<div style="display:flex;gap:8px;font-size:10px;color:var(--m)">'+
+    '<span>🔥 <strong style="color:var(--o)">'+kcal+'</strong>kcal</span>'+
+    '<span>💪 <strong style="color:var(--a)">'+p+'g</strong> prot</span>'+
+    '<span>🌾 <strong style="color:var(--y)">'+c+'g</strong> carb</span>'+
+    '<span>🫒 <strong style="color:var(--g)">'+f+'g</strong> gras</span>'+
+    '</div>';
+}
+
+function _macroRow(p,c,f){
+  return '<div style="display:flex;gap:8px;font-size:10px;color:var(--m)">'+
+    '<span>💪P:<strong style="color:var(--a)">'+p+'g</strong></span>'+
+    '<span>🌾C:<strong style="color:var(--y)">'+c+'g</strong></span>'+
+    '<span>🫒G:<strong style="color:var(--g)">'+f+'g</strong></span>'+
+    '</div>';
+}
+
+function dietToggle(i){var b=document.getElementById('diet-b-'+i);if(b)b.style.display=b.style.display==='none'?'block':'none';}
+
+function dietChoose(dayIdx,meal,optId){
+  var dateKey=_dietDate(dayIdx);
+  sd('diet_'+meal+'_'+dateKey,optId);
+  renderDietPlan();
+}
+
+function dietMarkDone(dayIdx,meal){
+  var dateKey=_dietDate(dayIdx);
+  var k='diet_'+meal+'_done_'+dateKey;
+  sd(k,!ld(k,false));
+  renderDietPlan();
 }
 
 function openRunWeekDetail(weekNum){
@@ -2468,6 +3887,20 @@ function openRunWeekDetail(weekNum){
   alert(rw.title+'\n\n'+rw.science||rw.effort||'');
 }
 
+
+function shopTab(t){
+  ['menu','list','cart'].forEach(function(tab){
+    var el=document.getElementById('shop-'+tab);
+    if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('#pg-shop .tr .tb').forEach(function(b,i){
+    b.classList.toggle('active',['menu','list','cart'][i]===t);
+  });
+}
+function renderShopMenu(){
+  var el=document.getElementById('shop-menu-content');
+  if(el) renderShop();
+}
 
 function renderRunToday(){
   var el=document.getElementById('run-today-content');
@@ -2737,7 +4170,7 @@ function renderFoodToday(){
   }
   if(!log.length) html='<div class="empty" style="padding:20px"><div class="empty-icon">🍽️</div><div class="empty-text">Sin alimentos registrados hoy.<br>Pulsa "Añadir alimento".</div></div>';
   document.getElementById('f-meals').innerHTML=html;
-  renderHomeMacros();
+  // renderHomeMacros removed
 
   // Alert if below 1500 kcal at end of day (after 21:00)
   var nowHour=new Date().getHours();
@@ -2758,7 +4191,7 @@ function renderFoodToday(){
 
 function checkFoodAlert(){
   var now=new Date();
-  var startTracking=new Date('2026-07-06');
+  var startTracking=new Date('2026-09-07');
   if(now<startTracking) return;
   var log=getFoodLog();
   var yesterday=getYesterday();
@@ -3165,6 +4598,7 @@ function addWeight(){
     var newProt=Math.round(val*1.8);
     setTimeout(function(){alert('🔄 Nuevo peso: '+val+' kg\nProteína actualizada: '+newProt+'g/día ('+val+' × 1,8)\nCalorías: 1.800 kcal sin cambios.');},200);
   }
+  if(new Date().getDay()===1){sd('monday_checkin_'+today(),true);}
   document.getElementById('w-val').value='';
   renderWeight();
 }
@@ -3177,11 +4611,47 @@ function renderWeight(){
   document.getElementById('w-cur').textContent=cur.toFixed(1)+' kg';
   document.getElementById('w-lost').textContent=(lost>=0?'-':'+')+Math.abs(lost).toFixed(1)+' kg';
   document.getElementById('h-weight').textContent=cur.toFixed(1)+' kg';
-  var pct=Math.min(100,Math.round((lost/Math.max(0.1,peakVal-83))*100));
+  // Goal: reach 80-82kg zone from ~93kg start
+  var inZoneRW=(cur>=80&&cur<=82);
+  var pct=inZoneRW?100:Math.min(100,Math.max(0,Math.round(((peakVal-cur)/Math.max(0.1,peakVal-82))*100)));
   document.getElementById('h-pct').textContent=pct+'%';
   document.getElementById('h-pbar').style.width=pct+'%';
+
+  // Monday check-in banner
+  var isMonday=new Date().getDay()===1;
+  var mondayKey='monday_checkin_'+today();
+  var mondayDone=ld(mondayKey,false);
+  var banner=document.getElementById('w-monday-banner');
+  if(banner){
+    if(isMonday&&!mondayDone){
+      banner.style.display='block';
+      banner.innerHTML='<div style="background:rgba(245,158,11,0.1);border:2px solid rgba(245,158,11,0.4);border-radius:12px;padding:14px;margin:8px 16px">'+
+        '<div style="font-size:14px;font-weight:700;color:var(--o);margin-bottom:6px">📸 Check-in semanal · Lunes</div>'+
+        '<div style="font-size:12px;color:var(--m);margin-bottom:10px;line-height:1.5">'+
+        '1. Pésate en ayunas, sin ropa<br>'+
+        '2. Hazte 3 fotos: frontal, lateral y espalda con la misma ropa y luz<br>'+
+        '3. Guárdalas en el carrete con la fecha<br>'+
+        '4. Registra el peso aquí abajo</div>'+
+        '<button class="btn btg btn-sm" onclick="mondayCheckDone()">✅ Check-in completado</button>'+
+        '</div>';
+    } else if(isMonday&&mondayDone){
+      banner.style.display='block';
+      banner.innerHTML='<div style="background:rgba(61,214,140,0.08);border:1px solid rgba(61,214,140,0.3);border-radius:12px;padding:10px 14px;margin:8px 16px;display:flex;align-items:center;gap:10px">'+
+        '<span style="font-size:20px">✅</span>'+
+        '<div><div style="font-size:13px;font-weight:600;color:var(--g)">Check-in semanal completado</div>'+
+        '<div style="font-size:11px;color:var(--m)">Fotos guardadas · Peso registrado · Hasta el próximo lunes</div></div></div>';
+    } else {
+      banner.style.display='none';
+    }
+  }
+
   drawChart(ws);
   renderWeightList(ws);
+}
+
+function mondayCheckDone(){
+  sd('monday_checkin_'+today(),true);
+  renderWeight();
 }
 
 function drawChart(ws){
@@ -3202,12 +4672,18 @@ function drawChart(ws){
   function yS(v){return pad.t+((maxV-v)/(maxV-minV))*cH;}
   ctx.strokeStyle='#2a2f42';ctx.lineWidth=1;
   for(var i=0;i<=4;i++){var y=pad.t+(cH/4)*i;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();var v=maxV-((maxV-minV)/4)*i;ctx.fillStyle='#8b91a8';ctx.font='10px -apple-system';ctx.textAlign='right';ctx.fillText(v.toFixed(1),pad.l-3,y+4);}
-  ctx.fillStyle='rgba(61,214,140,0.06)';ctx.fillRect(pad.l,yS(84),cW,yS(82)-yS(84));
-  ctx.strokeStyle='rgba(61,214,140,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(pad.l,yS(83));ctx.lineTo(W-pad.r,yS(83));ctx.stroke();ctx.setLineDash([]);
+  // Zone 80-82
+  ctx.fillStyle='rgba(61,214,140,0.08)';ctx.fillRect(pad.l,yS(82),cW,yS(80)-yS(82));
+  ctx.strokeStyle='rgba(61,214,140,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,yS(82));ctx.lineTo(W-pad.r,yS(82));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,yS(80));ctx.lineTo(W-pad.r,yS(80));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(61,214,140,0.8)';ctx.font='10px -apple-system';ctx.textAlign='left';
+  ctx.fillText('82kg',W-pad.r-30,yS(82)-3);ctx.fillText('80kg',W-pad.r-30,yS(80)+10);
   if(ws.length>1){ctx.strokeStyle='#4f8ef7';ctx.lineWidth=2.5;ctx.beginPath();ws.forEach(function(w,i){i===0?ctx.moveTo(xS(w.date),yS(w.val)):ctx.lineTo(xS(w.date),yS(w.val));});ctx.stroke();}
   ws.forEach(function(w){ctx.fillStyle='#4f8ef7';ctx.beginPath();ctx.arc(xS(w.date),yS(w.val),4,0,Math.PI*2);ctx.fill();});
-  ctx.fillStyle='#3dd68c';ctx.beginPath();ctx.arc(xS('2026-08-15'),yS(83),4,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#3dd68c';ctx.font='10px -apple-system';ctx.textAlign='left';ctx.fillText('83kg',xS('2026-08-15')+6,yS(83)+4);
+  ctx.fillStyle='#3dd68c';ctx.beginPath();ctx.arc(xS('2026-08-15'),yS(81),4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#3dd68c';ctx.font='10px -apple-system';ctx.textAlign='left';ctx.fillText('82kg',xS('2026-08-15')+6,yS(82)-3);ctx.fillText('zona',xS('2026-08-15')+6,yS(80)+10);
 }
 
 function renderWeightList(ws){
@@ -3233,15 +4709,18 @@ function deleteWeight(el){
 
 // HEALTH
 function healthTab(t){
-  ['analytics','impact','protocol'].forEach(function(x){
-    document.getElementById('ht-'+x).style.display=x===t?'block':'none';
+  ['analytics','impact','protocol','peso','movilidad'].forEach(function(x){
+    var el=document.getElementById('ht-'+x);
+    if(el) el.style.display=x===t?'block':'none';
   });
   document.querySelectorAll('#pg-health .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['analytics','impact','protocol'][i]===t);
+    b.classList.toggle('active',['peso','movilidad','analytics','protocol'][i]===t);
   });
   if(t==='analytics') renderHealthAnalytics();
   if(t==='impact') renderHealthImpact();
   if(t==='protocol') renderHealthProtocol();
+  if(t==='peso') renderWeight();
+  if(t==='movilidad') renderMobilityPage();
 }
 
 function renderHealthAnalytics(){
@@ -3489,7 +4968,7 @@ function init(){
     if(gd) gd.value=today();
     if(rd) rd.value=today();
     var srd=ld('run_start_date',null);
-    if(rps) rps.value=srd||'2026-07-06';
+    if(rps) rps.value=srd||'2026-07-28';
   }, 50);
   sd('active_food_log_date',today());
 
@@ -3524,7 +5003,7 @@ function init(){
   // Supplements reset: they key includes today's date so yesterday's data is ignored automatically
   // Health tab Sunday only
   var healthNb=document.getElementById('nb-health');
-  if(healthNb) healthNb.style.display=todayDow()===0?'flex':'none';
+  if(healthNb) healthNb.style.display='flex'; // Siempre visible
 
   renderHome();
 
@@ -3536,7 +5015,7 @@ function init(){
 
   // 22:00 alert check
   var now=new Date();
-  var startTracking=new Date('2026-07-06');
+  var startTracking=new Date('2026-09-07');
   if(now>=startTracking&&now.getHours()>=22){
     var log=getFoodLog();
     if(!log.length){
@@ -3544,6 +5023,8 @@ function init(){
       if(al){al.style.display='block';al.innerHTML='<div class="al alo"><span class="ali">⚠️</span><span>Son las 22:00 y no has introducido ninguna comida hoy. Recuerda tomar tus suplementos.</span></div>';}
     }
   }
+
+  nav('home');
 }
 
 function loadAppData(){
@@ -4040,6 +5521,7 @@ function generateShopListFromPlan(){
   sd('shop_list',Object.entries(aggregated).map(function(e,i){return {id:i,name:e[0],note:e[1],bought:false};}));
   shopTab('list');
 }
+
 
 
 </script>
