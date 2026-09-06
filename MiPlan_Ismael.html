@@ -18,10 +18,10 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;font-size:14px;line-height:1.5;display:flex;flex-direction:column;}
-.page{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(80px + var(--safe-b));}
+.page{display:none;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(80px + env(safe-area-inset-bottom,20px));}
 .page.active{display:block;}
 .bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(24,28,39,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b);display:flex;padding-bottom:var(--safe-b);z-index:1000;}
-.page{display:none;width:100%;min-height:calc(100vh - 120px);padding-bottom:80px}
+/* page rule consolidated */
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;cursor:pointer;border:none;background:none;color:var(--m);font-size:10px;font-weight:500;transition:color 0.2s;}
 .nb.active{color:var(--a);}
 .nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
@@ -29,7 +29,7 @@ body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSyste
 .ph{padding:calc(var(--safe-t) + 14px) 16px 12px;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:1px solid var(--b);}
 .pt{font-size:20px;font-weight:700;color:var(--t);}
 .ps{font-size:12px;color:var(--m);margin-top:2px;}
-.card{background:var(--s);border:1px solid var(--b);border-radius:16px;margin:10px 16px;overflow:hidden;}
+.card{background:var(--s);border:1px solid var(--b);border-radius:16px;margin:10px 16px;}
 .ch{padding:13px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px;}
 .ci{font-size:18px;}
 .ct{font-size:14px;font-weight:600;color:var(--t);flex:1;}
@@ -189,7 +189,7 @@ select.if{cursor:pointer;}
 .menu-day{background:var(--s2);border-radius:10px;margin-bottom:8px;overflow:hidden;}
 .menu-day-header{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--b);}
 .menu-day-name{font-size:13px;font-weight:600;color:var(--t);}
-.menu-day-body{padding:10px 14px;}
+.menu-day-/* body padding removed */
 .menu-select{width:100%;background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:8px 10px;color:var(--t);font-size:13px;outline:none;-webkit-appearance:none;font-family:inherit;margin-bottom:6px;}
 .post-fiesta-card{background:linear-gradient(135deg,rgba(167,139,250,0.1),rgba(239,68,68,0.08));border:1px solid rgba(167,139,250,0.3);border-radius:16px;margin:8px 16px;padding:14px 16px;}
 
@@ -565,24 +565,28 @@ select.if{cursor:pointer;}
     <button class="tb" onclick="healthTab('protocol')">💊 Proto.</button>
   </div>
   <div id="ht-peso" style="display:block">
-  <div class="ph"><div class="pt">⚖️ Peso</div><div class="ps">Objetivo: 80-82 kg · Menos grasa · Más músculo</div></div>
+  <div class="ph"><div class="pt">⚖️ Peso</div><div class="ps">Objetivo: 80-82 kg · Recomposición corporal</div></div>
   <div id="w-monday-banner" style="display:none"></div>
+  <!-- Stats primero -->
+  <div class="sr" style="margin-top:8px">
+    <div class="sb"><div class="sv" id="w-cur" style="color:var(--a)">—</div><div class="sl">Actual (kg)</div></div>
+    <div class="sb"><div class="sv" id="w-lost" style="color:var(--g)">—</div><div class="sl">Perdido</div></div>
+  </div>
+  <!-- Gráfica primero -->
+  <div class="card"><div class="ch"><span class="ci">📈</span><span class="ct">Evolución del peso</span></div><div style="padding:8px"><canvas id="w-chart" height="180"></canvas></div></div>
+  <!-- Registros -->
+  <div class="card" style="margin-bottom:8px"><div class="ch"><span class="ci">📋</span><span class="ct">Registros</span></div><div id="w-list"></div></div>
+  <!-- Añadir peso -->
   <div class="card">
-    <div class="ch"><span class="ci">➕</span><span class="ct">Registrar peso · Cada lunes en ayunas</span></div>
+    <div class="ch"><span class="ci">➕</span><span class="ct">Registrar peso</span><span style="font-size:10px;color:var(--m);margin-left:4px">· Lunes en ayunas</span></div>
     <div class="cb">
       <div style="display:flex;gap:8px;align-items:flex-end">
         <div style="flex:1"><label class="il">Fecha</label><input type="date" class="if" id="w-date"></div>
-        <div style="flex:1"><label class="il">Peso (kg)</label><input type="number" class="if" id="w-val" placeholder="90.0" step="0.1"></div>
+        <div style="flex:1"><label class="il">Peso (kg)</label><input type="number" class="if" id="w-val" placeholder="86.0" step="0.1"></div>
         <button class="btn btg btn-sm" onclick="addWeight()" style="flex-shrink:0">+</button>
       </div>
     </div>
   </div>
-  <div class="sr">
-    <div class="sb"><div class="sv" id="w-cur" style="color:var(--a)">—</div><div class="sl">Actual (kg)</div></div>
-    <div class="sb"><div class="sv" id="w-lost" style="color:var(--g)">—</div><div class="sl">Perdido (kg)</div></div>
-  </div>
-  <div class="card"><div class="ch"><span class="ci">📈</span><span class="ct">Evolución</span></div><div style="padding:8px"><canvas id="w-chart" height="180"></canvas></div></div>
-  <div class="card" style="margin-bottom:8px"><div class="ch"><span class="ci">📋</span><span class="ct">Registros</span></div><div id="w-list"></div></div>
   <div class="card" style="margin:0 0 16px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.25)">
     <div style="display:flex;gap:8px;padding:4px 0">
       <button onclick="exportData()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;color:var(--t);font-size:13px;font-weight:600;cursor:pointer">📤 Exportar datos</button>
@@ -710,7 +714,122 @@ const QUOTES=[
   {t:"The richest man ain't the one with the first dollar, it's the one who still got his first friend.",a:"Drake",s:"Crew Love"},
   {t:"Take a chance, because you never know how perfect something can turn out.",a:"J. Cole",s:"Note To Self"},
   {t:"I'm not afraid, I'm not ashamed, I'm not to blame.",a:"Eminem",s:"Beautiful"},
-  {t:"Greatness is what we on the brink of.",a:"Jay-Z",s:"On to the Next One"}
+  {t:"Greatness is what we on the brink of.",a:"Jay-Z",s:"On to the Next One"},
+  {
+    n:'Smoothie verde proteico',
+    emoji:'🥤',
+    kcal_total:380, raciones:1, kcal_racion:380,
+    macro:{p:28,c:42,f:8},
+    tiempo:'5 min · Sin cocinar',
+    ingredientes:[
+      {n:'Yogur griego',g:150,nota:'Base proteica'},
+      {n:'Espinacas frescas',g:60,nota:'Sin sabor intenso al batir'},
+      {n:'Plátano congelado',g:100,nota:'Da cremosidad y dulzor'},
+      {n:'Leche de almendras',g:150,nota:'O leche normal'},
+      {n:'Mantequilla de cacahuete',g:20,nota:'Opcional'},
+      {n:'Jengibre fresco',g:5,nota:'Antiinflamatorio'},
+    ],
+    pasos:[
+      'Congela el plátano en rodajas la noche anterior.',
+      'Bate todos los ingredientes hasta textura homogénea.',
+      'Si queda muy espeso añade más leche de almendras.',
+      'Toma inmediatamente — se oxida con el tiempo.',
+    ]
+  },
+  {
+    n:'Smoothie de frutos rojos y avena',
+    emoji:'🍓',
+    kcal_total:320, raciones:1, kcal_racion:320,
+    macro:{p:20,c:48,f:5},
+    tiempo:'5 min · Sin cocinar',
+    ingredientes:[
+      {n:'Frutos rojos congelados',g:150,nota:'Arándanos, fresas, frambuesas'},
+      {n:'Yogur griego',g:150,nota:''},
+      {n:'Avena en copos',g:30,nota:'Da saciedad'},
+      {n:'Miel',g:15,nota:'Al gusto'},
+      {n:'Leche o agua',g:100,nota:''},
+    ],
+    pasos:[
+      'Remoja la avena 2 min en la leche si no tienes batidora potente.',
+      'Bate todo hasta que quede liso.',
+      'Añade hielo si quieres más frío y consistencia.',
+    ]
+  },
+  {
+    n:'Baos caseros de pollo',
+    emoji:'🥟',
+    kcal_total:1200, raciones:4, kcal_racion:300,
+    macro:{p:22,c:38,f:7},
+    tiempo:'30 min prep · 15 min vapor',
+    ingredientes:[
+      {n:'Harina de fuerza',g:250,nota:'O harina normal'},
+      {n:'Levadura seca',g:5,nota:'1 sobre'},
+      {n:'Leche tibia',g:120,nota:''},
+      {n:'Azúcar',g:10,nota:'Para la levadura'},
+      {n:'AOVE',g:15,nota:''},
+      {n:'Pechuga de pollo',g:250,nota:'Relleno'},
+      {n:'Salsa hoisin o teriyaki casera',g:40,nota:'Tamari + miel + ajo'},
+      {n:'Pepino',g:80,nota:'En juliana'},
+      {n:'Cebolleta',g:30,nota:''},
+    ],
+    pasos:[
+      'Mezcla levadura con leche tibia y azúcar. Deja 10 min hasta que espume.',
+      'Incorpora harina y aceite. Amasa 8 min hasta masa elástica.',
+      'Deja reposar tapada 1h hasta que doble volumen.',
+      'Divide en 8 porciones. Estira oval. Dobla por la mitad con papel vegetal dentro.',
+      'Cuece al vapor 12 min.',
+      'Saltea el pollo en tiras con la salsa teriyaki.',
+      'Rellena los baos con pollo, pepino y cebolleta.',
+    ]
+  },
+  {
+    n:'Gyozas de ternera y jengibre',
+    emoji:'🥟',
+    kcal_total:640, raciones:4, kcal_racion:160,
+    macro:{p:14,c:20,f:5},
+    tiempo:'30 min prep · 10 min cocina',
+    ingredientes:[
+      {n:'Obleas de gyoza',g:200,nota:'En tiendas asiáticas o grandes supermercados'},
+      {n:'Carne picada de ternera',g:200,nota:''},
+      {n:'Col china',g:100,nota:'Muy picada'},
+      {n:'Jengibre fresco rallado',g:10,nota:''},
+      {n:'Ajo',g:5,nota:'2 dientes'},
+      {n:'Tamari (salsa de soja sin gluten)',g:20,nota:''},
+      {n:'Aceite de sésamo',g:10,nota:''},
+      {n:'Cebolleta',g:30,nota:''},
+    ],
+    pasos:[
+      'Mezcla la carne con col, jengibre, ajo, tamari y aceite de sésamo.',
+      'Pon 1 cucharadita de relleno en el centro de cada oblea.',
+      'Humedece el borde con agua. Dobla y frunce el borde para sellar.',
+      'Calienta sartén con un poco de aceite a fuego medio-alto.',
+      'Fríe las gyozas 2 min por un lado hasta que estén doradas.',
+      'Añade 60ml de agua y tapa inmediatamente. Cuece al vapor 5 min.',
+      'Destapa y deja evaporar el agua 1 min más.',
+      'Sirve con tamari + vinagre de arroz + aceite de sésamo.',
+    ]
+  },
+  {
+    n:'Dumplings de pollo y setas',
+    emoji:'🥟',
+    kcal_total:560, raciones:4, kcal_racion:140,
+    macro:{p:12,c:18,f:4},
+    tiempo:'25 min prep · 8 min cocina',
+    ingredientes:[
+      {n:'Obleas de gyoza',g:200,nota:''},
+      {n:'Pechuga de pollo picada',g:200,nota:'Pícala fina o usa robot'},
+      {n:'Setas shiitake o champiñones',g:80,nota:'Muy picados'},
+      {n:'Ajo y jengibre',g:15,nota:''},
+      {n:'Tamari',g:15,nota:''},
+      {n:'Cebolleta',g:20,nota:''},
+    ],
+    pasos:[
+      'Sofríe las setas con ajo y jengibre 3 min. Deja enfriar.',
+      'Mezcla con el pollo picado, tamari y cebolleta.',
+      'Rellena y sella las obleas igual que las gyozas.',
+      'Cuece al vapor 8 min o fríe-vapor como las gyozas.',
+    ]
+  },
 ];
 
 var RECIPE_DETAILS={};
@@ -2076,6 +2195,7 @@ function renderCasaPage(){
     el.innerHTML=h; return;
   }
 
+  window._secCounter=0; // Reset for deterministic section IDs
   h+='<div style="padding:0 16px">';
 
   // Hoy done badge
@@ -2105,13 +2225,15 @@ function renderCasaPage(){
 }
 
 function _renderSection(title, color, content){
-  var id='sec_'+Math.random().toString(36).substr(2,6);
+  if(!window._secCounter) window._secCounter=0;
+  var id='sec_'+(++window._secCounter);
   return '<div style="margin-bottom:10px;border:1px solid var(--b);border-radius:10px;overflow:hidden">'+
-    '<div style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--s2)" onclick="var b=document.getElementById(\''+id+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\'">'+
+    '<div style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--s2)" onclick="toggleSection(\''+id+'\')">'+
     '<div style="font-size:12px;font-weight:700;color:'+color+'">'+title+'</div>'+
     '<span style="color:var(--m);font-size:16px">›</span></div>'+
     '<div id="'+id+'" style="padding:10px 12px;display:block">'+content+'</div></div>';
 }
+function toggleSection(id){var b=document.getElementById(id);if(b)b.style.display=b.style.display==='none'?'block':'none';}
 
 function _renderCal(items){
   var h='';
@@ -2340,6 +2462,19 @@ function removeHistSeries(exIdx, si){
   if(el) el.remove();
 }
 
+function runTab(t){
+  ['today','plan','history'].forEach(function(x){
+    var el=document.getElementById('rt-'+x);
+    if(el) el.style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('#pg-run .tr .tb').forEach(function(b,i){
+    b.classList.toggle('active',['today','plan','history'][i]===t);
+  });
+  if(t==='today') renderRunToday();
+  if(t==='plan') renderRunPlan();
+  if(t==='history') renderRunHistory();
+}
+
 function nav(id){
   document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active');});
@@ -2366,10 +2501,10 @@ function nav(id){
       gymTab('session');renderGymSession();
     }
   }
-  if(id==='run'){renderRunToday();}
-  if(id==='food'){renderFoodToday();if(document.getElementById('diet-content')) renderDietPlan();}
+  if(id==='run'){runTab('today');}
+  if(id==='food'){foodTab('today');}
   // weight merged into health
-  if(id==='health'){var dow3=new Date().getDay();if(dow3!==0){nav('home');return;}healthTab('analytics');renderHealthAnalytics();}
+  if(id==='health'){healthTab('peso');}
   if(id==='shop'){shopTab('menu');renderShopMenu();}
 }
 
@@ -2825,7 +2960,7 @@ function renderHome(){
   }
 
   // Weight mini-chart on home
-  var wsHome=ld('weights',[]);
+  var wsHome=ld('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
   var curKgEl=document.getElementById('h-cur-kg');
   var wLostEl=document.getElementById('h-weight-lost');
   var hPbar=document.getElementById('h-pbar');
@@ -4215,13 +4350,16 @@ function deleteFoodItem(el){
 }
 
 function foodTab(t){
-  ['today','plan','history'].forEach(function(x){
-    document.getElementById('ft-'+x).style.display=x===t?'block':'none';
+  ['today','plan','caseras','history'].forEach(function(x){
+    var el=document.getElementById('ft-'+x);
+    if(el) el.style.display=x===t?'block':'none';
   });
   document.querySelectorAll('#pg-food .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['today','plan','history'][i]===t);
+    b.classList.toggle('active',['today','plan','caseras','history'][i]===t);
   });
-  if(t==='plan') renderFoodPlan();
+  if(t==='today') renderFoodToday();
+  if(t==='plan') renderDietPlan();
+  if(t==='caseras') renderRecetasCaseras();
   if(t==='history') renderFoodHistory();
 }
 
@@ -4709,18 +4847,18 @@ function deleteWeight(el){
 
 // HEALTH
 function healthTab(t){
-  ['analytics','impact','protocol','peso','movilidad'].forEach(function(x){
+  ['peso','movilidad','analytics','impact','protocol'].forEach(function(x){
     var el=document.getElementById('ht-'+x);
     if(el) el.style.display=x===t?'block':'none';
   });
   document.querySelectorAll('#pg-health .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['peso','movilidad','analytics','protocol'][i]===t);
+    b.classList.toggle('active',['peso','movilidad','analytics','impact','protocol'][i]===t);
   });
+  if(t==='peso') renderWeight();
+  if(t==='movilidad') renderMobilityPage();
   if(t==='analytics') renderHealthAnalytics();
   if(t==='impact') renderHealthImpact();
   if(t==='protocol') renderHealthProtocol();
-  if(t==='peso') renderWeight();
-  if(t==='movilidad') renderMobilityPage();
 }
 
 function renderHealthAnalytics(){
@@ -5521,9 +5659,6 @@ function generateShopListFromPlan(){
   sd('shop_list',Object.entries(aggregated).map(function(e,i){return {id:i,name:e[0],note:e[1],bought:false};}));
   shopTab('list');
 }
-
-
-
 </script>
 
 <!-- HISTORICAL ENTRY MODAL -->
@@ -5580,5 +5715,6 @@ function generateShopListFromPlan(){
     <div id="recipe-detail-body"></div>
   </div>
 </div>
+  <div id="st-cart" style="display:none"><div id="shop-cart-content" style="padding:12px 16px"><div style="text-align:center;padding:30px;color:var(--m)">Carrito en desarrollo</div></div></div>
 </body>
 </html>
