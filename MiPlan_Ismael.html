@@ -2133,7 +2133,7 @@ function renderRunProgress(){
     {w:4,label:'3km continuo',emoji:'🏃'},
     {w:8,label:'5km',emoji:'⭐'},
     {w:12,label:'7km',emoji:'🔥'},
-    {w:16,label:'10km sub-50'',emoji:'🏆'},
+    {w:16,label:'10km sub-50\u0027',emoji:'🏆'},
   ];
   var h='<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">';
   h+='<div style="font-size:12px;font-weight:700;color:var(--g)">🏃 Running · Semana '+week+'/'+totalWeeks+'</div>';
@@ -2183,7 +2183,7 @@ function renderHome(){
   document.getElementById('h-pct').textContent=pct+'%';
   document.getElementById('h-pbar').style.width=pct+'%';
   // Mini weight chart
-  drawHomeChart(ws);
+  drawHomeChart(ws2);
   // Monday check-in card
   var mondayCard=document.getElementById('h-monday-card');
   if(mondayCard){
@@ -2401,11 +2401,11 @@ function renderHomeMacros(){
   var log=ld('food_'+today(),[]);
   var t=log.reduce(function(a,f){return{k:a.k+f.k,p:a.p+f.p,c:a.c+f.c,f2:a.f2+f.f};},{k:0,p:0,c:0,f2:0});
   var maxK=getTargetKcal();
-  document.getElementById('h-kcal-badge').textContent=Math.round(t.k)+' / '+maxK+' kcal';
-  document.getElementById('h-kcal-bar').style.width=Math.min(100,(t.k/maxK)*100)+'%';
-  document.getElementById('h-prot').textContent=Math.round(t.p)+'g';
-  document.getElementById('h-carb').textContent=Math.round(t.c)+'g';
-  document.getElementById('h-fat').textContent=Math.round(t.f2)+'g';
+  var hKb=document.getElementById('h-kcal-badge');if(hKb)hKb.textContent=Math.round(t.k)+' / '+maxK+' kcal';
+  var hKBar=document.getElementById('h-kcal-bar');if(hKBar)hKBar.style.width=Math.min(100,(t.k/maxK)*100)+'%';
+  var hPr=document.getElementById('h-prot');if(hPr)hPr.textContent=Math.round(t.p)+'g';
+  var hCr=document.getElementById('h-carb');if(hCr)hCr.textContent=Math.round(t.c)+'g';
+  var hFat=document.getElementById('h-fat');if(hFat)hFat.textContent=Math.round(t.f2)+'g';
 }
 
 function fetchWeather(){
@@ -5205,20 +5205,7 @@ function init(){
 }
 
 function loadAppData(){
-  return fetch('app_data.json')
-    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(function(data){
-      if(data.RECIPES) RECIPES=data.RECIPES;
-      if(data.RECIPE_DETAILS) RECIPE_DETAILS=data.RECIPE_DETAILS;
-      if(data.FOOD_DB) FOOD_DB=data.FOOD_DB;
-    })
-    .catch(function(err){
-      console.error('No se pudo cargar app_data.json:',err);
-      var w=document.createElement('div');
-      w.style.cssText='position:fixed;top:0;left:0;right:0;background:#f59e0b;color:#000;font-size:12px;padding:8px 12px;text-align:center;z-index:9999';
-      w.textContent='⚠️ No se pudo cargar la base de recetas/alimentos (app_data.json). Comprueba tu conexión o que el archivo esté subido junto al HTML.';
-      document.body.appendChild(w);
-    });
+  return Promise.resolve();
 }
 
 if(document.readyState==='loading'){
