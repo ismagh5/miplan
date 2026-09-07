@@ -248,37 +248,17 @@ select.if{cursor:pointer;}
   </div>
 
   <div id="h-alert-yesterday" style="display:none;margin:8px 16px 0"></div>
-  <div id="h-photo-reminder" style="display:none;margin:8px 16px 0"></div>
 
-  <div style="margin:10px 16px;background:var(--s);border:1px solid var(--b);border-radius:14px;padding:18px 16px;text-align:center">
-    <div style="font-size:46px;font-weight:800;color:var(--g);line-height:1" id="h-days">—</div>
-    <div style="font-size:12px;font-weight:600;color:var(--t);letter-spacing:0.5px;margin-top:2px">DÍAS RESTANTES</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px">
-      <span style="font-size:11px;color:var(--m)">⚖️ Peso actual:</span>
-      <span style="font-size:13px;font-weight:700;color:var(--m)" id="h-weight">—</span>
-    </div>
-  </div>
 
-  <div style="padding:0 16px 4px;opacity:0.7">
-    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--m);margin-bottom:3px">
-      <span id="h-peak-label">— → zona 80-82 kg</span><span id="h-pct">0%</span>
-    </div>
-    <div class="pw" style="height:5px"><div class="pb pbg" id="h-pbar" style="width:0%"></div></div>
-    <canvas id="h-w-chart" height="70" style="width:100%;margin-top:8px;display:block"></canvas>
-  </div>
-
-  <!-- RETO COUNTDOWN -->
-  <div id="h-reto-card" style="margin:8px 16px"></div>
 
   <!-- LUNES CHECK-IN -->
   <div id="h-monday-card" style="display:none;margin:0 16px 8px">
     <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:12px 14px">
-      <div style="font-size:13px;font-weight:700;color:var(--o);margin-bottom:6px">📸 Lunes — Check-in semanal · En ayunas</div>
-      <div style="font-size:11px;color:var(--m);margin-bottom:10px;line-height:1.8">
-        <div>⚖️ Pésate sin ropa, sin haber comido ni bebido</div>
-        <div>📸 Fotos: frontal, lateral dcha, espalda — misma luz y posición</div>
-        <div>📏 Medidas: cintura · abdomen · pecho · cadera · muslo · brazo · gemelo</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:13px;font-weight:700;color:var(--o)">📸 Check-in semanal</div>
+        <div style="font-size:10px;color:var(--m)">En ayunas</div>
       </div>
+      <div style="font-size:11px;color:var(--m);margin-bottom:8px">Peso · Fotos · Cintura · Cadera · Muslo</div>
       <div style="display:flex;gap:6px">
         <button class="btn bth btn-sm" style="flex:1" onclick="nav('weight');setTimeout(function(){weightTab('peso')},100)">⚖️ Peso</button>
         <button class="btn bth btn-sm" style="flex:1" onclick="nav('weight');setTimeout(function(){weightTab('medidas')},100)">📏 Medidas</button>
@@ -286,87 +266,61 @@ select.if{cursor:pointer;}
     </div>
   </div>
 
+  
   <!-- RACHA CONSISTENCIA + RUNNING PROGRESS -->
-  <div class="card" style="margin:8px 16px">
-    <div class="cb" style="padding:10px 14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+  <div class="card" style="margin:8px 16px;background:linear-gradient(135deg,rgba(249,115,22,0.08),rgba(245,158,11,0.05));border:1px solid rgba(249,115,22,0.25)">
+    <div class="cb" style="padding:14px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div>
-          <div style="font-size:12px;font-weight:700;color:var(--o)">🔥 Racha de consistencia</div>
-          <div style="font-size:11px;color:var(--m)">Entreno · Running · Movilidad</div>
+          <div style="font-size:13px;font-weight:700;color:var(--o)">🔥 Racha de consistencia</div>
+          <div style="font-size:11px;color:var(--m);margin-top:2px">Entreno · Running · Movilidad</div>
         </div>
-        <div>
-          <div style="font-size:36px;font-weight:800;color:var(--o);line-height:1" id="h-streak">0</div>
-          <div style="font-size:10px;color:var(--m);text-align:center">días</div>
+        <div style="text-align:right">
+          <div style="font-size:46px;font-weight:800;color:var(--o);line-height:1" id="h-streak">0</div>
+          <div style="font-size:10px;color:var(--m)">días seguidos</div>
         </div>
       </div>
+      <canvas id="h-streak-chart" height="40" style="width:100%;display:block;margin-bottom:10px"></canvas>
       <div id="h-run-progress"></div>
     </div>
   </div>
 
+  
+  <!-- COMIDA DEL MOMENTO -->
+  <div class="card" style="margin:8px 16px;background:linear-gradient(135deg,rgba(79,142,247,0.06),rgba(99,102,241,0.03));border:1px solid rgba(79,142,247,0.2)">
+    <div class="ch">
+      <span class="ci" id="h-meal-emoji">🍽️</span>
+      <span class="ct" id="h-meal-title" style="color:var(--a)">Cargando...</span>
+    </div>
+    <div class="cb" style="padding:10px 16px" id="h-meal-content"></div>
+  </div>
+
+  
   <!-- HABITS -->
-  <div class="card" style="margin:8px 16px">
+  <div class="card" id="day-schedule-card" style="margin:8px 16px">
     <div class="ch"><span class="ci">📋</span><span class="ct">Plan del día</span><span id="schedule-badge" class="cbadge bb">0/0</span></div>
     <div class="cb" id="day-schedule-checks"></div>
   </div>
-  <div class="card" style="margin:8px 16px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25)">
-    <div class="ch"><span class="ci">💪</span><span class="ct">Grease the Groove — Flexiones</span><span id="gtg-badge" class="cbadge bb">0/6</span></div>
-    <div class="cb">
-      <div style="font-size:12px;color:var(--m);margin-bottom:8px">Haz <strong id="gtg-target">2 flexiones</strong> ahora. Sin llegar al fallo. Cada vez que pases por aquí.</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap" id="gtg-checks"></div>
-      <button class="btn bth btn-sm" style="margin-top:8px;width:100%" onclick="logGTG()">✓ Hecho</button>
-    </div>
-  </div>
   <div id="hab-row" style="display:none"></div>
 
-  <!-- GYM TODAY -->
-  <div class="today-card tc-gym" id="h-gym-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:600;color:var(--a)">💪 Gym hoy</div>
-      <span class="cbadge bb" id="h-gym-badge">—</span>
-    </div>
-    <div id="h-gym-detail" style="font-size:13px;color:var(--m);margin-bottom:10px"></div>
-    <button class="btn btg btn-sm" onclick="nav('gym')">Ver sesión →</button>
-  </div>
 
-  <!-- RUN TODAY -->
-  <div class="today-card tc-run" id="h-run-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:600;color:var(--g)">🏃 Running hoy</div>
-      <span class="cbadge bg" id="h-run-badge">—</span>
-    </div>
-    <div id="h-run-detail" style="font-size:13px;color:var(--m);margin-bottom:10px"></div>
-    <button class="btn btg btn-sm" onclick="nav('run')">Ver plan →</button>
-  </div>
-
-  <!-- KCAL -->
-  <div class="card">
-    <div class="ch"><span class="ci">🍽️</span><span class="ct">Calorías hoy</span><span class="cbadge bo" id="h-kcal-badge">0 / 1.800</span></div>
-    <div class="cb">
-      <div class="pw"><div class="pb pbo" id="h-kcal-bar" style="width:0%"></div></div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;text-align:center">
-        <div><div style="font-size:15px;font-weight:700;color:var(--a)" id="h-prot">0g</div><div style="font-size:10px;color:var(--m)">Proteína</div></div>
-        <div><div style="font-size:15px;font-weight:700;color:var(--o)" id="h-carb">0g</div><div style="font-size:10px;color:var(--m)">Carbos</div></div>
-        
+  
+  <!-- CORRER HOY (sábado) -->
+  <div id="h-run-reminder" style="display:none;margin:8px 16px">
+    <div style="background:linear-gradient(135deg,rgba(61,214,140,0.1),rgba(6,182,212,0.08));border:1px solid rgba(61,214,140,0.3);border-radius:14px;padding:14px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:14px;font-weight:700;color:var(--g)">🏃 Running — Semana 1</div>
+        <span id="h-run-reminder-week" style="font-size:12px;color:var(--m)">Sábado · 12:00</span>
       </div>
+      <div style="font-size:12px;color:var(--m);margin-bottom:10px" id="h-run-reminder-detail">Sal a correr hoy a las 12:00</div>
+      <button class="btn btg btn-sm" onclick="nav('run')">Ver plan →</button>
     </div>
   </div>
-  <div id="hab-confirm" style="display:none;font-size:12px;color:var(--g);text-align:center;padding:10px 16px 4px;font-weight:500"></div>
 
-  <!-- COMIDA DEL MOMENTO -->
-  <div class="card" style="margin:8px 16px">
-    <div class="ch"><span class="ci" id="h-meal-emoji">🍽️</span><span class="ct" id="h-meal-title">Cargando...</span></div>
-    <div class="cb" style="padding:10px 16px" id="h-meal-content"></div>
-  </div>
-  <!-- TIEMPO PALENCIA -->
-  <div class="card" style="margin:8px 16px">
-    <div class="ch"><span class="ci">🌤️</span><span class="ct">Palencia</span></div>
-    <div class="cb" style="padding:8px 16px"><div style="display:flex;align-items:baseline;gap:10px"><div style="font-size:28px;font-weight:700;color:var(--t)" id="h-weather-temp">—</div><div style="font-size:11px;color:var(--m)" id="h-weather-desc">Cargando...</div></div></div>
-  </div>
-  <!-- MOVILIDAD HOY -->
-  <div class="card" style="margin:8px 16px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.2)">
-    <div class="cb" style="padding:10px 14px"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:700;color:var(--p)">🧘 Movilidad · 8 min · 23:00</div><div style="font-size:11px;color:var(--m)">Isquios + postura + vacuum</div></div><div id="h-mob-status" style="font-size:20px">⏰</div></div>
-  </div>
-</div>
+  <!-- RETO COUNTDOWN -->
+  <div id="h-reto-card" style="margin:8px 16px"></div>
+
+  <div id="hab-confirm" style="display:none;font-size:12px;color:var(--g);text-align:center;padding:10px 16px 4px;font-weight:500"></div>
 </div>
 <!-- GYM -->
 <div class="page" id="pg-gym">
@@ -436,6 +390,12 @@ select.if{cursor:pointer;}
         <input type="date" class="if" id="run-plan-start" style="font-size:13px" onchange="applyRunPlanStart()">
       </div>
       <button class="btn bth btn-sm" id="run-date-today-btn" onclick="resetRunDate()" style="display:none;margin-top:18px">Hoy</button>
+      <div style="flex:1;min-width:120px"><label class="il">Forzar sesión</label>
+        <select class="if" id="run-force-day" style="font-size:13px" onchange="applyRunForceDay()">
+          <option value="">📅 Solo días de running</option>
+          <option value="force">⚡ Registrar igualmente</option>
+        </select>
+      </div>
     </div>
     <div id="run-today-content"></div>
   </div>
@@ -1027,30 +987,6 @@ const GYM_WEEKS=[
    tip:'El 15 de agosto es el día de evaluación. Llega al máximo.'},
 ];
 
-function getGymWeek(){
-  var MIN_GYM=3; // minimum sessions to complete a week
-  var start=new Date(2026,6,13);
-  var now=new Date();
-  var hist=ld('gym_hist',[]);
-
-  // Find the highest week where user has >=MIN_GYM sessions
-  var calWeek=Math.floor((now-start)/(7*86400000));
-  calWeek=Math.max(0,Math.min(GYM_WEEKS.length-1,calWeek));
-
-  // Check weeks from current backwards to find the right one
-  for(var w=calWeek;w>=0;w--){
-    var count=hist.filter(function(s){
-      if(!s.date) return false;
-      var d=new Date(s.date+'T12:00:00');
-      var wk=Math.floor((d-start)/(7*86400000));
-      return wk===w;
-    }).length;
-    if(count>=MIN_GYM) return GYM_WEEKS[Math.min(w+1,GYM_WEEKS.length-1)];
-    // If it's the current calendar week with sessions but not yet MIN, stay here
-    if(w===calWeek&&count>0) return GYM_WEEKS[w];
-  }
-  return GYM_WEEKS[0];
-}
 
 const MOB_GENERAL=[
   {name:'Cat-cow — Activación columna',dur:'60 seg (10 reps)',
@@ -1228,7 +1164,7 @@ const RUN_WEEKS=[
       {date:'2026-06-25',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,20,12.5,7.5)},
       {date:'2026-06-26',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(15,15,7.5,10,15,10)},
       // ── Semana nueva 29/06 — nuevo plan completo ──
-      {date:'2026-07-06',day:'lunes',name:'Espalda + Bíceps',exercises:[
+      {date:'2026-09-08',day:'lunes',name:'Espalda + Bíceps',exercises:[
         {name:'Jalón al pecho',blocks:[{s:4,r:'12',w:32.5}]},
         {name:'Remo con barra',blocks:[{s:4,r:'10',w:70}]},
         {name:'Remo en máquina',blocks:[{s:3,r:'12',w:35}]},
@@ -1285,14 +1221,14 @@ const RUN_WEEKS=[
     var wDates=wArr.map(function(w){return w.date;});
     [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},
      {date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},
-     {date:'2026-06-22',val:89.4},{date:'2026-07-06',val:90.6}
+     {date:'2026-06-22',val:89.4},{date:'2026-09-08',val:90.6}
     ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
     wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
     localStorage.setItem('weights',JSON.stringify(wArr));
 
     // Set run start date to July 6 (week 2 starts July 13)
     if(!localStorage.getItem('run_start_date')){
-      localStorage.setItem('run_start_date','2026-07-06');
+      localStorage.setItem('run_start_date','2026-09-08');
     }
 
     // Seed martes 15 julio sesión (corregido)
@@ -1354,32 +1290,6 @@ const ANALYTICS={
 };
 
 // WATER SCHEDULES
-function getWaterSchedule(dow,temp15){
-  var isWeekend=(dow===0||dow===6);
-  var isGymRun=(dow===2||dow===4||dow===6);  // martes, jueves, sabado = gym+run
-  var isGym=!isWeekend;  // lunes-viernes = gym 11:00-12:30
-  var extra=temp15>=35?600:temp15>=30?400:temp15>=25?200:0;
-  
-  if(isWeekend){
-    return {
-      total:2800+extra,
-      drops:[{ml:600,label:"Al levantarte",hour:10},{ml:400,label:"Antes de comer",hour:12},{ml:250,label:"Con la comida",hour:14},{ml:400,label:"Antes 17:00",hour:16},{ml:200,label:"Con merienda",hour:17},{ml:300,label:"Antes 20:00",hour:19},{ml:250,label:"Con cena",hour:21},{ml:200,label:"Post-cena",hour:22}],
-      schedule:"11:00 💧600ml · Antes 13:00 💧400ml · Comida 💧250ml · Antes 17:00 💧400ml · Merienda 💧200ml · Antes 20:00 💧300ml · Cena 💧250ml · Post-cena 💧200ml"
-    };
-  } else if(isGymRun){
-    return {
-      total:3500+extra,
-      drops:[{ml:600,label:"Al levantarte",hour:8},{ml:250,label:"Batido pre-gym (10:30)",hour:10},{ml:600,label:"Durante el gym (11-12:30)",hour:11},{ml:300,label:"Post-gym",hour:13},{ml:250,label:"Con la comida",hour:14},{ml:400,label:"Antes 17:00",hour:16},{ml:200,label:"Con merienda",hour:17},{ml:300,label:"Pre-running (19:30)",hour:19},{ml:600,label:"Post-running",hour:21},{ml:250,label:"Con la cena",hour:22},{ml:200,label:"Post-cena",hour:23}],
-      schedule:"08:00 💧600ml · 10:30 💧250ml batido pre-gym · Gym 11-12:30 💧600ml · Post-gym 💧300ml · Comida 💧250ml · Antes 17:00 💧400ml · Merienda 💧200ml · 19:30 💧300ml pre-running · Post-running 💧600ml · Cena 💧250ml · Post-cena 💧200ml"
-    };
-  } else {
-    return {
-      total:3000+extra,
-      drops:[{ml:600,label:"Al levantarte",hour:8},{ml:250,label:"Batido pre-gym (10:30)",hour:10},{ml:600,label:"Durante el gym (11-12:30)",hour:11},{ml:300,label:"Post-gym",hour:13},{ml:250,label:"Con la comida",hour:14},{ml:400,label:"Antes 17:00",hour:16},{ml:200,label:"Con merienda",hour:17},{ml:300,label:"Antes 20:00",hour:19},{ml:250,label:"Con la cena",hour:21},{ml:200,label:"Post-cena",hour:22}],
-      schedule:"08:00 💧600ml · 10:30 💧250ml batido pre-gym · Gym 11-12:30 💧600ml · Post-gym 💧300ml · Comida 💧250ml · Antes 17:00 💧400ml · Merienda 💧200ml · 20:00 💧300ml · Cena 💧250ml · Post-cena 💧200ml"
-    };
-  }
-}
 
 const SEASONAL_FRUITS={
   junio:["Fresas","Cerezas","Albaricoque","Melocotón","Nectarina","Sandía","Melón"],
@@ -1623,100 +1533,59 @@ function removeHistSeries(exIdx, si){
   if(el) el.remove();
 }
 
-function getGTGTarget(){
-  // Week-based target from plan start July 6
-  var start=new Date(2026,6,6);
-  var now=new Date();
-  var week=Math.floor((now-start)/(7*86400000))+1;
-  if(week<=1) return 2;
-  if(week==2) return 3;
-  if(week==3) return 4;
-  if(week==4) return 3;
-  return 5;
-}
-function renderGTG(){
-  var done=ld('gtg_'+today(),[]);
-  var target=getGTGTarget();
-  var badge=document.getElementById('gtg-badge');
-  var tEl=document.getElementById('gtg-target');
-  var checks=document.getElementById('gtg-checks');
-  if(badge) badge.textContent=done.length+'/6';
-  if(tEl) tEl.textContent=target+' flexiones';
-  if(checks){
-    var h='';
-    for(var i=0;i<6;i++){
-      var isDone=i<done.length;
-      h+='<div style="width:32px;height:32px;border-radius:8px;border:2px solid '+(isDone?'var(--g)':'var(--b)')+';background:'+(isDone?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;font-size:14px">'+(isDone?'✅':'')+'</div>';
-    }
-    checks.innerHTML=h;
-  }
-}
-function logGTG(){
-  var done=ld('gtg_'+today(),[]);
-  if(done.length>=6){alert('¡Ya has completado las 6 series de hoy!');return;}
-  done.push(new Date().getHours()+':'+String(new Date().getMinutes()).padStart(2,'0'));
-  sd('gtg_'+today(),done);
-  renderGTG();
-  if(done.length===6) setTimeout(function(){alert('🎉 ¡6/6 completadas hoy! Mañana seguimos.');},200);
-}
 
 var DAILY_SCHEDULE={
   base:[
-    {id:'levanta',time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'ducha',time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'desayuno',time:'09:30',emoji:'🍌',label:'Desayuno'},
-    {id:'estudio1',time:'10:00',emoji:'💻',label:'Estudio bloque 1 — 1h'},
-    {id:'entreno',time:'11:00',emoji:'💪',label:'Entrenamiento HIIT'},
-    {id:'estudio2',time:'12:30',emoji:'💻',label:'Estudio bloque 2 — 2h'},
+    {id:'estudio1',time:'10:00',emoji:'💻',label:'Estudio — 1h'},
+    {id:'entreno',time:'11:00',emoji:'💪',label:'HIIT — 70 min'},
+    {id:'estudio2',time:'12:30',emoji:'💻',label:'Estudio — 2h'},
     {id:'comida',time:'14:30',emoji:'🍝',label:'Comida'},
-    {id:'estudio3',time:'15:30',emoji:'💻',label:'Estudio bloque 3 — 5h'},
+    {id:'estudio3',time:'15:30',emoji:'💻',label:'Estudio — 5h'},
     {id:'descanso',time:'20:30',emoji:'🛋️',label:'Descanso'},
     {id:'cena',time:'21:00',emoji:'🍽️',label:'Cena'},
     {id:'dj',time:'23:00',emoji:'🎧',label:'DJ — 1h'},
     {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
-    {id:'leer',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'lectura',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
     {id:'dormir',time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
   running:[
-    {id:'levanta',time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'ducha',time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'desayuno',time:'09:30',emoji:'🍌',label:'Desayuno'},
-    {id:'estudio1',time:'10:00',emoji:'💻',label:'Estudio bloque 1 — 1h'},
-    {id:'entreno',time:'11:00',emoji:'💪',label:'Entrenamiento HIIT'},
-    {id:'estudio2',time:'12:30',emoji:'💻',label:'Estudio bloque 2 — 2h'},
+    {id:'estudio1',time:'10:00',emoji:'💻',label:'Estudio — 1h'},
+    {id:'entreno',time:'11:00',emoji:'💪',label:'HIIT — 70 min'},
+    {id:'estudio2',time:'12:30',emoji:'💻',label:'Estudio — 2h'},
     {id:'comida',time:'14:30',emoji:'🍝',label:'Comida'},
-    {id:'estudio3',time:'15:30',emoji:'💻',label:'Estudio bloque 3 — 4h'},
-    {id:'prep',time:'19:30',emoji:'🔄',label:'Preparación running'},
+    {id:'estudio3',time:'15:30',emoji:'💻',label:'Estudio — 4h'},
     {id:'running',time:'20:00',emoji:'🏃',label:'Running — 20:00'},
-    {id:'ducha',time:'20:45',emoji:'🚿',label:'Ducha post-running'},
-    {id:'cena',time:'21:00',emoji:'🍽️',label:'Cena post-running'},
+    {id:'cena',time:'21:00',emoji:'🍽️',label:'Cena'},
     {id:'dj',time:'23:00',emoji:'🎧',label:'DJ — 1h'},
     {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
-    {id:'leer',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'lectura',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
     {id:'dormir',time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
   sabado:[
-    {id:'levanta',time:'10:30',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'ducha',time:'10:30',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'desayuno',time:'11:00',emoji:'🍌',label:'Desayuno'},
-    {id:'libre',time:'11:30',emoji:'🛋️',label:'Libre'},
     {id:'running',time:'12:00',emoji:'🏃',label:'Running — 12:00'},
-    {id:'ducha',time:'12:45',emoji:'🚿',label:'Ducha post-running'},
     {id:'comida',time:'14:00',emoji:'🍝',label:'Comida'},
-    {id:'tardelibre',time:'15:00',emoji:'🛋️',label:'Tarde libre'},
+    {id:'libre',time:'15:00',emoji:'🛋️',label:'Tarde libre'},
     {id:'cena',time:'21:00',emoji:'🍽️',label:'Cena'},
     {id:'dj',time:'23:00',emoji:'🎧',label:'DJ — 1h'},
     {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
-    {id:'leer',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'lectura',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
     {id:'dormir',time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
   domingo:[
-    {id:'levanta',time:'10:30',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'ducha',time:'10:30',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'desayuno',time:'11:00',emoji:'🍌',label:'Desayuno tranquilo'},
-    {id:'libre',time:'11:30',emoji:'🛋️',label:'Libre'},
     {id:'comida',time:'14:00',emoji:'🍝',label:'Comida'},
-    {id:'tardelibre',time:'15:00',emoji:'🛋️',label:'Tarde libre'},
+    {id:'libre',time:'15:00',emoji:'🛋️',label:'Tarde libre'},
     {id:'cena',time:'21:00',emoji:'🍽️',label:'Cena'},
     {id:'dj',time:'23:00',emoji:'🎧',label:'DJ — 1h'},
     {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad — 8 min'},
-    {id:'leer',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
+    {id:'lectura',time:'00:10',emoji:'📚',label:'Lectura — 30 min'},
     {id:'dormir',time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
 };
@@ -2174,9 +2043,110 @@ function renderRunProgress(){
   el.innerHTML=h;
 }
 
+
+function drawStreakChart(){
+  var canvas=document.getElementById('h-streak-chart');
+  if(!canvas) return;
+  var W=canvas.parentElement.offsetWidth-32||320; var H=40;
+  canvas.width=W; canvas.height=H;
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  // Build last 12 weeks of activity data
+  var weeks=[]; var startDate=new Date(2026,8,8);
+  var now=new Date();
+  var totalWeeks=Math.max(1,Math.ceil((now-startDate)/(7*86400000))+1);
+  totalWeeks=Math.min(totalWeeks,12);
+
+  for(var w=0;w<totalWeeks;w++){
+    var wStart=new Date(startDate.getTime()+w*7*86400000);
+    var wKey=wStart.getFullYear()+'-'+String(wStart.getMonth()+1).padStart(2,'0')+'-'+String(wStart.getDate()).padStart(2,'0');
+    var entreno=parseInt(ld('casa_week_'+wKey,0));
+    var run=ld('run_hist',[]).filter(function(s){
+      if(!s.date) return false;
+      var d=new Date(s.date+'T12:00:00');
+      return Math.floor((d-startDate)/604800000)===w;
+    }).length;
+    var mob=0;
+    for(var d=0;d<7;d++){
+      var dd=new Date(wStart.getTime()+d*86400000);
+      var dk=dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0');
+      if(ld('mob_done_'+dk,false)) mob++;
+    }
+    var score=Math.min(10,entreno+run+(mob>=4?2:mob>=2?1:0));
+    weeks.push(score);
+  }
+
+  if(weeks.length<2){
+    ctx.fillStyle='rgba(249,115,22,0.2)';
+    ctx.fillRect(0,H-4,W,4);
+    return;
+  }
+
+  var maxV=Math.max.apply(null,weeks)||1;
+  var pad=4; var cW=W-pad*2;
+  var step=cW/(weeks.length-1);
+
+  // Fill gradient
+  var grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(249,115,22,0.3)');
+  grad.addColorStop(1,'rgba(249,115,22,0)');
+  ctx.beginPath();
+  ctx.moveTo(pad,H-pad-(weeks[0]/maxV)*(H-pad*2));
+  weeks.forEach(function(v,i){
+    ctx.lineTo(pad+i*step, H-pad-(v/maxV)*(H-pad*2));
+  });
+  ctx.lineTo(pad+(weeks.length-1)*step,H);
+  ctx.lineTo(pad,H);
+  ctx.closePath();
+  ctx.fillStyle=grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle='rgba(249,115,22,0.8)';
+  ctx.lineWidth=2;
+  ctx.lineJoin='round';
+  weeks.forEach(function(v,i){
+    var x=pad+i*step; var y=H-pad-(v/maxV)*(H-pad*2);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // Last dot
+  var lx=pad+(weeks.length-1)*step;
+  var ly=H-pad-(weeks[weeks.length-1]/maxV)*(H-pad*2);
+  ctx.fillStyle='var(--o)';
+  ctx.beginPath();
+  ctx.arc(lx,ly,4,0,Math.PI*2);
+  ctx.fill();
+}
+
 function renderHome(){
   var now=new Date();
   var dow=now.getDay();
+  // Day-based home layout
+  var isWeekend=(dow===0||dow===6);
+  var isSat=(dow===6);
+  var isSun=(dow===0);
+  var habitsEl=document.querySelector('#pg-home .card[data-block="habits"]');
+  var runReminderEl=document.getElementById('h-run-reminder');
+  if(runReminderEl){
+    runReminderEl.style.display=isSat?'block':'none';
+    if(isSat){
+      var rnW=getCurrentRunWeek();
+      var rnEl=document.getElementById('h-run-reminder-week');
+      if(rnEl) rnEl.textContent='Semana '+rnW+'/7 · Sábado · 12:00';
+      var rnD=document.getElementById('h-run-reminder-detail');
+      if(rnD&&rnW>0&&rnW<=7){
+        var rw=typeof RUN_WEEKS!=='undefined'?RUN_WEEKS[rnW-1]:null;
+        if(rnD) rnD.textContent=rw?rw.work:'Sal a correr hoy a las 12:00';
+      }
+    }
+  }
+  // Habits (plan del día): show Mon-Fri only
+  var habitsCard=document.getElementById('day-schedule-card');
+  if(habitsCard) habitsCard.style.display=isWeekend?'none':'block';
   var days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   var months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   document.getElementById('h-date').textContent=days[dow]+', '+now.getDate()+' de '+months[now.getMonth()];
@@ -2191,11 +2161,9 @@ function renderHome(){
   var lost=peakW-w;
   var aug15=new Date('2026-08-15');
   var dLeft=Math.max(0,Math.ceil((aug15-now)/86400000));
-  document.getElementById('h-weight').textContent=w.toFixed(1)+' kg';
-  document.getElementById('h-days').textContent=dLeft;
-  var pct=Math.min(100,Math.round((lost/Math.max(0.1,peakW-83))*100));
-  document.getElementById('h-pct').textContent=pct+'%';
-  document.getElementById('h-pbar').style.width=pct+'%';
+  var _hw2=document.getElementById('h-weight');if(_hw2)_hw2.textContent=w.toFixed(1)+' kg';
+  
+  
   // Mini weight chart
   drawHomeChart(ws2);
   // Monday check-in card
@@ -2205,24 +2173,9 @@ function renderHome(){
     var mondayDone=ld('monday_checkin_'+today(),false);
     mondayCard.style.display=(isMonday&&!mondayDone)?'block':'none';
   }
-  var plEl=document.getElementById('h-peak-label');if(plEl)plEl.textContent=peakW.toFixed(1)+' kg → 83 kg';
+  
 
   // Photo + weight reminder on Monday
-  var pr=document.getElementById('h-photo-reminder');
-  if(dow===1){
-    pr.style.display='block';
-    var photoState=ld('photo_done_'+today(),false);
-    var weightDone=ld('weights',[]).some(function(w){return w.date===today();});
-    // Only show cards that are NOT done yet
-    var cards=[];
-    if(!photoState) cards.push('<div style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid rgba(79,142,247,0.4);background:rgba(79,142,247,0.06);cursor:pointer;text-align:center" onclick="togglePhotoCheck()"><div style="font-size:22px">📸</div><div style="font-size:11px;font-weight:600;color:var(--a);margin-top:3px">Hazte la foto</div></div>');
-    if(!weightDone) cards.push('<div style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid rgba(79,142,247,0.4);background:rgba(79,142,247,0.06);cursor:pointer;text-align:center" onclick="nav(\'weight\')"><div style="font-size:22px">⚖️</div><div style="font-size:11px;font-weight:600;color:var(--a);margin-top:3px">Anota el peso</div></div>');
-    if(cards.length){
-      pr.innerHTML='<div style="display:flex;gap:8px">'+cards.join('')+'</div>';
-    } else {
-      pr.style.display='none';
-    }
-  } else pr.style.display='none';
 
   // Yesterday alert
   var pfData=ld('pf_'+getYesterday(),null);
@@ -2253,26 +2206,11 @@ function renderHome(){
     habConf.style.display=chips.length?'block':'none';
   }
 
-  // Gym card
-  var dayMap={1:'lunes',2:'martes',3:'miercoles',4:'jueves',5:'viernes',6:'sabado'};
-  var dk=dayMap[dow];
-  var plan=dk?getGymDayData(dk):null;
-  if(plan){
-    document.getElementById('h-gym-badge').textContent=plan.name;
-    var pfActive=ld('pf_'+getYesterday(),null);
-    if(pfActive){
-      document.getElementById('h-gym-detail').innerHTML='<div class="al aly" style="margin:0 0 8px"><span class="ali">⚠️</span><span>Post-fiesta: solo calentamiento + movilidad + cardio suave 20-25 min · mínimo 1h · sin fuerza</span></div>';
-    } else if(!plan.exercises.length){
-      document.getElementById('h-gym-detail').innerHTML='<div class="al alb" style="margin:0"><span class="ali">🏃</span><span>Hoy toca running largo, sin gym.</span></div>';
-    } else {
-      document.getElementById('h-gym-detail').innerHTML=plan.exercises.slice(0,3).map(function(e){
-        return '<div style="padding:2px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.05)">'+e.name+' <span style="color:var(--m);font-size:11px">'+e.sets+'×'+e.reps+'</span></div>';
-      }).join('')+(plan.exercises.length>3?'<div style="font-size:11px;color:var(--m);margin-top:6px">+'+(plan.exercises.length-3)+' más'+(plan.cardio?' · 🚴 '+plan.cardio:'')+'</div>':(plan.cardio?'<div style="font-size:11px;color:var(--m);margin-top:6px">🚴 '+plan.cardio+'</div>':''));
-    }
-  } else { var gc=document.getElementById('h-gym-card'); if(gc) gc.style.display='none'; }
+
 
   // Run card
-  var isRunDay=(dow===2||dow===4||dow===6);
+  var runForced=ld('run_force_day','')==='force';
+  var isRunDay=(dow===2||dow===4||dow===6)||runForced;
   var nowDate2=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   var startRunDate=getRunStartDate();
   var runStarted=(nowDate2>=startRunDate);
@@ -2280,31 +2218,28 @@ function renderHome(){
   var start=getRunStartDate();
   var pfActiveRun=ld('pf_'+getYesterday(),null);
   if(!runStarted){
-    document.getElementById('h-run-badge').textContent='Empieza el 22 jun';
-    document.getElementById('h-run-detail').textContent='El plan de running empieza el 29 de junio. ¡Ya falta poco!';
+    var _rb=document.getElementById('h-run-badge');if(_rb)_rb.textContent='Empieza el 22 jun';
+    var _rdt=document.getElementById('h-run-detail');if(_rdt)_rdt.textContent='El plan de running empieza el 29 de junio. ¡Ya falta poco!';
   } else if(isRunDay&&wn>0){
     var rw=RUN_WEEKS[wn-1];
     if(pfActiveRun){
       var compSat=shouldCompensateSaturday(dow);
-      document.getElementById('h-run-badge').textContent='Post-fiesta';
-      document.getElementById('h-run-detail').innerHTML='<div class="al alr" style="margin:0 0 6px"><span class="ali">⛔</span><span>No corras hoy por protocolo post-fiesta.'+(compSat?' Compensa el sábado.':'')+'</span></div>';
+      var _rb=document.getElementById('h-run-badge');if(_rb)_rb.textContent='Post-fiesta';
+      var _rd=document.getElementById('h-run-detail');if(_rd)_rd.innerHTML='<div class="al alr" style="margin:0 0 6px"><span class="ali">⛔</span><span>No corras hoy por protocolo post-fiesta.'+(compSat?' Compensa el sábado.':'')+'</span></div>';
     } else {
-      document.getElementById('h-run-badge').textContent='Semana '+wn;
-      document.getElementById('h-run-detail').innerHTML='<div style="margin-bottom:4px">'+rw.work+'</div><div style="font-size:11px;color:var(--m)">'+rw.tip+'</div>';
+      var _rb=document.getElementById('h-run-badge');if(_rb)_rb.textContent='Semana '+wn;
+      var _rd=document.getElementById('h-run-detail');if(_rd)_rd.innerHTML='<div style="margin-bottom:4px">'+rw.work+'</div><div style="font-size:11px;color:var(--m)">'+rw.tip+'</div>';
     }
   } else {
-    document.getElementById('h-run-badge').textContent='No toca hoy';
-    document.getElementById('h-run-detail').textContent='Próxima sesión: '+getNextRunDay(now);
+    var _rb=document.getElementById('h-run-badge');if(_rb)_rb.textContent='No toca hoy';
+    var _rdt=document.getElementById('h-run-detail');if(_rdt)_rdt.textContent='Próxima sesión: '+getNextRunDay(now);
   }
 
   var rc=document.getElementById('h-run-card'); if(rc){ rc.style.display=(runStarted&&isRunDay&&wn>0)?'block':'none'; }
   // Food macros
-  renderHomeMacros();
   renderDaySchedule();
-  renderGTG();
 
   // Weather & water
-  fetchWeather();
   // Refresh schedule every minute
   if(window._schedInterval) clearInterval(window._schedInterval);
   window._schedInterval=setInterval(renderDaySchedule, 60000);
@@ -2313,9 +2248,6 @@ function renderHome(){
   // Meal + weather + mobility
   renderMealOfMoment();
   fetchWeatherHome();
-  var mobDone=ld('mob_done_'+today(),false);
-  var mobEl=document.getElementById('h-mob-status');
-  if(mobEl) mobEl.textContent=mobDone?'✅':'⏰';
   // Racha + running progress
   var streakEl=document.getElementById('h-streak');
   if(streakEl) streakEl.textContent=getConsistencyStreak();
@@ -2366,7 +2298,7 @@ function getNextRunDay(now){
 function getRunStartDate(){
   var saved=ld('run_start_date',null);
   if(saved){var p=saved.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-  return new Date(2026,8,7);
+  return new Date(2026,8,8);
 }
 function resetRunPlan(){
   var btn=event.target;
@@ -2414,16 +2346,6 @@ function togglePhotoCheck(){
   renderHome();
 }
 
-function renderHomeMacros(){
-  var log=ld('food_'+today(),[]);
-  var t=log.reduce(function(a,f){return{k:a.k+f.k,p:a.p+f.p,c:a.c+f.c,f2:a.f2+f.f};},{k:0,p:0,c:0,f2:0});
-  var maxK=getTargetKcal();
-  var hKb=document.getElementById('h-kcal-badge');if(hKb)hKb.textContent=Math.round(t.k)+' / '+maxK+' kcal';
-  var hKBar=document.getElementById('h-kcal-bar');if(hKBar)hKBar.style.width=Math.min(100,(t.k/maxK)*100)+'%';
-  var hPr=document.getElementById('h-prot');if(hPr)hPr.textContent=Math.round(t.p)+'g';
-  var hCr=document.getElementById('h-carb');if(hCr)hCr.textContent=Math.round(t.c)+'g';
-  var hFat=document.getElementById('h-fat');if(hFat)hFat.textContent=Math.round(t.f2)+'g';
-}
 
 function fetchWeather(){
   document.getElementById('h-temp').textContent='...';
@@ -2459,60 +2381,7 @@ function getWeatherData(lat,lon){
   });
 }
 
-function renderWater(temp15){
-  sd('last_temp15',temp15);
-  var dow=todayDow();
-  var ws=getWaterSchedule(dow,temp15);
-  var savedDrops=ld('water_'+today(),{});
-  var curHour=new Date().getHours();
 
-  document.getElementById('h-water-total').textContent=(ws.total/1000).toFixed(1).replace('.',',')+'L';
-  var subText=temp15>=35?'☀️ Ola de calor':temp15>=30?'🌡️ Mucho calor':temp15>=25?'🌤️ Calor moderado':'🌥️ Suave';
-  var tempSubEl=document.getElementById('h-temp-sub');
-  if(tempSubEl) tempSubEl.textContent=subText;
-
-  var totalDone=ws.drops.filter(function(d,i){return savedDrops[i];}).length;
-  var mlDone=ws.drops.reduce(function(s,d,i){return s+(savedDrops[i]?d.ml:0);},0);
-
-  // Progress bar
-  var progPct=Math.round((mlDone/ws.total)*100);
-  var html='<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">';
-  html+='<div style="flex:1;height:6px;background:rgba(6,182,212,0.15);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,progPct)+'%;background:var(--c);border-radius:4px;transition:width 0.3s"></div></div>';
-  html+='<span style="font-size:10px;color:var(--c);font-weight:700;white-space:nowrap">'+(mlDone/1000).toFixed(1)+'L</span>';
-  html+='</div>';
-
-  var toShow=ws.drops.filter(function(d,i){
-    if(savedDrops[i]) return false;
-    return d.hour<=curHour+1;
-  }).slice(0,2);
-
-  if(!toShow.length){
-    var allDone=totalDone===ws.drops.length;
-    html+='<div style="font-size:12px;color:var(--g);font-weight:600;text-align:center;padding:4px 0">'+
-      (allDone?'✅ ¡Hidratación completa por hoy!':'💧 Siguiente: '+(ws.drops.find(function(d,i){return !savedDrops[i];})||{label:'fin del día'}).label)+'</div>';
-    document.getElementById('h-water-schedule').innerHTML=html;
-    return;
-  }
-
-  html+='<div style="display:flex;gap:6px;flex-wrap:wrap">';
-  html+=toShow.map(function(d){
-    var idx=ws.drops.indexOf(d);
-    return '<div style="flex:1;min-width:110px;display:flex;align-items:center;gap:5px;padding:6px 9px;border-radius:8px;border:1.5px solid rgba(6,182,212,0.5);background:rgba(6,182,212,0.1);cursor:pointer" onclick="toggleWaterDrop('+idx+')">'+
-      '<span style="font-size:13px">💧</span>'+
-      '<div><div style="font-size:10px;font-weight:600;color:var(--t)">'+d.label+'</div><div style="font-size:9px;color:var(--c)">'+d.ml+'ml</div></div>'+
-      '</div>';
-  }).join('');
-  html+='</div>';
-  document.getElementById('h-water-schedule').innerHTML=html;
-}
-
-function toggleWaterDrop(i){
-  var drops=ld('water_'+today(),{});
-  drops[i]=!drops[i];
-  sd('water_'+today(),drops);
-  var lastTemp=ld('last_temp15',28);
-  renderWater(lastTemp);
-}
 
 // GYM
 function gymTab(t){
@@ -3196,6 +3065,12 @@ function openRunDetail(idx){
   modal.classList.add('open');
 }
 
+function applyRunForceDay(){
+  var sel=document.getElementById('run-force-day');
+  if(sel) sd('run_force_day', sel.value);
+  renderRunToday();
+}
+
 function renderRunToday(){
   var el=document.getElementById('run-today-content');
   var logDateStr=getLogDate();
@@ -3211,8 +3086,10 @@ function renderRunToday(){
   // Update static date input
   var rInp=document.getElementById('run-log-date'); if(rInp) rInp.value=logDateStr;
   var rBtn=document.getElementById('run-date-today-btn'); if(rBtn) rBtn.style.display=isYesterday?'block':'none';
+  var rfd=document.getElementById('run-force-day');
+  if(rfd) rfd.value=ld('run_force_day','');
   var rps=document.getElementById('run-plan-start');
-  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-07-06';}
+  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-09-08';}
   var toggleHtml=isYesterday?'<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDateStr)+'</span></div>':'';
   var now=new Date(logDateStr+'T12:00:00');
   var dow=now.getDay();
@@ -3517,7 +3394,6 @@ function renderFoodToday(){
   }
   if(!log.length) html='<div class="empty" style="padding:20px"><div class="empty-icon">🍽️</div><div class="empty-text">Sin alimentos registrados hoy.<br>Pulsa "Añadir alimento".</div></div>';
   document.getElementById('f-meals').innerHTML=html;
-  renderHomeMacros();
 
   // Alert if below 1500 kcal at end of day (after 21:00)
   var nowHour=new Date().getHours();
@@ -3538,7 +3414,7 @@ function renderFoodToday(){
 
 function checkFoodAlert(){
   var now=new Date();
-  var startTracking=new Date('2026-07-06');
+  var startTracking=new Date('2026-09-08');
   if(now<startTracking) return;
   var log=getFoodLog();
   var yesterday=getYesterday();
@@ -3959,10 +3835,10 @@ function renderWeight(){
   var lost=peakVal-cur;
   document.getElementById('w-cur').textContent=cur.toFixed(1)+' kg';
   document.getElementById('w-lost').textContent=(lost>=0?'-':'+')+Math.abs(lost).toFixed(1)+' kg';
-  document.getElementById('h-weight').textContent=cur.toFixed(1)+' kg';
+  var _hw=document.getElementById('h-weight');if(_hw)_hw.textContent=cur.toFixed(1)+' kg';
   var pct=Math.min(100,Math.round((lost/Math.max(0.1,peakVal-83))*100));
-  document.getElementById('h-pct').textContent=pct+'%';
-  document.getElementById('h-pbar').style.width=pct+'%';
+  
+  
   drawChart(ws);
   renderWeightList(ws);
 }
@@ -4288,9 +4164,11 @@ function setTrainingMode(mode){
 
 function casaMarkDone(){
   var today_key=today();
-  sd('casa_done_'+today_key,true);
+  var wasDone=ld('casa_done_'+today_key,false);
+  sd('casa_done_'+today_key,!wasDone);
   var ws=_weekStart();
-  var n=parseInt(ld('casa_week_'+ws,0))+1;
+  var n=parseInt(ld('casa_week_'+ws,0));
+  if(!wasDone) n=Math.min(5,n+1); else n=Math.max(0,n-1);
   sd('casa_week_'+ws,n);
   renderCasaPage();
 }
@@ -4455,7 +4333,7 @@ function casaToggleSec(id){
 
 function getCurrentCasaWeek(){
   var MIN_HOME=4;
-  var startDate=new Date(2026,8,7); // Sept 7
+  var startDate=new Date(2026,8,8); // Sept 8
   var now=new Date();
   var nowDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(nowDate<startDate) return 1;
@@ -4509,7 +4387,7 @@ function renderCasaPage(){
   var postMin=Math.round(plan.post.length*2);
   h+=_casaSection('🧘 POST — Vuelta a la calma (~'+postMin+' min) · Mantén cada posición sin rebotar','var(--g)',_casaCal(plan.post));
   h+=_casaSection('🥗 POST — Nutrición y recuperación','var(--p)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+plan.postNut+'</p>');
-  if(!done) h+='<button class="btn btg" style="margin:10px 0" onclick="casaMarkDone()">✅ Marcar sesión completada</button>';
+  h+='<button class="btn '+(done?'bth':'btg')+'" style="margin:10px 0" onclick="casaMarkDone()">'+(done?'↩️ Revertir sesión':'✅ Marcar sesión completada')+'</button>';
   h+='</div>';
   el.innerHTML=h;
 }
@@ -4832,7 +4710,7 @@ var DIETA15=[
 ];
 
 function _dietDate(idx){
-  var s=new Date(2026,8,7);
+  var s=new Date(2026,8,8);
   var d=new Date(s.getTime()+idx*86400000);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
@@ -4840,7 +4718,7 @@ function _dietDate(idx){
 function renderDietPlan(){
   var el=document.getElementById('food-plan-content');
   if(!el) return;
-  var start=new Date(2026,8,7);
+  var start=new Date(2026,8,8);
   var now=new Date();
   var todayIdx=Math.max(0,Math.floor((now-start)/86400000)%15);
   var h='';
@@ -5141,7 +5019,7 @@ function renderMealOfMoment(){
   var titleEl=document.getElementById('h-meal-title');
   if(emojiEl) emojiEl.textContent=meal.emoji;
   if(titleEl) titleEl.textContent=meal.title+' · '+meal.timeLabel;
-  var planStart=new Date(2026,8,7);
+  var planStart=new Date(2026,8,8);
   var dayIdx=Math.max(0,Math.floor((new Date()-planStart)/86400000)%15);
   var day=typeof DIETA15!=='undefined'?DIETA15[dayIdx]:null;
   if(!day){el.innerHTML='<div style="font-size:12px;color:var(--m)">Plan empieza el 7 de septiembre</div>';return;}
@@ -5169,8 +5047,8 @@ function renderMealOfMoment(){
 }
 
 function fetchWeatherHome(){
-  var tempEl=document.getElementById('h-weather-temp');
-  var descEl=document.getElementById('h-weather-desc');
+  var tempEl=document.getElementById('h-temp');
+  var descEl=document.getElementById('h-temp-sub');
   if(!tempEl) return;
   fetch('https://wttr.in/Palencia,Spain?format=j1')
     .then(function(r){return r.json();})
@@ -5193,25 +5071,13 @@ function openBarcodeScanner(){alert("Escáner no disponible en esta versión.");
 var MEDIDAS_DEF=[
   {id:'cintura',label:'Cintura',emoji:'📏',unit:'cm',
    desc:'A la altura del ombligo. Espira el aire y mide sin tensar.',
-   why:'Indicador principal de grasa visceral. Objetivo: -8 a -10cm desde 93kg.'},
-  {id:'abdomen',label:'Abdomen',emoji:'📏',unit:'cm',
-   desc:'En el punto más ancho por encima de las caderas.',
-   why:'Diferencia con cintura muestra distribución de grasa abdominal.'},
-  {id:'pecho',label:'Pecho',emoji:'📏',unit:'cm',
-   desc:'A la altura de los pezones, brazos relajados a los lados.',
-   why:'Músculo pectoral + dorsal. Si sube mientras cintura baja → recomposición.'},
+   why:'El indicador principal. Objetivo: -8cm desde el inicio.'},
   {id:'cadera',label:'Cadera',emoji:'📏',unit:'cm',
    desc:'En el punto más ancho de los glúteos.',
-   why:'Referencia para ratio cintura/cadera. Objetivo: ratio <0.9.'},
+   why:'Con la cintura da el ratio cintura/cadera. Objetivo: ratio <0.9.'},
   {id:'muslo',label:'Muslo',emoji:'📏',unit:'cm',
-   desc:'A mitad de camino entre la ingle y la rodilla, pierna derecha.',
-   why:'Masa muscular cuádriceps. Si sube con el HIIT es músculo, no grasa.'},
-  {id:'brazo',label:'Brazo',emoji:'📏',unit:'cm',
-   desc:'Bíceps derecho relajado, a mitad del brazo.',
-   why:'Volumen de brazo. En recomposición sube mientras el peso baja.'},
-  {id:'gemelo',label:'Gemelo',emoji:'📏',unit:'cm',
-   desc:'Gemelo derecho en el punto más ancho, de pie.',
-   why:'El running y el HIIT desarrollan los gemelos. Si sube es músculo.'},
+   desc:'A mitad del muslo derecho, pierna recta.',
+   why:'Sube si ganas músculo con el HIIT. Buena señal si la cintura baja a la vez.'},
 ];
 
 function saveMedida(){
@@ -5357,73 +5223,72 @@ function renderMedidas(){
 // COUNTDOWN RETO — 23 diciembre 2026
 // ═══════════════════════════════════════
 function renderRetoCountdown(){
-  var el=document.getElementById('h-reto-card');
-  if(!el) return;
-
-  var now=new Date();
-  var meta=new Date(2026,11,23); // 23 diciembre
-  var daysLeft=Math.max(0,Math.ceil((meta-now)/86400000));
-  var startDate=new Date(2026,8,7); // 7 sept
-  var totalDays=Math.ceil((meta-startDate)/86400000);
-  var daysDone=Math.max(0,Math.ceil((now-startDate)/86400000));
-  var pctDone=Math.min(100,Math.round((daysDone/totalDays)*100));
-
-  // Check objectives
-  var ws=ld('weights',[]);
-  var curW=ws.length>0?ws[ws.length-1].val:null;
-  var pesoOk=curW&&curW>=80&&curW<=82;
-  var runWeek=getCurrentRunWeek();
-  var runOk=runWeek>=7;
-  var allDone=pesoOk&&runOk;
-
-  var h='';
-  if(allDone){
-    h='<div style="background:linear-gradient(135deg,rgba(61,214,140,0.15),rgba(79,142,247,0.1));border:1px solid rgba(61,214,140,0.4);border-radius:14px;padding:16px">';
-    h+='<div style="font-size:32px;text-align:center;margin-bottom:8px">🏆</div>';
-    h+='<div style="font-size:18px;font-weight:800;color:var(--g);text-align:center;margin-bottom:4px">RETO COMPLETADO</div>';
-    h+='<div style="font-size:12px;color:var(--m);text-align:center">10km sub-50\' · 80-82 kg · Diciembre 2026</div>';
-    h+='</div>';
-  } else {
-    h='<div style="background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(99,102,241,0.05));border:1px solid rgba(79,142,247,0.25);border-radius:14px;padding:14px">';
-    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">';
-    h+='<div><div style="font-size:12px;font-weight:700;color:var(--a)">🎯 RETO 23 DICIEMBRE</div>';
-    h+='<div style="font-size:10px;color:var(--m);margin-top:1px">10km sub-50\' · 80-82 kg</div></div>';
-    h+='<div style="text-align:right">';
-    h+='<div style="font-size:32px;font-weight:800;color:var(--a);line-height:1">'+daysLeft+'</div>';
-    h+='<div style="font-size:10px;color:var(--m)">días</div></div></div>';
-
-    // Progress bar
-    h+='<div style="background:var(--b);border-radius:4px;height:5px;margin-bottom:10px">';
-    h+='<div style="height:5px;border-radius:4px;background:linear-gradient(90deg,var(--a),var(--p));width:'+pctDone+'%;transition:width 0.6s"></div></div>';
-    h+='<div style="font-size:10px;color:var(--m);margin-bottom:10px;text-align:right">'+pctDone+'% del camino · '+daysDone+' días de '+totalDays+'</div>';
-
-    // Objectives status
-    h+='<div style="display:flex;gap:8px">';
-    // Running
-    h+='<div style="flex:1;background:var(--s2);border-radius:10px;padding:8px 10px;border:1px solid '+(runOk?'rgba(61,214,140,0.4)':'var(--b)')+'">';
-    h+='<div style="font-size:10px;font-weight:700;color:'+(runOk?'var(--g)':'var(--m)')+'">🏃 Running</div>';
-    if(runOk){
-      h+='<div style="font-size:12px;font-weight:700;color:var(--g)">✅ Listo</div>';
+  try{
+    var el=document.getElementById('h-reto-card');
+    if(!el) return;
+    var now=new Date();
+    var meta=new Date(2026,11,23);
+    var start=new Date(2026,8,8);
+    var daysLeft=Math.max(0,Math.ceil((meta-now)/86400000));
+    var totalDays=Math.ceil((meta-start)/86400000);
+    var daysDone=Math.max(0,Math.ceil((now-start)/86400000));
+    var pct=Math.min(100,Math.round((daysDone/totalDays)*100));
+    var ws=ld('weights',[]);
+    var curW=ws.length>0?ws[ws.length-1].val:null;
+    var pesoOk=curW&&curW>=80&&curW<=82;
+    var runWeek=getCurrentRunWeek();
+    var runOk=runWeek>=7;
+    var h='';
+    if(pesoOk&&runOk){
+      h='<div style="background:linear-gradient(135deg,rgba(61,214,140,0.15),rgba(79,142,247,0.1));border:1px solid rgba(61,214,140,0.4);border-radius:14px;padding:18px;text-align:center">';
+      h+='<div style="font-size:48px;margin-bottom:6px">🏆</div>';
+      h+='<div style="font-size:20px;font-weight:800;color:var(--g);margin-bottom:4px">RETO COMPLETADO</div>';
+      h+='<div style="font-size:12px;color:var(--m)">10km sub-50\' · 80-82 kg · Diciembre 2026</div>';
+      h+='</div>';
     } else {
-      h+='<div style="font-size:13px;font-weight:700;color:var(--t)">Sem '+runWeek+'/7</div>';
-      h+='<div style="font-size:10px;color:var(--m)">'+(7-runWeek)+' semanas</div>';
+      h='<div style="background:linear-gradient(135deg,rgba(79,142,247,0.1),rgba(99,102,241,0.06));border:1px solid rgba(79,142,247,0.3);border-radius:14px;padding:14px 16px">';
+      // Header
+      h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">';
+      h+='<div>';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--a);letter-spacing:0.5px;text-transform:uppercase">🎯 Reto 23 Diciembre</div>';
+      h+='<div style="font-size:10px;color:var(--m);margin-top:2px">10km sub-50\' · 80-82 kg</div>';
+      h+='</div>';
+      h+='<div style="text-align:right">';
+      h+='<div style="font-size:40px;font-weight:800;color:var(--a);line-height:1">'+daysLeft+'</div>';
+      h+='<div style="font-size:10px;color:var(--m)">días</div>';
+      h+='</div></div>';
+      // Progress bar
+      h+='<div style="background:rgba(42,47,66,0.8);border-radius:6px;height:6px;margin-bottom:6px">';
+      h+='<div style="height:6px;border-radius:6px;background:linear-gradient(90deg,var(--a),var(--p));width:'+pct+'%;transition:width 0.6s"></div></div>';
+      h+='<div style="font-size:10px;color:var(--m);margin-bottom:12px">'+daysDone+' días completados · '+pct+'% del camino</div>';
+      // Two objectives
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+      // Running objective
+      h+='<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;border:1px solid '+(runOk?'rgba(61,214,140,0.4)':'rgba(42,47,66,0.8)')+';">';
+      h+='<div style="font-size:18px;margin-bottom:2px">🏃</div>';
+      h+='<div style="font-size:10px;color:var(--m);margin-bottom:4px">Running</div>';
+      if(runOk){
+        h+='<div style="font-size:13px;font-weight:700;color:var(--g)">✅ Completado</div>';
+      } else {
+        h+='<div style="font-size:20px;font-weight:800;color:var(--t);line-height:1">'+runWeek+'<span style="font-size:12px;color:var(--m)">/7</span></div>';
+        h+='<div style="font-size:10px;color:var(--m)">sem completadas</div>';
+      }
+      h+='</div>';
+      // Weight objective
+      h+='<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;border:1px solid '+(pesoOk?'rgba(61,214,140,0.4)':'rgba(42,47,66,0.8)')+';">';
+      h+='<div style="font-size:18px;margin-bottom:2px">⚖️</div>';
+      h+='<div style="font-size:10px;color:var(--m);margin-bottom:4px">Peso</div>';
+      if(pesoOk){
+        h+='<div style="font-size:13px;font-weight:700;color:var(--g)">✅ '+(curW?curW.toFixed(1):'—')+'kg</div>';
+      } else {
+        h+='<div style="font-size:20px;font-weight:800;color:var(--t);line-height:1">'+(curW?curW.toFixed(1):'—')+'<span style="font-size:11px;color:var(--m)">kg</span></div>';
+        h+='<div style="font-size:10px;color:var(--m)">zona 80-82</div>';
+      }
+      h+='</div>';
+      h+='</div></div>';
     }
-    h+='</div>';
-    // Peso
-    h+='<div style="flex:1;background:var(--s2);border-radius:10px;padding:8px 10px;border:1px solid '+(pesoOk?'rgba(61,214,140,0.4)':'var(--b)')+'">';
-    h+='<div style="font-size:10px;font-weight:700;color:'+(pesoOk?'var(--g)':'var(--m)')+'">⚖️ Peso</div>';
-    if(pesoOk){
-      h+='<div style="font-size:12px;font-weight:700;color:var(--g)">✅ '+curW.toFixed(1)+'kg</div>';
-    } else {
-      h+='<div style="font-size:13px;font-weight:700;color:var(--t)">'+(curW?curW.toFixed(1)+'kg':'—')+'</div>';
-      h+='<div style="font-size:10px;color:var(--m)">Zona 80-82</div>';
-    }
-    h+='</div>';
-    h+='</div>';
-    h+='</div>';
-  }
-
-  el.innerHTML=h;
+    el.innerHTML=h;
+  } catch(e){ console.warn('renderRetoCountdown error:',e); }
 }
 
 function init(){
@@ -5438,7 +5303,7 @@ function init(){
     if(gd) gd.value=today();
     if(rd) rd.value=today();
     var srd=ld('run_start_date',null);
-    if(rps) rps.value=srd||'2026-07-06';
+    if(rps) rps.value=srd||'2026-09-08';
   }, 50);
   sd('active_food_log_date',today());
 
@@ -5466,7 +5331,7 @@ function init(){
   var wDates=wArr.map(function(w){return w.date;});
   [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},
    {date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},{date:'2026-06-22',val:89.4},
-   {date:'2026-07-06',val:90.6}
+   {date:'2026-09-08',val:90.6}
   ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
   wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
   sd('weights',wArr);
@@ -5485,7 +5350,7 @@ function init(){
 
   // 22:00 alert check
   var now=new Date();
-  var startTracking=new Date('2026-07-06');
+  var startTracking=new Date('2026-09-08');
   if(now>=startTracking&&now.getHours()>=22){
     var log=getFoodLog();
     if(!log.length){
