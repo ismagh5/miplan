@@ -267,12 +267,22 @@ select.if{cursor:pointer;}
     <canvas id="h-w-chart" height="70" style="width:100%;margin-top:8px;display:block"></canvas>
   </div>
 
+  <!-- RETO COUNTDOWN -->
+  <div id="h-reto-card" style="margin:8px 16px"></div>
+
   <!-- LUNES CHECK-IN -->
   <div id="h-monday-card" style="display:none;margin:0 16px 8px">
     <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:12px 14px">
-      <div style="font-size:13px;font-weight:700;color:var(--o);margin-bottom:4px">📸 Lunes — Check-in semanal</div>
-      <div style="font-size:11px;color:var(--m);margin-bottom:8px;line-height:1.5">1. Pésate en ayunas, sin ropa<br>2. Fotos: frontal, lateral y espalda<br>3. Guárdalas en el carrete con la fecha</div>
-      <button class="btn bth btn-sm" onclick="nav('weight')">Registrar peso →</button>
+      <div style="font-size:13px;font-weight:700;color:var(--o);margin-bottom:6px">📸 Lunes — Check-in semanal · En ayunas</div>
+      <div style="font-size:11px;color:var(--m);margin-bottom:10px;line-height:1.8">
+        <div>⚖️ Pésate sin ropa, sin haber comido ni bebido</div>
+        <div>📸 Fotos: frontal, lateral dcha, espalda — misma luz y posición</div>
+        <div>📏 Medidas: cintura · abdomen · pecho · cadera · muslo · brazo · gemelo</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bth btn-sm" style="flex:1" onclick="nav('weight');setTimeout(function(){weightTab('peso')},100)">⚖️ Peso</button>
+        <button class="btn bth btn-sm" style="flex:1" onclick="nav('weight');setTimeout(function(){weightTab('medidas')},100)">📏 Medidas</button>
+      </div>
     </div>
   </div>
 
@@ -485,6 +495,7 @@ select.if{cursor:pointer;}
   <div class="ph"><div class="pt">⚖️ Peso · Salud</div><div class="ps">Objetivo: 80-82 kg · Recomposición corporal</div></div>
   <div class="tr">
     <button class="tb active" onclick="weightTab('peso')">⚖️ Peso</button>
+    <button class="tb" onclick="weightTab('medidas')">📏 Medidas</button>
     <button class="tb" onclick="weightTab('movilidad')">🧘 Mov.</button>
   </div>
   <div id="wt-peso">
@@ -514,7 +525,10 @@ select.if{cursor:pointer;}
 
 <!-- HEALTH -->
   </div>
-  <div id="wt-movilidad" style="display:none"><div id="mob-content" style="padding:12px 16px"></div></div>
+  <div id="wt-medidas" style="display:none">
+  <div style="padding:12px 16px" id="medidas-content"></div>
+</div>
+<div id="wt-movilidad" style="display:none"><div id="mob-content" style="padding:12px 16px"></div></div>
 
 <div class="page" id="pg-health">
   <div class="ph"><div class="pt">🩺 Salud</div><div class="ps">Analítica 6 mayo 2026</div></div>
@@ -2294,6 +2308,8 @@ function renderHome(){
   // Refresh schedule every minute
   if(window._schedInterval) clearInterval(window._schedInterval);
   window._schedInterval=setInterval(renderDaySchedule, 60000);
+  // Reto countdown
+  renderRetoCountdown();
   // Meal + weather + mobility
   renderMealOfMoment();
   fetchWeatherHome();
@@ -2304,6 +2320,7 @@ function renderHome(){
   var streakEl=document.getElementById('h-streak');
   if(streakEl) streakEl.textContent=getConsistencyStreak();
   renderRunProgress();
+  renderRetoCountdown();
 }
 
 function shouldCompensateSaturday(dow){
@@ -4298,14 +4315,15 @@ var CASA_BASE={
       {n:'Skipping suave',dur:'60s',desc:'Eleva rodillas a la cadera. Ritmo moderado.'},
     ],
     circ:[
-      {n:'Sentadilla básica',muscle:'Cuádriceps · Glúteo',r:4,t:'40s/20s',desc:'Pies a la anchura de hombros. Baja hasta muslos paralelos. Empuja con los talones.'},
-      {n:'Sentadilla búlgara (dcha)',muscle:'Cuádriceps · Glúteo',r:4,t:'40s/20s',desc:'Pie trasero en la silla. Baja la rodilla trasera sin tocar. Torso erguido.'},
-      {n:'Sentadilla búlgara (izqda)',muscle:'Cuádriceps · Glúteo',r:4,t:'40s/20s',desc:'Mismo, pierna contraria.'},
-      {n:'Hip Thrust en silla',muscle:'Glúteo mayor · Isquios',r:4,t:'40s/20s',desc:'Hombros en el borde de la silla. Sube la cadera apretando el glúteo 1s arriba.'},
-      {n:'Zancada alternante',muscle:'Cuádriceps · Glúteo',r:4,t:'40s/20s',desc:'Paso largo adelante, baja rodilla trasera al suelo. Alterna piernas.'},
-      {n:'Nordic Curl asistido',muscle:'Isquiotibiales',r:4,t:'40s/20s',desc:'Pies anclados bajo el sofá. Baja el cuerpo controlando con los isquios.'},
-      {n:'Calf Raise unilateral',muscle:'Gemelos · Sóleo',r:4,t:'40s/20s',desc:'En un escalón. Una pierna. Baja el talón y sube de puntillas al máximo.'},
-      {n:'Sentadilla isométrica en pared',muscle:'Cuádriceps',r:4,t:'40s/20s',desc:'Espalda en la pared, muslos paralelos. No te muevas. Avanzado: garrafa en el regazo.'},
+      {n:'Sentadilla básica',muscle:'Cuádriceps · Glúteo',r:5,t:'40s/20s',desc:'Pies a la anchura de hombros. Baja hasta muslos paralelos. Empuja con los talones.'},
+      {n:'Sentadilla búlgara (dcha)',muscle:'Cuádriceps · Glúteo',r:5,t:'40s/20s',desc:'Pie trasero en la silla. Baja la rodilla trasera sin tocar. Torso erguido.'},
+      {n:'Sentadilla búlgara (izqda)',muscle:'Cuádriceps · Glúteo',r:5,t:'40s/20s',desc:'Mismo, pierna contraria.'},
+      {n:'Hip Thrust en silla',muscle:'Glúteo mayor · Isquios',r:5,t:'40s/20s',desc:'Hombros en el borde de la silla. Sube la cadera apretando el glúteo 1s arriba.'},
+      {n:'Zancada alternante',muscle:'Cuádriceps · Glúteo',r:5,t:'40s/20s',desc:'Paso largo adelante, baja rodilla trasera al suelo. Alterna piernas.'},
+      {n:'Nordic Curl asistido',muscle:'Isquiotibiales',r:5,t:'40s/20s',desc:'Pies anclados bajo el sofá. Baja el cuerpo controlando con los isquios.'},
+      {n:'Calf Raise unilateral',muscle:'Gemelos · Sóleo',r:5,t:'40s/20s',desc:'En un escalón. Una pierna. Baja el talón y sube de puntillas al máximo.'},
+      {n:'Sentadilla isométrica en pared',muscle:'Cuádriceps',r:5,t:'40s/20s',desc:'Espalda en la pared, muslos paralelos. No te muevas. Avanzado: garrafa en el regazo.'},
+      {n:'Step Up en silla',muscle:'Glúteo · Cuádriceps · Equilibrio',r:5,t:'40s/20s',desc:'Sube al asiento de la silla con una pierna, baja controlado. Alterna piernas. El talón de la pierna de arriba empuja, no el del suelo.'},
     ],
     post:[
       {n:'Estiramiento cuádriceps',dur:'45s/lado',desc:'De pie, talón al glúteo. Rodilla alineada.'},
@@ -4318,9 +4336,11 @@ var CASA_BASE={
   martes:{n:'Empuje — Pecho · Hombros · Tríceps',emoji:'💪',obj:'Pectoral · Deltoides · Tríceps',
     preNut:'Si hay running a las 20:00: cena ligera 90 min antes.',
     cal:[
-      {n:'Rotaciones de hombro',dur:'30s/dirección',desc:'Círculos hacia delante y atrás. Empieza pequeño.'},
-      {n:'Flexión en pared',dur:'15 reps',desc:'Manos en la pared. Inclínate y empuja.'},
-      {n:'Shoulder tap en cuadrupedia',dur:'20 reps',desc:'A cuatro patas, lleva una mano al hombro contrario. Core estable.'},
+      {n:'Rotaciones de hombro',dur:'30s/dirección',desc:'Círculos hacia delante y atrás empezando pequeños. Primero hacia atrás (rompe la tensión del ordenador), luego hacia delante. 30s cada dirección.'},
+      {n:'Apertura de pecho en marco de puerta',dur:'30s/lado',desc:'Antebrazo apoyado en el marco a 90°. Da un paso adelante y gira el cuerpo hasta sentir el pecho. Prepara los pectorales antes de las flexiones.'},
+      {n:'Flexión en pared',dur:'15 reps',desc:'Manos en la pared a la altura del pecho. Inclínate y empuja. Es una flexión asistida — activa pecho y tríceps sin carga completa.'},
+      {n:'Shoulder tap en cuadrupedia',dur:'20 reps',desc:'A cuatro patas, lleva una mano al hombro contrario manteniendo la cadera quieta. Core estable en todo momento.'},
+      {n:'Rotación torácica en suelo',dur:'5 reps/lado',desc:'Tumbado de lado, rodillas dobladas a 90°. Abre el brazo superior hacia atrás rotando la columna. Activa la movilidad torácica que las flexiones requieren.'},
     ],
     circ:[
       {n:'Flexión estándar',muscle:'Pectoral · Tríceps · Hombros',r:5,t:'40s/20s',desc:'Manos a la anchura de hombros, cuerpo recto. Baja hasta casi tocar el suelo. Rodillas si necesitas.'},
@@ -4331,12 +4351,14 @@ var CASA_BASE={
       {n:'Elevaciones laterales con banda',muscle:'Deltoides medial',r:5,t:'40s/20s',desc:'Pisa la banda. Levanta los brazos en cruz a la altura de los hombros. Sin impulso.'},
       {n:'Face Pull con banda',muscle:'Deltoides posterior · Romboides',r:5,t:'40s/20s',desc:'Banda anclada alta. Tira hacia la cara con codos en alto. Previene lesiones de hombro.'},
       {n:'Shoulder tap en flexión',muscle:'Core · Estabilidad hombro',r:5,t:'40s/20s',desc:'Desde la posición de flexión, lleva una mano al hombro contrario sin mover las caderas.'},
+      {n:'Press de hombro con banda',muscle:'Deltoides · Tríceps · Estabilidad',r:5,t:'40s/20s',desc:'Pisa la banda con ambos pies. Lleva las manos a los hombros y empuja hacia arriba extendiendo los codos. Controla la bajada. Equivalente al press militar con resistencia progresiva.'},
     ],
     post:[
-      {n:'Estiramiento pectoral en puerta',dur:'45s/lado',desc:'Antebrazo en el marco a 90°. Da un paso adelante y gira el cuerpo.'},
-      {n:'Estiramiento tríceps',dur:'30s/lado',desc:'Codo detrás de la cabeza, mano entre los omóplatos.'},
-      {n:"Child's pose",dur:'60s',desc:'Arrodillado en los talones, brazos al frente. Relaja el pecho.'},
-      {n:'Foam roller dorsales',dur:'2 min',desc:'Transversal a la espalda media. Deja que la espalda se abra.'},
+      {n:'Estiramiento pectoral en puerta',dur:'45s/lado',desc:'Antebrazo en el marco a 90°. Da un paso adelante y gira el cuerpo. Nota la apertura del pecho. Prueba el brazo a distintas alturas: 90°, 45° y 120° para llegar a todas las fibras pectorales.'},
+      {n:'Estiramiento cruzado de hombro',dur:'30s/lado',desc:'Lleva el brazo recto al hombro contrario. La mano libre presiona desde el codo hacia tu cuerpo. Estira el deltoides posterior que trabaja en los face pull.'},
+      {n:'Estiramiento tríceps sobre la cabeza',dur:'30s/lado',desc:'Codo doblado detrás de la cabeza, mano entre los omóplatos. La mano libre empuja suavemente el codo hacia abajo.'},
+      {n:"Child's pose",dur:'60s',desc:'Arrodillado en los talones, brazos estirados al frente. Deja caer el pecho al suelo. Respira profundo y relaja la espalda y hombros completamente.'},
+      {n:'Foam roller dorsales',dur:'2 min',desc:'Foam roller transversal a la espalda media, nivel omóplatos. Apoya la cabeza con las manos y deja que la gravedad abra el pecho hacia el suelo. Mueve 2-3cm arriba y abajo buscando puntos de tensión.'},
     ],
     postNut:'Si hay running: cena ligera 90min antes. Si no: creatina + yogur dentro de 45min.'},
   miercoles:{n:'Power + Full Body',emoji:'⚡',obj:'Potencia · Cardio · Quema de grasa',
@@ -4348,19 +4370,22 @@ var CASA_BASE={
       {n:'Inchworm',dur:'5 reps',desc:'De pie, baja las manos al suelo y camina hasta posición de flexión. Vuelve.'},
     ],
     circ:[
-      {n:'Burpee completo',muscle:'Cuerpo completo · Cardio máximo',r:4,t:'40s/20s',desc:'Agáchate, salta los pies atrás, pecho al suelo, sube, salta arriba con brazos extendidos.'},
-      {n:'Jump Squat',muscle:'Cuádriceps · Glúteo · Potencia',r:4,t:'40s/20s',desc:'Baja a la sentadilla y explota hacia arriba. Aterriza suavemente.'},
-      {n:'Mountain Climbers',muscle:'Core · Hombros · Cardio',r:4,t:'40s/20s',desc:'Posición de flexión. Rodillas alternadas hacia el pecho, lo más rápido posible.'},
-      {n:'Bear Crawl',muscle:'Hombros · Core · Coordinación',r:4,t:'40s/20s',desc:'A cuatro patas, rodillas 5cm del suelo. Mueve brazo y pierna opuestos simultáneamente.'},
-      {n:'High Knees intenso',muscle:'Cardio · Flexores cadera',r:4,t:'40s/20s',desc:'Rodillas al máximo posible. Brazos en bomba. Ritmo máximo sostenible.'},
-      {n:'Tuck Jump',muscle:'Potencia · Extensores rodilla',r:4,t:'40s/20s',desc:'Salta y lleva las rodillas al pecho en el aire. Aterriza suave.'},
-      {n:'Sprint en sitio',muscle:'Cardio máximo · EPOC',r:4,t:'40s/20s',desc:'Corre en el sitio a máxima velocidad. Genera el mayor efecto postcombustión.'},
-      {n:'Lateral Shuffle',muscle:'Agilidad · Cuádriceps',r:4,t:'40s/20s',desc:'Posición atlética. Desplázate de lado en lado tocando el suelo en cada extremo.'},
+      {n:'Burpee completo',muscle:'Cuerpo completo · Cardio máximo',r:5,t:'40s/20s',desc:'Agáchate, salta los pies atrás, pecho al suelo, sube, salta arriba con brazos extendidos.'},
+      {n:'Jump Squat',muscle:'Cuádriceps · Glúteo · Potencia',r:5,t:'40s/20s',desc:'Baja a la sentadilla y explota hacia arriba. Aterriza suavemente.'},
+      {n:'Mountain Climbers',muscle:'Core · Hombros · Cardio',r:5,t:'40s/20s',desc:'Posición de flexión. Rodillas alternadas hacia el pecho, lo más rápido posible.'},
+      {n:'Bear Crawl',muscle:'Hombros · Core · Coordinación',r:5,t:'40s/20s',desc:'A cuatro patas, rodillas 5cm del suelo. Mueve brazo y pierna opuestos simultáneamente.'},
+      {n:'High Knees intenso',muscle:'Cardio · Flexores cadera',r:5,t:'40s/20s',desc:'Rodillas al máximo posible. Brazos en bomba. Ritmo máximo sostenible.'},
+      {n:'Tuck Jump',muscle:'Potencia · Extensores rodilla',r:5,t:'40s/20s',desc:'Salta y lleva las rodillas al pecho en el aire. Aterriza suave.'},
+      {n:'Sprint en sitio',muscle:'Cardio máximo · EPOC',r:5,t:'40s/20s',desc:'Corre en el sitio a máxima velocidad. Genera el mayor efecto postcombustión.'},
+      {n:'Lateral Shuffle',muscle:'Agilidad · Cuádriceps',r:5,t:'40s/20s',desc:'Posición atlética. Desplázate de lado en lado tocando el suelo en cada extremo.'},
+      {n:'Jumping Lunge',muscle:'Cuádriceps · Glúteo · Potencia',r:5,t:'40s/20s',desc:'Zancada y salta cambiando las piernas en el aire. Aterriza suave con la rodilla trasera casi al suelo. El ejercicio de mayor demanda metabólica del circuito.'},
     ],
     post:[
-      {n:'Respiración diafragmática',dur:'2 min',desc:'Inspira 4s, aguanta 2s, espira 6s. Baja las pulsaciones.'},
-      {n:"Child's pose lateral",dur:'45s/lado',desc:'Desde child pose, desplaza los brazos hacia un lado.'},
-      {n:'Estiramiento cadera de corredor',dur:'45s/lado',desc:'Rodilla en el suelo, pie delantero al frente. Empuja la cadera hacia abajo.'},
+      {n:'Respiración diafragmática',dur:'2 min',desc:'Inspira 4 segundos por la nariz, aguanta 2 segundos, espira 6 segundos por la boca. Repite hasta que la frecuencia cardíaca baje a menos de 100 ppm. Fundamental tras el circuito de potencia.'},
+      {n:"Child's pose lateral",dur:'45s/lado',desc:'Desde child pose (arrodillado, brazos al frente), desplaza los dos brazos hacia un lado. Sientes el estiramiento lateral del torso y el dorsal. Mantén la cadera en los talones.'},
+      {n:'Estiramiento cadera de corredor',dur:'45s/lado',desc:'Rodilla trasera en el suelo, pie delantero adelante. Empuja la cadera hacia adelante y abajo hasta sentir el flexor de cadera. Después inclina levemente el torso hacia atrás para profundizar.'},
+      {n:'Hip Circles pasivos',dur:'30s/lado',desc:'De pie, manos en la cadera. Círculos amplios y lentos. Permite que la articulación se relaje después de los saltos y el impacto del circuito de potencia.'},
+      {n:'Estiramiento de gemelos en pared',dur:'45s/lado',desc:'Manos apoyadas en la pared, pierna trasera estirada y talón en el suelo. La punta del pie apunta hacia la pared. Después dobla ligeramente la rodilla trasera para alcanzar el sóleo. Los saltos del circuito de potencia sobrecargan los gemelos — este estiramiento previene contracturas.'},
     ],
     postNut:'Sesión de alto estrés. Proteína dentro de 45min es más importante hoy. Yogur + plátano + creatina.'},
   jueves:{n:'Hombros + Core',emoji:'🔥',obj:'Deltoides · Core profundo · Postura',
@@ -4380,19 +4405,24 @@ var CASA_BASE={
       {n:'Hollow Body Hold',muscle:'Recto abdominal · Core',r:5,t:'40s/20s',desc:'Levanta hombros y piernas. Cuerpo en banana. Brazos junto a las orejas.'},
       {n:'Bird Dog',muscle:'Erector · Glúteo · Core',r:5,t:'40s/20s',desc:'A cuatro patas. Extiende brazo y pierna contrarios. Columna neutra.'},
       {n:'Vacuum abdominal',muscle:'Transverso abdominal',r:3,t:'30s/30s pausa',desc:'Vacía el aire. Mete el abdomen al máximo. Mantén sin respirar. Define la cintura.'},
+      {n:'Reverse Plank',muscle:'Glúteo · Isquios · Core posterior',r:5,t:'40s/20s',desc:'Sentado en el suelo, manos apoyadas detrás de las caderas. Eleva la cadera hasta que el cuerpo forme una línea recta. Aprieta los glúteos. Trabaja la cadena posterior que el ordenador debilita.'},
     ],
     post:[
-      {n:'Estiramiento hombro cruzado',dur:'30s/lado',desc:'Brazo cruzado al hombro contrario. La mano contraria empuja desde el codo.'},
-      {n:'Estiramiento cuello',dur:'30s/posición',desc:'Lleva la oreja al hombro suavemente.'},
-      {n:'Cat-Cow',dur:'90s',desc:'A cuatro patas, 10 repeticiones lentas.'},
+      {n:'Estiramiento hombro cruzado',dur:'30s/lado',desc:'Lleva el brazo recto al hombro contrario a la altura del pecho. La mano libre presiona desde el codo hacia tu cuerpo. Nota el estiramiento en el deltoides posterior.'},
+      {n:'Estiramiento cuello lateral',dur:'30s/lado',desc:'Lleva la oreja derecha al hombro derecho suavemente, sin forzar. Puedes poner la mano encima para añadir peso suave. Estira el trapecio superior y los escalenos que aguantan la posición de hombros durante el circuito.'},
+      {n:'Doorway pectoral stretch',dur:'30s/lado',desc:'Marco de la puerta, antebrazo a 90°. Da un paso y gira el cuerpo. Aunque el jueves es hombros, el deltoides anterior cruza el pectoral — estirarlo previene lesiones.'},
+      {n:'Cat-Cow lento',dur:'90s',desc:'A cuatro patas, 10 repeticiones lentas. Arqueado máximo (cat) 2s, extensión máxima (cow) 2s. Libera la tensión acumulada en lumbar y cervicales después del trabajo de core intenso.'},
+      {n:'Foam roller lumbar',dur:'90s',desc:'Foam roller transversal a la espalda baja. Rodillas dobladas, pies en el suelo. Deja caer el peso. Después mueve el foam roller hacia la zona torácica. Cierra la sesión de core liberando la musculatura paravertebral.'},
     ],
     postNut:'Running a las 20:00: la cena post-running es la recuperación principal.'},
   viernes:{n:'Posterior + Core Intensivo',emoji:'🏋️',obj:'Isquiotibiales · Glúteo · Lumbar',
     preNut:'Última sesión de la semana. Come bien la comida del día.',
     cal:[
-      {n:'Hip hinge bodyweight',dur:'10 reps',desc:'Inclina el torso hacia adelante empujando los glúteos atrás. Espalda recta.'},
-      {n:'Good morning con palo',dur:'10 reps',desc:'Palo en los hombros. Torso paralelo al suelo. Activa isquios y lumbar.'},
-      {n:'Glute Bridge básico',dur:'15 reps',desc:'Empuja con los talones, eleva la cadera, aprieta el glúteo 1s arriba.'},
+      {n:'Hip hinge bodyweight',dur:'10 reps',desc:'De pie, pies a la anchura de hombros. Empuja los glúteos hacia atrás mientras inclinas el torso manteniendo la espalda completamente recta. Sientes el tirón en los isquios. Si redondeas la espalda, reduce el rango.'},
+      {n:'Good morning con palo',dur:'10 reps',desc:'Palo en los hombros detrás de la cabeza. Desde la cadera, baja el torso hasta casi paralelo al suelo con la espalda recta. Sientes la tensión en los isquios y lumbar. Es el patrón del peso muerto rumano.'},
+      {n:'Glute Bridge básico',dur:'15 reps',desc:'Tumbado boca arriba, rodillas dobladas, pies apoyados. Empuja con los talones y eleva la cadera hasta que el cuerpo forme una línea recta. Aprieta el glúteo 1-2 segundos en la parte alta. Baja controlado.'},
+      {n:'Foam roller isquios',dur:'60s/pierna',desc:'Sentado en el suelo con el foam roller bajo los isquios. Rueda desde la parte baja del glúteo hasta la rodilla. Cuando encuentres un punto de tensión, mantén 10-15 segundos. Activa la musculatura antes de la sesión.'},
+      {n:'Rotación de cadera en cuadrupedia',dur:'10 reps/lado',desc:'A cuatro patas, rodilla en el aire. Dibuja círculos amplios con la rodilla. Primero hacia fuera, luego hacia dentro. Activa el glúteo medio y calienta la articulación de la cadera para los hip thrust.'},
     ],
     circ:[
       {n:'Hip Thrust con garrafa',muscle:'Glúteo mayor',r:5,t:'40s/20s',desc:'Hombros en el borde de la silla, garrafa en las caderas. Extiende la cadera completamente.'},
@@ -4403,6 +4433,7 @@ var CASA_BASE={
       {n:'Plancha lateral (izqda)',muscle:'Oblicuos · Glúteo medio',r:5,t:'40s/20s',desc:'Mismo, lado contrario.'},
       {n:'Hollow Hold',muscle:'Recto abdominal · Core',r:5,t:'40s/20s',desc:'Levanta hombros y piernas. La lumbar no se despega del suelo.'},
       {n:'Vacuum abdominal',muscle:'Transverso abdominal',r:3,t:'30s/30s pausa',desc:'Cierra la semana con el ejercicio que más define la cintura.'},
+      {n:'Hip Thrust unilateral en silla',muscle:'Glúteo mayor · Isquios · Equilibrio',r:5,t:'40s/20s',desc:'Hombros en la silla, una pierna extendida. Solo con la pierna de apoyo. Eleva la cadera apretando el glúteo. El ejercicio más efectivo para desequilibrios glúteo derecho-izquierdo.'},
     ],
     post:[
       {n:'Estiramiento isquios',dur:'60s/lado',desc:'Tumbado, pierna hacia arriba. 60s+ para que se relajen de verdad.'},
@@ -4471,10 +4502,12 @@ function renderCasaPage(){
   h+='<div style="font-size:20px;margin-bottom:4px">'+plan.emoji+' <strong style="font-size:15px;color:var(--t)">'+plan.n+'</strong></div>';
   h+='<div style="font-size:11px;color:var(--o)">🎯 '+plan.obj+'</div></div>';
   // Sections
-  h+=_casaSection('⚡ PRE — Calentamiento','var(--y)',_casaCal(plan.cal));
-  h+=_casaSection('🍎 PRE — Nutrición','var(--o)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+plan.preNut+'</p>');
-  h+=_casaSection('💪 CIRCUITO (40s trabajo / 20s descanso)','var(--a)',_casaCirc(plan.circ));
-  h+=_casaSection('🧘 POST — Vuelta a la calma','var(--g)',_casaCal(plan.post));
+  var preMin=Math.round(plan.cal.length*1.5);
+  h+=_casaSection('⚡ PRE — Calentamiento (~'+preMin+' min) · Sin pausas largas, fluye de uno a otro','var(--y)',_casaCal(plan.cal));
+  h+=_casaSection('🍎 PRE — Nutrición antes de empezar','var(--o)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+plan.preNut+'</p>');
+  h+=_casaSection('💪 CIRCUITO — ~53 min (40s trabajo / 20s descanso / 60s entre ejercicios)','var(--a)',_casaCirc(plan.circ));
+  var postMin=Math.round(plan.post.length*2);
+  h+=_casaSection('🧘 POST — Vuelta a la calma (~'+postMin+' min) · Mantén cada posición sin rebotar','var(--g)',_casaCal(plan.post));
   h+=_casaSection('🥗 POST — Nutrición y recuperación','var(--p)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+plan.postNut+'</p>');
   if(!done) h+='<button class="btn btg" style="margin:10px 0" onclick="casaMarkDone()">✅ Marcar sesión completada</button>';
   h+='</div>';
@@ -4504,17 +4537,30 @@ function _casaSection(title,color,content){
 function _casaCal(items){
   var h='';
   items.forEach(function(item,i){
-    h+='<div style="margin-bottom:8px;padding:8px 10px;background:var(--s2);border-radius:8px">';
-    h+='<div style="display:flex;justify-content:space-between;margin-bottom:3px">';
+    var isLast=i===items.length-1;
+    h+='<div style="margin-bottom:'+(isLast?'4':'2')+'px;border:1px solid var(--b);border-radius:8px;overflow:hidden">';
+    h+='<div style="padding:8px 10px;background:var(--s2)">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">';
     h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+(i+1)+'. '+item.n+'</div>';
-    h+='<div style="font-size:10px;color:var(--a);font-weight:600">'+item.dur+'</div></div>';
-    h+='<div style="font-size:11px;color:var(--m);line-height:1.5">'+item.desc+'</div></div>';
+    h+='<div style="font-size:11px;color:var(--a);font-weight:700">⏱ '+item.dur+'</div></div>';
+    h+='<div style="font-size:11px;color:var(--m);line-height:1.5">'+item.desc+'</div>';
+    h+='</div>';
+    if(!isLast){
+      h+='<div style="padding:4px 10px;background:rgba(245,158,11,0.05);font-size:10px;color:var(--y)">↓ Pausa 10-15s · Respira · Pasa al siguiente</div>';
+    }
+    h+='</div>';
   });
   return h;
 }
 
 function _casaCirc(items){
-  var h='<div style="background:rgba(79,142,247,0.06);border-radius:8px;padding:8px;margin-bottom:8px;font-size:11px;color:var(--m)">40s trabajo · 20s descanso · Completa todas las rondas antes de pasar al siguiente</div>';
+  var h='<div style="background:rgba(79,142,247,0.06);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--m);line-height:1.8">';
+  h+='<div style="font-weight:700;color:var(--a);margin-bottom:4px">⏱ Estructura por ejercicio:</div>';
+  h+='<div>🔴 <strong>40s</strong> — Trabajo a máxima intensidad sostenible</div>';
+  h+='<div>🟡 <strong>20s</strong> — Descanso activo: respira profundo, agita el músculo trabajado, no te sientes</div>';
+  h+='<div>🔁 Repite 5 veces (5 rondas)</div>';
+  h+='<div>⏸ <strong>60s</strong> — Descanso entre ejercicios: bebe agua, camina 2-3 pasos, estira levemente el músculo que acabas de trabajar</div>';
+  h+='</div>';
   items.forEach(function(item,i){
     h+='<div style="margin-bottom:6px;border:1px solid var(--b);border-radius:8px;overflow:hidden">';
     h+='<div style="padding:8px 12px;background:var(--s2);display:flex;justify-content:space-between;align-items:center">';
@@ -4522,7 +4568,11 @@ function _casaCirc(items){
     h+='<div style="font-size:10px;color:var(--p)">'+item.muscle+'</div></div>';
     h+='<div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--a)">'+item.r+' rondas</div>';
     h+='<div style="font-size:10px;color:var(--m)">'+item.t+'</div></div></div>';
-    h+='<div style="padding:6px 12px;font-size:11px;color:var(--m);line-height:1.5;border-top:1px solid var(--b)">'+item.desc+'</div></div>';
+    h+='<div style="padding:6px 12px;font-size:11px;color:var(--m);line-height:1.5;border-top:1px solid var(--b)">'+item.desc+'</div>';
+    h+='<div style="padding:4px 12px 8px;display:flex;gap:10px;font-size:10px">';
+    h+='<span style="color:var(--y)">🟡 20s: respira + agita músculo</span>';
+    h+='<span style="color:var(--c)">⏸ tras '+item.r+'ª ronda: 60s agua + estiramiento</span>';
+    h+='</div></div>';
   });
   return h;
 }
@@ -5000,15 +5050,16 @@ function finishMobSession(){
 }
 
 function weightTab(t){
-  ['peso','movilidad'].forEach(function(x){
+  ['peso','medidas','movilidad'].forEach(function(x){
     var el=document.getElementById('wt-'+x);
     if(el) el.style.display=x===t?'block':'none';
   });
   document.querySelectorAll('#pg-weight .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['peso','movilidad'][i]===t);
+    b.classList.toggle('active',['peso','medidas','movilidad'][i]===t);
   });
   if(t==='movilidad') renderMobilityPage();
   if(t==='peso') renderWeight();
+  if(t==='medidas') renderMedidas();
 }
 
 
@@ -5134,6 +5185,246 @@ function fetchWeatherHome(){
 }
 
 function openBarcodeScanner(){alert("Escáner no disponible en esta versión.");}
+
+
+// ═══════════════════════════════════════
+// MEDIDAS CORPORALES — Registro semanal
+// ═══════════════════════════════════════
+var MEDIDAS_DEF=[
+  {id:'cintura',label:'Cintura',emoji:'📏',unit:'cm',
+   desc:'A la altura del ombligo. Espira el aire y mide sin tensar.',
+   why:'Indicador principal de grasa visceral. Objetivo: -8 a -10cm desde 93kg.'},
+  {id:'abdomen',label:'Abdomen',emoji:'📏',unit:'cm',
+   desc:'En el punto más ancho por encima de las caderas.',
+   why:'Diferencia con cintura muestra distribución de grasa abdominal.'},
+  {id:'pecho',label:'Pecho',emoji:'📏',unit:'cm',
+   desc:'A la altura de los pezones, brazos relajados a los lados.',
+   why:'Músculo pectoral + dorsal. Si sube mientras cintura baja → recomposición.'},
+  {id:'cadera',label:'Cadera',emoji:'📏',unit:'cm',
+   desc:'En el punto más ancho de los glúteos.',
+   why:'Referencia para ratio cintura/cadera. Objetivo: ratio <0.9.'},
+  {id:'muslo',label:'Muslo',emoji:'📏',unit:'cm',
+   desc:'A mitad de camino entre la ingle y la rodilla, pierna derecha.',
+   why:'Masa muscular cuádriceps. Si sube con el HIIT es músculo, no grasa.'},
+  {id:'brazo',label:'Brazo',emoji:'📏',unit:'cm',
+   desc:'Bíceps derecho relajado, a mitad del brazo.',
+   why:'Volumen de brazo. En recomposición sube mientras el peso baja.'},
+  {id:'gemelo',label:'Gemelo',emoji:'📏',unit:'cm',
+   desc:'Gemelo derecho en el punto más ancho, de pie.',
+   why:'El running y el HIIT desarrollan los gemelos. Si sube es músculo.'},
+];
+
+function saveMedida(){
+  var fecha=document.getElementById('med-fecha');
+  if(!fecha||!fecha.value){alert('Selecciona la fecha');return;}
+  var data={date:fecha.value};
+  var allFilled=true;
+  MEDIDAS_DEF.forEach(function(m){
+    var inp=document.getElementById('med-'+m.id);
+    var val=inp?parseFloat(inp.value):0;
+    if(!val) allFilled=false;
+    data[m.id]=val||0;
+  });
+  var hist=ld('medidas_hist',[]);
+  var idx=hist.findIndex(function(h){return h.date===data.date;});
+  if(idx>=0) hist[idx]=data; else hist.unshift(data);
+  hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+  sd('medidas_hist',hist.slice(0,52));
+  renderMedidas();
+  // Clear inputs
+  MEDIDAS_DEF.forEach(function(m){
+    var inp=document.getElementById('med-'+m.id);
+    if(inp) inp.value='';
+  });
+}
+
+function renderMedidas(){
+  var el=document.getElementById('medidas-content');
+  if(!el) return;
+  var hist=ld('medidas_hist',[]);
+  var h='';
+
+  // Register form
+  h+='<div class="card" style="margin-bottom:10px">';
+  h+='<div class="ch"><span class="ci">📏</span><span class="ct">Registrar medidas</span>';
+  h+='<span class="cbadge bp">Cada lunes</span></div>';
+  h+='<div class="cb" style="padding:10px 14px">';
+  h+='<div style="margin-bottom:8px"><label class="il">Fecha</label>';
+  h+='<input type="date" class="if" id="med-fecha" value="'+today()+'"></div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
+  MEDIDAS_DEF.forEach(function(m){
+    var last=hist.length>0?hist[0][m.id]:0;
+    h+='<div><label class="il" style="font-size:11px">'+m.emoji+' '+m.label+' (cm)'+(last?' · último: '+last:'')+'</label>';
+    h+='<input type="number" class="if" id="med-'+m.id+'" placeholder="'+(last||'cm')+'" step="0.5" style="margin-bottom:0"></div>';
+  });
+  h+='</div>';
+  h+='<button class="btn btg" onclick="saveMedida()">💾 Guardar medidas</button>';
+  h+='</div></div>';
+
+  // Progress comparison
+  if(hist.length>=2){
+    var latest=hist[0];var prev=hist[1];
+    h+='<div style="font-size:11px;font-weight:700;color:var(--m);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">📊 Evolución vs semana anterior</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">';
+    MEDIDAS_DEF.forEach(function(m){
+      var cur=latest[m.id]||0;var pre=prev[m.id]||0;
+      if(!cur) return;
+      var diff=parseFloat((cur-pre).toFixed(1));
+      var isGood=(m.id==='cintura'||m.id==='abdomen'||m.id==='cadera')?diff<0:diff>0;
+      var color=diff===0?'var(--m)':isGood?'var(--g)':'var(--r)';
+      var arrow=diff<0?'↓':diff>0?'↑':'→';
+      h+='<div style="background:var(--s2);border-radius:10px;padding:10px 12px">';
+      h+='<div style="font-size:11px;color:var(--m);margin-bottom:3px">'+m.emoji+' '+m.label+'</div>';
+      h+='<div style="font-size:18px;font-weight:700;color:var(--t)">'+cur+' cm</div>';
+      if(pre) h+='<div style="font-size:11px;font-weight:600;color:'+color+'">'+arrow+' '+(diff>0?'+':'')+diff+' cm</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+
+    // Waist-hip ratio
+    if(latest.cintura&&latest.cadera){
+      var ratio=(latest.cintura/latest.cadera).toFixed(2);
+      var ratioOk=parseFloat(ratio)<0.9;
+      h+='<div style="background:'+(ratioOk?'rgba(61,214,140,0.08)':'rgba(239,68,68,0.08)')+';border:1px solid '+(ratioOk?'rgba(61,214,140,0.3)':'rgba(239,68,68,0.3)')+';border-radius:10px;padding:10px 12px;margin-bottom:12px">';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--m);margin-bottom:4px">Ratio Cintura/Cadera</div>';
+      h+='<div style="font-size:24px;font-weight:800;color:'+(ratioOk?'var(--g)':'var(--r)')+'">'+ratio;
+      h+='<span style="font-size:13px;font-weight:400;color:var(--m);margin-left:6px">'+(ratioOk?'✅ Objetivo <0.9':'⚠️ Objetivo: <0.9')+'</span></div></div>';
+    }
+  }
+
+  // Plan adjustment feedback based on trends
+  if(hist.length>=3){
+    var latest=hist[0];var prev=hist[1];var prev2=hist[2];
+    var cinturaTrend=hist.slice(0,4).map(function(e){return e.cintura||0;});
+    var pesoArr=ld('weights',[]);
+    var curPeso=pesoArr.length>0?pesoArr[pesoArr.length-1].val:null;
+    var prevPeso=pesoArr.length>1?pesoArr[pesoArr.length-2].val:null;
+
+    // Calculate weekly cintura rate
+    var cinturaDiff=(latest.cintura&&prev2.cintura)?(prev2.cintura-latest.cintura):0;
+    var musloUp=(latest.muslo&&prev.muslo&&latest.muslo>prev.muslo);
+    var brazoUp=(latest.brazo&&prev.brazo&&latest.brazo>prev.brazo);
+    var cinturaOk=cinturaTrend[0]>0&&cinturaTrend[1]>0&&cinturaTrend[0]<cinturaTrend[1];
+    var pesoOkRate=curPeso&&prevPeso&&(prevPeso-curPeso)<=0.8&&(prevPeso-curPeso)>=0;
+    var pesoStagnant=curPeso&&prevPeso&&Math.abs(prevPeso-curPeso)<0.2;
+
+    var insights=[];
+    var adjustments=[];
+
+    // Recomposición indicator
+    if(musloUp&&brazoUp&&cinturaOk) insights.push({icon:'💪',color:'var(--g)',text:'Recomposición activa — muslo y brazo suben mientras la cintura baja. El plan está funcionando.'});
+    if(cinturaOk&&!pesoStagnant) insights.push({icon:'📉',color:'var(--g)',text:'Cintura bajando '+cinturaDiff.toFixed(1)+'cm en 3 semanas. Velocidad óptima.'});
+    if(pesoStagnant&&!cinturaOk) adjustments.push({icon:'⚠️',color:'var(--o)',text:'Peso y cintura estancados 2 semanas. Reduce carbohidratos en cena (120g→80g arroz). Añade 10 min de caminata suave post-cena.'});
+    if(curPeso&&prevPeso&&(prevPeso-curPeso)>1) adjustments.push({icon:'⚡',color:'var(--y)',text:'Pérdida rápida (>1kg/sem). Aumenta la cena en 80-100 kcal para proteger el músculo.'});
+    if(latest.cintura&&latest.cadera&&(latest.cintura/latest.cadera)>0.92) adjustments.push({icon:'🎯',color:'var(--a)',text:'Ratio cintura/cadera alto. Prioriza el vacuum abdominal diario y reduce azúcares simples.'});
+    if(musloUp&&brazoUp) insights.push({icon:'🏋️',color:'var(--a)',text:'Ganas masa muscular. El HIIT está estimulando hipertrofia. No bajes calorías.'});
+
+    if(insights.length>0||adjustments.length>0){
+      h+='<div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:8px">🧠 ANÁLISIS DEL PLAN · Semana '+hist.length+'</div>';
+      insights.forEach(function(i_){
+        h+='<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 8px;background:rgba(61,214,140,0.05);border-radius:8px">';
+        h+='<span>'+i_.icon+'</span><div style="font-size:11px;color:'+i_.color+';line-height:1.5">'+i_.text+'</div></div>';
+      });
+      adjustments.forEach(function(a_){
+        h+='<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 8px;background:rgba(249,115,22,0.05);border-radius:8px">';
+        h+='<span>'+a_.icon+'</span><div style="font-size:11px;color:'+a_.color+';line-height:1.5">'+a_.text+'</div></div>';
+      });
+      h+='</div>';
+    }
+  }
+
+  // History table
+  if(hist.length>0){
+    h+='<div style="font-size:11px;font-weight:700;color:var(--m);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Historial</div>';
+    hist.slice(0,8).forEach(function(entry){
+      h+='<div style="border:1px solid var(--b);border-radius:10px;padding:10px 12px;margin-bottom:6px">';
+      h+='<div style="font-size:12px;font-weight:700;color:var(--t);margin-bottom:6px">📅 '+fmtDate(entry.date)+'</div>';
+      h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+      MEDIDAS_DEF.forEach(function(m){
+        if(entry[m.id]) h+='<span style="font-size:11px;color:var(--m)">'+m.emoji+' '+m.label+': <strong style="color:var(--t)">'+entry[m.id]+'cm</strong></span>';
+      });
+      h+='</div></div>';
+    });
+  } else {
+    h+='<div style="text-align:center;padding:20px;color:var(--m);font-size:13px">📏 Registra tus primeras medidas este lunes</div>';
+  }
+
+  el.innerHTML=h;
+}
+
+// ═══════════════════════════════════════
+// COUNTDOWN RETO — 23 diciembre 2026
+// ═══════════════════════════════════════
+function renderRetoCountdown(){
+  var el=document.getElementById('h-reto-card');
+  if(!el) return;
+
+  var now=new Date();
+  var meta=new Date(2026,11,23); // 23 diciembre
+  var daysLeft=Math.max(0,Math.ceil((meta-now)/86400000));
+  var startDate=new Date(2026,8,7); // 7 sept
+  var totalDays=Math.ceil((meta-startDate)/86400000);
+  var daysDone=Math.max(0,Math.ceil((now-startDate)/86400000));
+  var pctDone=Math.min(100,Math.round((daysDone/totalDays)*100));
+
+  // Check objectives
+  var ws=ld('weights',[]);
+  var curW=ws.length>0?ws[ws.length-1].val:null;
+  var pesoOk=curW&&curW>=80&&curW<=82;
+  var runWeek=getCurrentRunWeek();
+  var runOk=runWeek>=7;
+  var allDone=pesoOk&&runOk;
+
+  var h='';
+  if(allDone){
+    h='<div style="background:linear-gradient(135deg,rgba(61,214,140,0.15),rgba(79,142,247,0.1));border:1px solid rgba(61,214,140,0.4);border-radius:14px;padding:16px">';
+    h+='<div style="font-size:32px;text-align:center;margin-bottom:8px">🏆</div>';
+    h+='<div style="font-size:18px;font-weight:800;color:var(--g);text-align:center;margin-bottom:4px">RETO COMPLETADO</div>';
+    h+='<div style="font-size:12px;color:var(--m);text-align:center">10km sub-50\' · 80-82 kg · Diciembre 2026</div>';
+    h+='</div>';
+  } else {
+    h='<div style="background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(99,102,241,0.05));border:1px solid rgba(79,142,247,0.25);border-radius:14px;padding:14px">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">';
+    h+='<div><div style="font-size:12px;font-weight:700;color:var(--a)">🎯 RETO 23 DICIEMBRE</div>';
+    h+='<div style="font-size:10px;color:var(--m);margin-top:1px">10km sub-50\' · 80-82 kg</div></div>';
+    h+='<div style="text-align:right">';
+    h+='<div style="font-size:32px;font-weight:800;color:var(--a);line-height:1">'+daysLeft+'</div>';
+    h+='<div style="font-size:10px;color:var(--m)">días</div></div></div>';
+
+    // Progress bar
+    h+='<div style="background:var(--b);border-radius:4px;height:5px;margin-bottom:10px">';
+    h+='<div style="height:5px;border-radius:4px;background:linear-gradient(90deg,var(--a),var(--p));width:'+pctDone+'%;transition:width 0.6s"></div></div>';
+    h+='<div style="font-size:10px;color:var(--m);margin-bottom:10px;text-align:right">'+pctDone+'% del camino · '+daysDone+' días de '+totalDays+'</div>';
+
+    // Objectives status
+    h+='<div style="display:flex;gap:8px">';
+    // Running
+    h+='<div style="flex:1;background:var(--s2);border-radius:10px;padding:8px 10px;border:1px solid '+(runOk?'rgba(61,214,140,0.4)':'var(--b)')+'">';
+    h+='<div style="font-size:10px;font-weight:700;color:'+(runOk?'var(--g)':'var(--m)')+'">🏃 Running</div>';
+    if(runOk){
+      h+='<div style="font-size:12px;font-weight:700;color:var(--g)">✅ Listo</div>';
+    } else {
+      h+='<div style="font-size:13px;font-weight:700;color:var(--t)">Sem '+runWeek+'/7</div>';
+      h+='<div style="font-size:10px;color:var(--m)">'+(7-runWeek)+' semanas</div>';
+    }
+    h+='</div>';
+    // Peso
+    h+='<div style="flex:1;background:var(--s2);border-radius:10px;padding:8px 10px;border:1px solid '+(pesoOk?'rgba(61,214,140,0.4)':'var(--b)')+'">';
+    h+='<div style="font-size:10px;font-weight:700;color:'+(pesoOk?'var(--g)':'var(--m)')+'">⚖️ Peso</div>';
+    if(pesoOk){
+      h+='<div style="font-size:12px;font-weight:700;color:var(--g)">✅ '+curW.toFixed(1)+'kg</div>';
+    } else {
+      h+='<div style="font-size:13px;font-weight:700;color:var(--t)">'+(curW?curW.toFixed(1)+'kg':'—')+'</div>';
+      h+='<div style="font-size:10px;color:var(--m)">Zona 80-82</div>';
+    }
+    h+='</div>';
+    h+='</div>';
+    h+='</div>';
+  }
+
+  el.innerHTML=h;
+}
 
 function init(){
   // Reset log date to today on fresh load (avoid getting stuck on "ayer")
