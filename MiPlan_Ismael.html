@@ -583,7 +583,90 @@ select.if{cursor:pointer;}
 </div>
 
 <script>
-var RECIPES={};
+var RECIPES={
+  // Criterios: antiinflamatoria · gluten reducido (5 dias/semana OK, 2 sin gluten)
+  // alto en proteina · deficit calorico · mejora trigliceridos y LDL
+  // ✅ siempre OK · ⚠️ max 2x/semana · ❌ evitar en este proceso
+  carnes:[
+    {n:'Pechuga de pollo plancha',cat:'carnes',r:'good',e:'✅',why:'Proteína pura, 0 gluten, antiinflamatorio si con verduras.'},
+    {n:'Pollo al ajillo',cat:'carnes',r:'good',e:'✅',why:'Sin gluten. Proteína magra. Ajo es antiinflamatorio.'},
+    {n:'Pollo al curry casero',cat:'carnes',r:'good',e:'✅',why:'Cúrcuma = fuertemente antiinflamatorio. Sin gluten.'},
+    {n:'Pollo a la cerveza',cat:'carnes',r:'good',e:'✅',why:'El alcohol evapora. Sin gluten. Proteína magra.'},
+    {n:'Pavo a la plancha',cat:'carnes',r:'good',e:'✅',why:'La carne más magra. Sin gluten. Ideal para cenar.'},
+    {n:'Conejo al ajillo',cat:'carnes',r:'good',e:'✅',why:'Muy magro. Sin gluten. Proteína alta.'},
+    {n:'Filete de ternera plancha',cat:'carnes',r:'moderate',e:'⚠️',why:'Sin gluten pero grasa saturada moderada. Máx 2x/semana.'},
+    {n:'Hamburguesa casera de ternera',cat:'carnes',r:'moderate',e:'⚠️',why:'Sin gluten (sin pan). Proteína alta. Máx 1x/semana por la grasa saturada.'},
+    {n:'Albóndigas de ternera',cat:'carnes',r:'moderate',e:'⚠️',why:'Grasa saturada moderada. Pan rallado = algo de gluten. Máx 1x/semana.'},
+    {n:'Secreto ibérico',cat:'carnes',r:'bad',e:'❌',why:'Muy alta grasa saturada. Proinflamatorio. Cheat meal.'},
+    {n:'Costillas de cerdo',cat:'carnes',r:'bad',e:'❌',why:'Alta grasa saturada. Proinflamatorio. Cheat meal.'},
+  ],
+  pescados:[
+    {n:'Salmón al horno',cat:'pescados',r:'good',e:'✅',why:'Omega-3 top. Baja triglicéridos activamente. Sin gluten.'},
+    {n:'Salmón a la plancha',cat:'pescados',r:'good',e:'✅',why:'Omega-3. Tu mejor aliado para la analítica.'},
+    {n:'Sardinas al horno',cat:'pescados',r:'good',e:'✅',why:'Omega-3 muy alto. Muy antiinflamatorio. Sin gluten.'},
+    {n:'Caballa al horno',cat:'pescados',r:'good',e:'✅',why:'Omega-3 alto. El más económico entre los azules.'},
+    {n:'Dorada al horno',cat:'pescados',r:'good',e:'✅',why:'Pescado magro. Sin gluten. Antiinflamatorio.'},
+    {n:'Lubina al horno',cat:'pescados',r:'good',e:'✅',why:'Pescado magro. Sin gluten.'},
+    {n:'Merluza al vapor',cat:'pescados',r:'good',e:'✅',why:'Muy magra. Sin gluten. Proteína limpia.'},
+    {n:'Bacalao al horno',cat:'pescados',r:'good',e:'✅',why:'Sin gluten. Muy magro. Ayuda al LDL.'},
+    {n:'Gambas a la plancha',cat:'pescados',r:'good',e:'✅',why:'Sin grasa. Sin gluten. Proteína pura.'},
+    {n:'Gambas al ajillo',cat:'pescados',r:'good',e:'✅',why:'AOVE + ajo = antiinflamatorio. Sin gluten.'},
+    {n:'Pulpo a la gallega',cat:'pescados',r:'good',e:'✅',why:'Proteína magra. Sin gluten. Pimentón = antiinflamatorio.'},
+    {n:'Atún al natural',cat:'pescados',r:'good',e:'✅',why:'Omega-3. Proteína concentrada. Sin gluten.'},
+    {n:'Anchoas en aceite',cat:'pescados',r:'good',e:'✅',why:'Omega-3. Sin gluten. Añádelas a ensaladas.'},
+    {n:'Revuelto de gambas',cat:'pescados',r:'good',e:'✅',why:'Proteína doble. Sin gluten. Perfecto para cenar.'},
+  ],
+  arroces:[
+    {n:'Arroz con pollo al horno',cat:'arroces',r:'good',e:'✅',why:'Sin gluten. Carbohidrato limpio + proteína magra.'},
+    {n:'Arroz meloso de gambas',cat:'arroces',r:'good',e:'✅',why:'Sin gluten. Omega-3 + carbos. Mediterráneo.'},
+    {n:'Paella valenciana',cat:'arroces',r:'good',e:'✅',why:'Sin gluten. Plato completo. Domingo perfecto.'},
+    {n:'Paella de marisco',cat:'arroces',r:'good',e:'✅',why:'Sin gluten. Proteína magra + arroz.'},
+    {n:'Poke bowl de salmón',cat:'arroces',r:'good',e:'✅',why:'Omega-3 + carbos + verdura. Sin gluten. Top.'},
+    {n:'Bowl de atún con arroz',cat:'arroces',r:'good',e:'✅',why:'Sin gluten. Proteína alta + carbos. Post-gym.'},
+    {n:'Risotto de setas',cat:'arroces',r:'moderate',e:'⚠️',why:'Sin gluten pero con parmesano. Grasa saturada moderada.'},
+  ],
+  pastas:[
+    {n:'Pasta boloñesa casera',cat:'pastas',r:'moderate',e:'⚠️',why:'Gluten presente. OK 1x/semana. Usa pasta integral.'},
+    {n:'Pasta con gambas al ajillo',cat:'pastas',r:'moderate',e:'⚠️',why:'Gluten. AOVE es antiinflamatorio. Máx 1x/semana.'},
+    {n:'Pasta aglio e olio',cat:'pastas',r:'moderate',e:'⚠️',why:'Gluten. Cuida la frecuencia semanal.'},
+    {n:'Pasta con atún y tomate',cat:'pastas',r:'moderate',e:'⚠️',why:'Gluten. Proteína OK. Máx 1x/semana.'},
+    {n:'Carbonara casera',cat:'pastas',r:'bad',e:'❌',why:'Gluten + grasa saturada alta. Cheat meal.'},
+    {n:'Lasaña de carne',cat:'pastas',r:'bad',e:'❌',why:'Gluten alto + grasa saturada. Cheat meal.'},
+  ],
+  legumbres:[
+    {n:'Alubias blancas',cat:'legumbres',r:'good',e:'✅',why:'Sin gluten. Fibra que baja LDL y triglicéridos. Antiinflamatorio.'},
+    {n:'Lentejas guisadas',cat:'legumbres',r:'good',e:'✅',why:'Sin gluten. Proteína vegetal + hierro + fibra.'},
+    {n:'Garbanzos con espinacas',cat:'legumbres',r:'good',e:'✅',why:'Sin gluten. Hierro + proteína. Muy antiinflamatorio.'},
+  ],
+  huevos:[
+    {n:'Tortilla francesa',cat:'huevos',r:'good',e:'✅',why:'Sin gluten. Proteína rápida. Perfecta para cenar.'},
+    {n:'Huevos revueltos con verduras',cat:'huevos',r:'good',e:'✅',why:'Sin gluten. Muy antiinflamatorio con espinacas.'},
+    {n:'Revuelto de espárragos',cat:'huevos',r:'good',e:'✅',why:'Sin gluten. Proteína + verdura. Cena ideal.'},
+  ],
+  asiaticos:[
+    {n:'Wok de ternera con verduras',cat:'asiaticos',r:'good',e:'✅',why:'Sin gluten (con tamari en vez de soja). Antiinflamatorio.'},
+    {n:'Baos de pollo caseros',cat:'asiaticos',r:'moderate',e:'⚠️',why:'Gluten en la masa. Proteína OK. Máx 1x/semana.'},
+    {n:'Gyozas de ternera',cat:'asiaticos',r:'moderate',e:'⚠️',why:'Gluten en la oblea. Máx 1x/semana.'},
+    {n:'Burritos caseros de pollo',cat:'asiaticos',r:'moderate',e:'⚠️',why:'Gluten en la tortilla de trigo. Máx 1x/semana.'},
+  ],
+  otros:[
+    {n:'Ensalada con anchoas y huevo',cat:'otros',r:'good',e:'✅',why:'Sin gluten. Omega-3 + proteína. Cena perfecta.'},
+    {n:'Salpicón de marisco',cat:'otros',r:'good',e:'✅',why:'Sin gluten. Proteína magra. Muy antiinflamatorio.'},
+    {n:'Wrap de pavo con hummus',cat:'otros',r:'moderate',e:'⚠️',why:'Gluten en el wrap. Proteína OK. Alternativa: lechuga como wrap.'},
+  ],
+};
+
+var RECIPES_FLAT={};
+Object.values(RECIPES).forEach(function(arr){
+  arr.forEach(function(r){RECIPES_FLAT[r.n]=r;});
+});
+
+
+var RECIPES_FLAT={};
+Object.values(RECIPES).forEach(function(arr){
+  arr.forEach(function(r){RECIPES_FLAT[r.n]=r;});
+});
+
 
 const QUOTES=[
   {t:"I'll keep running cause a winner don't quit on themselves.",a:"Kanye West",s:"Only One"},
@@ -1162,7 +1245,7 @@ const RUN_WEEKS=[
       {date:'2026-06-25',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,20,12.5,7.5)},
       {date:'2026-06-26',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(15,15,7.5,10,15,10)},
       // ── Semana nueva 29/06 — nuevo plan completo ──
-      {date:'2026-09-08',day:'lunes',name:'Espalda + Bíceps',exercises:[
+      {date:'2026-09-14',day:'lunes',name:'Espalda + Bíceps',exercises:[
         {name:'Jalón al pecho',blocks:[{s:4,r:'12',w:32.5}]},
         {name:'Remo con barra',blocks:[{s:4,r:'10',w:70}]},
         {name:'Remo en máquina',blocks:[{s:3,r:'12',w:35}]},
@@ -1219,14 +1302,14 @@ const RUN_WEEKS=[
     var wDates=wArr.map(function(w){return w.date;});
     [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},
      {date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},
-     {date:'2026-06-22',val:89.4},{date:'2026-09-08',val:90.6}
+     {date:'2026-06-22',val:89.4},{date:'2026-09-14',val:90.6}
     ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
     wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
     localStorage.setItem('weights',JSON.stringify(wArr));
 
     // Set run start date to July 6 (week 2 starts July 13)
     if(!localStorage.getItem('run_start_date')){
-      localStorage.setItem('run_start_date','2026-09-08');
+      localStorage.setItem('run_start_date','2026-09-14');
     }
 
     // Seed martes 15 julio sesión (corregido)
@@ -1704,45 +1787,91 @@ function shopTab(t){
 function renderShopMenu(){
   var el=document.getElementById('shop-menu-content');
   if(!el) return;
-  var week=ld('shop_week',getCurrentMenuWeek());
-  var savedMenu=ld('shop_menu_'+week,null);
-  var menu=savedMenu||MEAL_PLAN[week];
+  var start=new Date(2026,8,14);
+  var now=new Date();
+  var daysDone=Math.max(0,Math.floor((now-start)/86400000));
+  var d15Idx=daysDone%15;
   var days=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
-  var dayNames={'lunes':'Lunes','martes':'Martes','miercoles':'Miércoles','jueves':'Jueves','viernes':'Viernes','sabado':'Sábado','domingo':'Domingo'};
-  var dayEmojis={'lunes':'💪','martes':'🏋️+🏃','miercoles':'🦵','jueves':'🏋️+🏃','viernes':'⚡','sabado':'🏃','domingo':'😴'};
-
-  // Week selector
-  var h='<div style="display:flex;gap:8px;margin-bottom:12px">';
-  var cls1=week==='semana1'?'btg':'bth';
-  var cls2=week==='semana2'?'btg':'bth';
-  h+='<button class="btn '+cls1+' btn-sm" onclick="setShopWeek(\'semana1\')">Semana 1</button>';
-  h+='<button class="btn '+cls2+' btn-sm" onclick="setShopWeek(\'semana2\')">Semana 2</button>';
-  h+='</div>';
-
-  days.forEach(function(day){
-    var dayMenu=menu[day]||{comida:'',cena:''};
-    h+='<div class="card" style="margin:0 0 8px">';
-    h+='<div class="ch"><span class="ci">'+dayEmojis[day]+'</span><span class="ct">'+dayNames[day]+'</span></div>';
-    h+='<div class="cb">';
-    // Comida selector
-    h+='<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--m);margin-bottom:3px">🍝 Comida</div>';
-    h+='<select class="if" style="font-size:12px" onchange="updateMenuDay(\''+week+'\',\''+day+'\',\'comida\',this.value)">';
-    var allRecipes=RECIPES?Object.values(RECIPES).flat():[];
-    allRecipes.forEach(function(r){
-      h+='<option value="'+r+'"'+(dayMenu.comida===r?' selected':'')+'>'+r+'</option>';
+  var dayNames={lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',
+                viernes:'Viernes',sabado:'Sábado',domingo:'Domingo'};
+  var h='<div style="font-size:11px;color:var(--m);margin-bottom:12px">Pulsa A o B para elegir comida y cena de cada día. Al final elige las recetas caseras de la semana.</div>';
+  days.forEach(function(day,di){
+    var dietaDay=DIETA15[(d15Idx+di)%15];
+    var saved=ld('shop_day_'+day,{com:'',cen:''});
+    h+='<div style="border:1px solid var(--b);border-radius:12px;margin-bottom:8px;overflow:hidden">';
+    h+='<div style="padding:9px 14px;background:var(--s2);display:flex;justify-content:space-between;align-items:center">';
+    h+='<div style="font-size:13px;font-weight:600;color:var(--t)">'+dayNames[day]+'</div>';
+    h+='<div style="font-size:10px;color:var(--m)">'+dietaDay.dia+'</div></div>';
+    h+='<div style="padding:10px 14px">';
+    // Desayuno fijo
+    h+='<div style="margin-bottom:10px;padding:6px 10px;background:rgba(249,115,22,0.04);border-radius:8px">';
+    h+='<div style="font-size:10px;font-weight:700;color:var(--o);margin-bottom:2px">🌅 DESAYUNO (fijo)</div>';
+    h+='<div style="font-size:11px;color:var(--m)">'+dietaDay.des.desc+'</div></div>';
+    // Comida A/B
+    h+='<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:6px">🍽️ COMIDA</div>';
+    h+='<div style="display:flex;flex-direction:column;gap:5px">';
+    dietaDay.com.opts.forEach(function(opt){
+      if(!opt.t||!opt.t.kcal) return;
+      var chosen=saved.com===opt.id;
+      var ri=RECIPES_FLAT&&RECIPES_FLAT[opt.n];
+      h+='<div onclick="shopChoose(\''+day+'\',\'com\',\''+(chosen?'':opt.id)+'\')" ';
+      h+='style="padding:8px 10px;border-radius:10px;border:2px solid '+(chosen?'var(--g)':'var(--b)')+';';
+      h+='background:'+(chosen?'rgba(61,214,140,0.07)':'var(--s2)')+';cursor:pointer">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+      h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+opt.id+'. '+opt.n+'</div>';
+      h+='<div style="display:flex;align-items:center;gap:5px">';
+      if(ri) h+='<span style="font-size:13px">'+ri.e+'</span>';
+      h+='<span style="font-size:11px;color:var(--o);font-weight:700">'+opt.t.kcal+'kcal</span></div></div>';
+      h+='<div style="font-size:10px;color:var(--m);margin-top:3px">';
+      opt.i.forEach(function(ing){h+='<span style="margin-right:5px">'+ing.n+' <b>'+ing.g+'g</b></span>';});
+      h+='</div></div>';
     });
-    h+='</select></div>';
-    // Cena selector
-    h+='<div><div style="font-size:11px;color:var(--m);margin-bottom:3px">🌙 Cena</div>';
-    h+='<select class="if" style="font-size:12px" onchange="updateMenuDay(\''+week+'\',\''+day+'\',\'cena\',this.value)">';
-    h+='<option value="Libre"'+(dayMenu.cena==='Libre'?' selected':'')+'>Libre</option>';
-    allRecipes.forEach(function(r){
-      h+='<option value="'+r+'"'+(dayMenu.cena===r?' selected':'')+'>'+r+'</option>';
+    h+='</div></div>';
+    // Merienda fija
+    h+='<div style="margin-bottom:10px;padding:6px 10px;background:rgba(249,115,22,0.03);border-radius:8px">';
+    h+='<div style="font-size:10px;font-weight:700;color:var(--o);margin-bottom:2px">🍊 MERIENDA (fija)</div>';
+    h+='<div style="font-size:11px;color:var(--m)">'+dietaDay.mer.desc+'</div></div>';
+    // Cena A/B
+    h+='<div><div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:6px">🌙 CENA</div>';
+    h+='<div style="display:flex;flex-direction:column;gap:5px">';
+    dietaDay.cen.opts.forEach(function(opt){
+      if(!opt.t||!opt.t.kcal) return;
+      var chosen=saved.cen===opt.id;
+      var ri=RECIPES_FLAT&&RECIPES_FLAT[opt.n];
+      h+='<div onclick="shopChoose(\''+day+'\',\'cen\',\''+(chosen?'':opt.id)+'\')" ';
+      h+='style="padding:8px 10px;border-radius:10px;border:2px solid '+(chosen?'var(--p)':'var(--b)')+';';
+      h+='background:'+(chosen?'rgba(167,139,250,0.07)':'var(--s2)')+';cursor:pointer">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center">';
+      h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+opt.id+'. '+opt.n+'</div>';
+      h+='<div style="display:flex;align-items:center;gap:5px">';
+      if(ri) h+='<span style="font-size:13px">'+ri.e+'</span>';
+      h+='<span style="font-size:11px;color:var(--o);font-weight:700">'+opt.t.kcal+'kcal</span></div></div>';
+      h+='<div style="font-size:10px;color:var(--m);margin-top:3px">';
+      opt.i.forEach(function(ing){h+='<span style="margin-right:5px">'+ing.n+' <b>'+ing.g+'g</b></span>';});
+      h+='</div></div>';
     });
-    h+='</select></div>';
+    h+='</div></div>';
     h+='</div></div>';
   });
-
+  // Recetas caseras
+  h+='<div style="border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:14px;margin-top:4px;background:rgba(245,158,11,0.04)">';
+  h+='<div style="font-size:13px;font-weight:700;color:var(--o);margin-bottom:4px">🍪 Recetas caseras — ¿cuáles haces esta semana?</div>';
+  h+='<div style="font-size:11px;color:var(--m);margin-bottom:10px">Sus ingredientes se añaden a la lista de la compra.</div>';
+  var selectedRecs=ld('shop_recipes',[]);
+  RECETAS_CASERAS.forEach(function(r){
+    var chosen=selectedRecs.indexOf(r.n)>=0;
+    h+='<div onclick="shopToggleRec(\''+encodeURIComponent(r.n)+'\')" ';
+    h+='style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;border-radius:10px;';
+    h+='border:1px solid '+(chosen?'rgba(245,158,11,0.5)':'var(--b)')+';';
+    h+='background:'+(chosen?'rgba(245,158,11,0.08)':'var(--s2)')+';cursor:pointer">';
+    h+='<div style="width:20px;height:20px;border-radius:6px;border:2px solid '+(chosen?'var(--y)':'var(--b)')+';';
+    h+='background:'+(chosen?'var(--y)':'transparent')+';display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">';
+    h+=(chosen?'✓':'')+'</div>';
+    h+='<div><div style="font-size:12px;font-weight:600;color:var(--t)">'+r.emoji+' '+r.n+'</div>';
+    h+='<div style="font-size:10px;color:var(--m)">'+r.kcal_r+'kcal/ración · '+r.tiempo+'</div></div></div>';
+  });
+  h+='</div>';
+  h+='<button class="btn btg" style="margin-top:12px;width:100%" onclick="generateShoppingList()">🛒 Generar lista de la compra</button>';
   el.innerHTML=h;
 }
 
@@ -1803,6 +1932,16 @@ function generateShoppingList(){
     if(!grouped[cat]) grouped[cat]=[];
     grouped[cat].push(ing);
   });
+
+  // Add selected weekly recipes
+  var selRecs=ld('shop_recipes',[]);
+  if(typeof RECETAS_CASERAS!=='undefined'){
+    RECETAS_CASERAS.forEach(function(r){
+      if(selRecs.indexOf(r.n)>=0&&r.ing){
+        r.ing.forEach(function(ing){ addIngredient(ing.n, ing.g+'g', r.n); });
+      }
+    });
+  }
 
   var el=document.getElementById('shop-lista-content');
   if(!el) return;
@@ -2052,7 +2191,7 @@ function drawStreakChart(){
   ctx.clearRect(0,0,W,H);
 
   // Build last 12 weeks of activity data
-  var weeks=[]; var startDate=new Date(2026,8,8);
+  var weeks=[]; var startDate=new Date(2026,8,14);
   var now=new Date();
   var totalWeeks=Math.max(1,Math.ceil((now-startDate)/(7*86400000))+1);
   totalWeeks=Math.min(totalWeeks,12);
@@ -2297,7 +2436,7 @@ function getNextRunDay(now){
 function getRunStartDate(){
   var saved=ld('run_start_date',null);
   if(saved){var p=saved.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-  return new Date(2026,8,8);
+  return new Date(2026,8,14);
 }
 function resetRunPlan(){
   var btn=event.target;
@@ -2308,7 +2447,7 @@ function resetRunPlan(){
   },'¿Reiniciar plan?');
 }
 function getCurrentRunWeek(){
-  var MIN_RUN=2; // minimum sessions to complete a running week
+  var MIN_RUN=3; // minimum sessions to complete a running week
   var now=new Date();
   var nowDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   var startDate=getRunStartDate();
@@ -3088,7 +3227,7 @@ function renderRunToday(){
   var rfd=document.getElementById('run-force-day');
   if(rfd) rfd.value=ld('run_force_day','');
   var rps=document.getElementById('run-plan-start');
-  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-09-08';}
+  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-09-14';}
   var toggleHtml=isYesterday?'<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDateStr)+'</span></div>':'';
   var now=new Date(logDateStr+'T12:00:00');
   var dow=now.getDay();
@@ -3413,7 +3552,7 @@ function renderFoodToday(){
 
 function checkFoodAlert(){
   var now=new Date();
-  var startTracking=new Date('2026-09-08');
+  var startTracking=new Date('2026-09-14');
   if(now<startTracking) return;
   var log=getFoodLog();
   var yesterday=getYesterday();
@@ -4333,7 +4472,7 @@ function casaToggleSec(id){
 
 function getCurrentCasaWeek(){
   var MIN_HOME=4;
-  var startDate=new Date(2026,8,8); // Sept 8
+  var startDate=new Date(2026,8,14); // Sept 8
   var now=new Date();
   var nowDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(nowDate<startDate) return 1;
@@ -4349,6 +4488,47 @@ function getCurrentCasaWeek(){
   }
   return 1;
 }
+
+
+// ══════════════════════════════
+// PROGRESIÓN ENTRENAMIENTO CASA
+// ══════════════════════════════
+function getCasaProgression(){
+  var week=getCurrentCasaWeek();
+  if(week<=3) return {
+    label:'Fase 1 · Adaptación',weeks:'Sem 1-3',
+    rounds:5,workSec:40,restSec:20,restBetween:60,
+    note:'Aprende los movimientos. Prioriza la técnica sobre la velocidad.'
+  };
+  if(week<=6) return {
+    label:'Fase 2 · Intensificación',weeks:'Sem 4-6',
+    rounds:5,workSec:45,restSec:15,restBetween:60,
+    note:'Menos descanso entre series. Si algún ejercicio se te queda corto, añade peso (garrafa).'
+  };
+  if(week<=9) return {
+    label:'Fase 3 · Volumen',weeks:'Sem 7-9',
+    rounds:6,workSec:45,restSec:15,restBetween:50,
+    note:'6 rondas. El circuito dura ~60 min. Aquí es donde se construye el músculo.'
+  };
+  return {
+    label:'Fase 4 · Alta intensidad',weeks:'Sem 10-12',
+    rounds:6,workSec:50,restSec:10,restBetween:45,
+    note:'Ratio trabajo/descanso máximo. Variantes avanzadas. El cuerpo ya está adaptado.'
+  };
+}
+
+// Hard variants for weeks 10-12
+var CASA_ADVANCED={
+  'Sentadilla básica':'Sentadilla con salto (Jump Squat)',
+  'Sentadilla búlgara (dcha)':'Sentadilla búlgara con garrafa (dcha)',
+  'Sentadilla búlgara (izqda)':'Sentadilla búlgara con garrafa (izqda)',
+  'Hip Thrust en silla':'Hip Thrust con garrafa',
+  'Flexión estándar':'Flexión con palmada (Clap Push-up)',
+  'Nordic Curl asistido':'Nordic Curl sin asistencia',
+  'Hip Thrust con garrafa':'Hip Thrust unilateral con garrafa',
+  'Good Morning bodyweight':'Good Morning con garrafa en hombros',
+  'Sentadilla isométrica en pared':'Sentadilla isométrica con garrafa',
+};
 
 function renderCasaPage(){
   var el=document.getElementById('gt-casa');
@@ -4383,7 +4563,17 @@ function renderCasaPage(){
   var preMin=Math.round(plan.cal.length*1.5);
   h+=_casaSection('⚡ PRE — Calentamiento (~'+preMin+' min) · Sin pausas largas, fluye de uno a otro','var(--y)',_casaCal(plan.cal));
   h+=_casaSection('🍎 PRE — Nutrición antes de empezar','var(--o)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+plan.preNut+'</p>');
-  h+=_casaSection('💪 CIRCUITO — ~53 min (40s trabajo / 20s descanso / 60s entre ejercicios)','var(--a)',_casaCirc(plan.circ));
+  var prog=getCasaProgression();
+  var circTime=Math.round(plan.circ.length*(prog.rounds*((prog.workSec+prog.restSec)/60))+(plan.circ.length-1)*(prog.restBetween/60));
+  h+='<div style="background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(99,102,241,0.05));border:1px solid rgba(79,142,247,0.3);border-radius:10px;padding:10px 14px;margin-bottom:8px">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+  h+='<div style="font-size:12px;font-weight:700;color:var(--a)">'+prog.label+'</div>';
+  h+='<div style="font-size:10px;color:var(--m)">'+prog.weeks+'</div></div>';
+  h+='<div style="display:flex;gap:12px;font-size:11px;color:var(--m);margin-bottom:4px">';
+  h+='<span>🔴 '+prog.workSec+'s trabajo</span><span>🟡 '+prog.restSec+'s descanso</span>';
+  h+='<span>⏸ '+prog.restBetween+'s entre ej.</span><span>🔁 '+prog.rounds+' rondas</span></div>';
+  h+='<div style="font-size:10px;color:var(--a);font-style:italic">'+prog.note+'</div></div>';
+  h+=_casaSection('💪 CIRCUITO — ~'+circTime+' min','var(--a)',_casaCirc(plan.circ,prog));
   var postMin=Math.round(plan.post.length*2);
   h+=_casaSection('🧘 POST — Vuelta a la calma (~'+postMin+' min) · Mantén cada posición sin rebotar','var(--g)',_casaCal(plan.post));
   h+=_casaSection('🥗 POST — Nutrición y recuperación','var(--p)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+plan.postNut+'</p>');
@@ -4431,25 +4621,33 @@ function _casaCal(items){
   return h;
 }
 
-function _casaCirc(items){
+function _casaCirc(items,prog){
+  prog=prog||{rounds:5,workSec:40,restSec:20,restBetween:60};
+  var week=getCurrentCasaWeek();
   var h='<div style="background:rgba(79,142,247,0.06);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--m);line-height:1.8">';
   h+='<div style="font-weight:700;color:var(--a);margin-bottom:4px">⏱ Estructura por ejercicio:</div>';
-  h+='<div>🔴 <strong>40s</strong> — Trabajo a máxima intensidad sostenible</div>';
-  h+='<div>🟡 <strong>20s</strong> — Descanso activo: respira profundo, agita el músculo trabajado, no te sientes</div>';
-  h+='<div>🔁 Repite 5 veces (5 rondas)</div>';
-  h+='<div>⏸ <strong>60s</strong> — Descanso entre ejercicios: bebe agua, camina 2-3 pasos, estira levemente el músculo que acabas de trabajar</div>';
+  h+='<div>🔴 <strong>'+prog.workSec+'s</strong> — Trabajo a máxima intensidad sostenible</div>';
+  h+='<div>🟡 <strong>'+prog.restSec+'s</strong> — Descanso activo: respira profundo, agita el músculo trabajado, no te sientes</div>';
+  h+='<div>🔁 Repite <strong>'+prog.rounds+' veces</strong> ('+prog.rounds+' rondas)</div>';
+  h+='<div>⏸ <strong>'+prog.restBetween+'s</strong> — Descanso entre ejercicios: bebe agua, camina, estira el músculo</div>';
   h+='</div>';
   items.forEach(function(item,i){
     h+='<div style="margin-bottom:6px;border:1px solid var(--b);border-radius:8px;overflow:hidden">';
+    var displayRounds=prog?prog.rounds:item.r;
+    var displayName=(week>=10&&CASA_ADVANCED&&CASA_ADVANCED[item.n])?CASA_ADVANCED[item.n]:item.n;
+    var isAdvanced=(week>=10&&CASA_ADVANCED&&CASA_ADVANCED[item.n]);
     h+='<div style="padding:8px 12px;background:var(--s2);display:flex;justify-content:space-between;align-items:center">';
-    h+='<div><div style="font-size:12px;font-weight:700;color:var(--t)">'+(i+1)+'. '+item.n+'</div>';
+    h+='<div><div style="font-size:12px;font-weight:700;color:'+(isAdvanced?'var(--o)':'var(--t)')+'">'+(i+1)+'. '+displayName+(isAdvanced?' ⚡':'')+'</div>';
     h+='<div style="font-size:10px;color:var(--p)">'+item.muscle+'</div></div>';
-    h+='<div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--a)">'+item.r+' rondas</div>';
-    h+='<div style="font-size:10px;color:var(--m)">'+item.t+'</div></div></div>';
+    var displayRounds=prog?prog.rounds:item.r;
+    var displayName=(week>=10&&CASA_ADVANCED[item.n])?CASA_ADVANCED[item.n]:item.n;
+    var isAdvanced=(week>=10&&CASA_ADVANCED[item.n]);
+    h+='<div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--a)">'+displayRounds+' rondas</div>';
+    h+='<div style="font-size:10px;color:var(--m)">'+prog.workSec+'s/'+prog.restSec+'s</div></div></div>';
     h+='<div style="padding:6px 12px;font-size:11px;color:var(--m);line-height:1.5;border-top:1px solid var(--b)">'+item.desc+'</div>';
     h+='<div style="padding:4px 12px 8px;display:flex;gap:10px;font-size:10px">';
-    h+='<span style="color:var(--y)">🟡 20s: respira + agita músculo</span>';
-    h+='<span style="color:var(--c)">⏸ tras '+item.r+'ª ronda: 60s agua + estiramiento</span>';
+    h+='<span style="color:var(--y)">🟡 '+prog.restSec+'s: respira + agita músculo</span>';
+    h+='<span style="color:var(--c)">⏸ tras '+displayRounds+'ª ronda: '+prog.restBetween+'s agua + estiramiento</span>';
     h+='</div></div>';
   });
   return h;
@@ -4498,11 +4696,11 @@ var DIETA15=[
    des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Almendras 15g',kcal:364,p:22,c:47,f:14},
    com:{kobj:515,opts:[
      {id:'A',n:'Pasta aglio e olio con gambas',
-      i:[{n:'Pasta integral cocida',g:220},{n:'Gambas',g:130},{n:'AOVE',g:12}],
-      t:{kcal:502,p:35,c:54,f:16}},
-     {id:'B',n:'Secreto ibérico con judías verdes y zanahoria',
-      i:[{n:'Secreto ibérico',g:150},{n:'Judías verdes',g:200},{n:'Zanahoria',g:100},{n:'AOVE',g:10}],
-      t:{kcal:523,p:36,c:24,f:33}}]},
+      i:[{n:'Pasta integral',g:90},{n:'Gambas',g:130},{n:'Ajo',g:10},{n:'AOVE',g:12},{n:'Perejil',g:5}],
+      t:{kcal:487,p:36,c:48,f:14}},
+     {id:'B',n:'Pasta boloñesa casera',
+      i:[{n:'Pasta integral',g:90},{n:'Carne picada ternera magra',g:120},{n:'Tomate natural triturado',g:200},{n:'Cebolla',g:80},{n:'Ajo',g:10},{n:'AOVE',g:10}],
+      t:{kcal:541,p:42,c:52,f:16}}]},
    mer:{desc:'🫐 Muffins de arándanos caseros (avena 40g · yogur · huevo · miel) — 2 uds',kcal:300,p:12,c:42,f:8},
    cen:{kobj:360,opts:[
      {id:'A',n:'Dorada al horno con judías verdes',
@@ -4531,9 +4729,9 @@ var DIETA15=[
   {dia:'Día 5',
    des:{desc:'Yogur griego 200g · Plátano 100g · Naranja 150g · Nueces 15g',kcal:388,p:22,c:58,f:17},
    com:{kobj:590,opts:[
-     {id:'A',n:'Conejo al ajillo con arroz y brócoli',
-      i:[{n:'Conejo',g:180},{n:'Arroz cocido',g:150},{n:'Brócoli',g:150},{n:'AOVE',g:10}],
-      t:{kcal:647,p:60,c:53,f:21}},
+     {id:'A',n:'Arroz con pollo al horno y pimientos',
+      i:[{n:'Pechuga pollo',g:150},{n:'Arroz cocido',g:160},{n:'Pimiento rojo',g:100},{n:'Tomate',g:100},{n:'AOVE',g:10}],
+      t:{kcal:558,p:50,c:55,f:13}},
      {id:'B',n:'Pasta carbonara con pavo',
       i:[{n:'Pasta integral cocida',g:220},{n:'Pechuga pavo',g:80},{n:'Huevo (1)',g:55},{n:'AOVE',g:8}],
       t:{kcal:531,p:40,c:51,f:16}}]},
@@ -4585,9 +4783,9 @@ var DIETA15=[
      {id:'A',n:'Pollo en pepitoria con arroz',
       i:[{n:'Muslo pollo sin piel',g:160},{n:'Arroz cocido',g:150},{n:'AOVE',g:8}],
       t:{kcal:585,p:45,c:43,f:24}},
-     {id:'B',n:'Salmón al horno con boniato y brócoli',
-      i:[{n:'Salmón',g:150},{n:'Boniato',g:120},{n:'Brócoli',g:150},{n:'AOVE',g:10}],
-      t:{kcal:556,p:36,c:35,f:30}}]},
+     {id:'B',n:'Pasta con gambas al ajillo',
+      i:[{n:'Pasta integral',g:90},{n:'Gambas',g:150},{n:'Ajo',g:10},{n:'AOVE',g:12},{n:'Guindilla',g:2}],
+      t:{kcal:487,p:38,c:48,f:14}}]},
    mer:{desc:'Manzana 150g · Almendras 20g',kcal:194,p:4,c:25,f:10},
    cen:{kobj:340,opts:[
      {id:'A',n:'Tortilla francesa con berenjena a la plancha',
@@ -4616,9 +4814,9 @@ var DIETA15=[
   {dia:'Día 10',
    des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Almendras 15g',kcal:364,p:22,c:47,f:14},
    com:{kobj:555,opts:[
-     {id:'A',n:'Secreto ibérico con judías verdes y arroz',
-      i:[{n:'Secreto ibérico',g:150},{n:'Judías verdes',g:150},{n:'Arroz cocido',g:120}],
-      t:{kcal:533,p:37,c:45,f:23}},
+     {id:'A',n:'Hamburguesa casera de ternera con ensalada',
+      i:[{n:'Carne picada ternera magra',g:180},{n:'Lechuga',g:80},{n:'Tomate',g:100},{n:'Cebolla',g:50},{n:'AOVE',g:8}],
+      t:{kcal:482,p:46,c:12,f:28}},
      {id:'B',n:'Pollo al ajillo con brócoli y arroz',
       i:[{n:'Pechuga pollo',g:130},{n:'Brócoli',g:200},{n:'Arroz cocido',g:150},{n:'AOVE',g:10}],
       t:{kcal:568,p:50,c:56,f:16}}]},
@@ -4668,8 +4866,8 @@ var DIETA15=[
    des:{desc:'Yogur griego 200g · Plátano 100g · Mango 100g · Nueces 20g',kcal:389,p:22,c:55,f:21},
    com:{kobj:555,opts:[
      {id:'A',n:'Pollo a la cerveza con arroz y brócoli',
-      i:[{n:'Muslo pollo sin piel',g:160},{n:'Arroz cocido',g:150},{n:'Brócoli',g:150},{n:'AOVE',g:8}],
-      t:{kcal:606,p:48,c:53,f:23}},
+      i:[{n:'Muslo pollo sin piel',g:150},{n:'Arroz cocido',g:140},{n:'Brócoli',g:150},{n:'Cerveza (30ml para cocinar)',g:30},{n:'AOVE',g:8}],
+      t:{kcal:554,p:46,c:50,f:18}},
      {id:'B',n:'Arroz meloso de gambas',
       i:[{n:'Gambas',g:180},{n:'Arroz cocido',g:200},{n:'AOVE',g:10}],
       t:{kcal:503,p:38,c:58,f:12}}]},
@@ -4684,9 +4882,9 @@ var DIETA15=[
   {dia:'Día 14',
    des:{desc:'Yogur griego 200g · Plátano 100g · Kiwi 100g · Almendras 15g',kcal:368,p:22,c:48,f:14},
    com:{kobj:520,opts:[
-     {id:'A',n:'Costillas de cerdo con judías verdes y arroz',
-      i:[{n:'Costillas cerdo',g:180},{n:'Judías verdes',g:150},{n:'Arroz cocido',g:120}],
-      t:{kcal:577,p:38,c:45,f:27}},
+     {id:'A',n:'Hamburguesa de ternera con boniato asado',
+      i:[{n:'Carne picada ternera magra',g:180},{n:'Boniato',g:150},{n:'Lechuga y tomate',g:80},{n:'AOVE',g:8}],
+      t:{kcal:521,p:46,c:38,f:19}},
      {id:'B',n:'Merluza en salsa verde con arroz',
       i:[{n:'Merluza',g:200},{n:'Arroz cocido',g:160},{n:'AOVE',g:10}],
       t:{kcal:462,p:40,c:45,f:12}}]},
@@ -4710,7 +4908,7 @@ var DIETA15=[
 ];
 
 function _dietDate(idx){
-  var s=new Date(2026,8,8);
+  var s=new Date(2026,8,14);
   var d=new Date(s.getTime()+idx*86400000);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
@@ -4718,7 +4916,7 @@ function _dietDate(idx){
 function renderDietPlan(){
   var el=document.getElementById('food-plan-content');
   if(!el) return;
-  var start=new Date(2026,8,8);
+  var start=new Date(2026,8,14);
   var now=new Date();
   var todayIdx=Math.max(0,Math.floor((now-start)/86400000)%15);
   var h='';
@@ -5058,7 +5256,7 @@ function renderMealOfMoment(){
   var titleEl=document.getElementById('h-meal-title');
   if(emojiEl) emojiEl.textContent=meal.emoji;
   if(titleEl) titleEl.textContent=meal.title+' · '+meal.timeLabel;
-  var planStart=new Date(2026,8,8);
+  var planStart=new Date(2026,8,14);
   var dayIdx=Math.max(0,Math.floor((new Date()-planStart)/86400000)%15);
   var day=typeof DIETA15!=='undefined'?DIETA15[dayIdx]:null;
   if(!day){el.innerHTML='<div style="font-size:12px;color:var(--m)">Plan empieza el 7 de septiembre</div>';return;}
@@ -5267,7 +5465,7 @@ function renderRetoCountdown(){
     if(!el) return;
     var now=new Date();
     var meta=new Date(2026,11,23);
-    var start=new Date(2026,8,8);
+    var start=new Date(2026,8,14);
     var daysLeft=Math.max(0,Math.ceil((meta-now)/86400000));
     var totalDays=Math.ceil((meta-start)/86400000);
     var daysDone=Math.max(0,Math.ceil((now-start)/86400000));
@@ -5342,7 +5540,7 @@ function init(){
     if(gd) gd.value=today();
     if(rd) rd.value=today();
     var srd=ld('run_start_date',null);
-    if(rps) rps.value=srd||'2026-09-08';
+    if(rps) rps.value=srd||'2026-09-14';
   }, 50);
   sd('active_food_log_date',today());
 
@@ -5361,7 +5559,7 @@ function init(){
   var dow=todayDow();
   // Show shop tab only on Sundays
   var nbShop=document.getElementById('nb-shop');
-  if(nbShop) nbShop.style.display=dow===0?'flex':'none';
+  if(nbShop) nbShop.style.display='flex';
 
   document.getElementById('w-date').value=today();
 
@@ -5370,7 +5568,7 @@ function init(){
   var wDates=wArr.map(function(w){return w.date;});
   [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},
    {date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},{date:'2026-06-22',val:89.4},
-   {date:'2026-09-08',val:90.6}
+   {date:'2026-09-14',val:90.6}
   ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
   wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
   sd('weights',wArr);
@@ -5389,7 +5587,7 @@ function init(){
 
   // 22:00 alert check
   var now=new Date();
-  var startTracking=new Date('2026-09-08');
+  var startTracking=new Date('2026-09-14');
   if(now>=startTracking&&now.getHours()>=22){
     var log=getFoodLog();
     if(!log.length){
