@@ -458,7 +458,7 @@ select.if{cursor:pointer;}
     <button class="tb" onclick="weightTab('medidas')">📏 Medidas</button>
     <button class="tb" onclick="weightTab('movilidad')">🧘 Mov.</button>
   </div>
-  <div id="wt-peso">
+  <div id="wt-peso" style="display:block">
   <div class="card">
     <div class="ch"><span class="ci">➕</span><span class="ct">Registrar peso</span></div>
     <div class="cb">
@@ -482,13 +482,11 @@ select.if{cursor:pointer;}
     </div>
   </div>
 </div>
-
-<!-- HEALTH -->
-  </div>
   <div id="wt-medidas" style="display:none">
-  <div style="padding:12px 16px" id="medidas-content"></div>
+    <div style="padding:12px 16px" id="medidas-content"></div>
+  </div>
+  <div id="wt-movilidad" style="display:none"><div id="mob-content" style="padding:12px 16px"></div></div>
 </div>
-<div id="wt-movilidad" style="display:none"><div id="mob-content" style="padding:12px 16px"></div></div>
 
 <div class="page" id="pg-health">
   <div class="ph"><div class="pt">🩺 Salud</div><div class="ps">Analítica 6 mayo 2026</div></div>
@@ -1907,6 +1905,7 @@ function todayDow(){return new Date().getDay();}
 
 // NAV
 function nav(id){
+  stopMobTimer();
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active');});
   document.getElementById('pg-'+id).classList.add('active');
@@ -1919,7 +1918,7 @@ function nav(id){
   }
   if(id==='run'){runTab('today');renderRunToday();}
   if(id==='food'){foodTab('today');renderFoodToday();}
-  if(id==='weight') renderWeight();
+  if(id==='weight'){stopMobTimer();renderWeight();}
   if(id==='health'){healthTab('analytics');renderHealthAnalytics();}
   if(id==='shop'){shopTab('menu');renderShopMenu();}
 }
@@ -1937,7 +1936,7 @@ function getTargetProt(){return Math.round(getCurrentWeight()*1.8);}
 function drawHomeChart(ws){
   var canvas=document.getElementById('h-w-chart');
   if(!canvas||!ws||ws.length<2) return;
-  var W=canvas.parentElement.offsetWidth-32||320; var H=70;
+  var W=(canvas.parentElement?canvas.parentElement.offsetWidth-32:0)||320; var H=70;
   canvas.width=W; canvas.height=H;
   var ctx=canvas.getContext('2d'); ctx.clearRect(0,0,W,H);
   var vals=ws.map(function(w){return w.val;});
@@ -3845,8 +3844,9 @@ function renderWeight(){
 
 function drawChart(ws){
   var canvas=document.getElementById('w-chart');
+  if(!canvas) return;
   var ctx=canvas.getContext('2d');
-  var W=canvas.parentElement.offsetWidth-16;var H=180;
+  var W=canvas.parentElement.offsetWidth-16||300;var H=180;
   canvas.width=W;canvas.height=H;ctx.clearRect(0,0,W,H);
   if(!ws.length) return;
   var target={date:'2026-08-15',val:83};
@@ -4823,7 +4823,7 @@ var MOBILITY_PLAN=[
    desc:'De pie. Vacía todo el aire. Mete el abdomen al máximo. Mantén 30s. En 3-4 semanas reduce la cintura 3-4cm visualmente.'},
 ];
 
-var MOB_STATE={running:false,exIdx:0,timeLeft:0,interval:null};
+var MOB_STATE={running:false,stopped:true,exIdx:0,timeLeft:0,interval:null};
 
 function getMobStreak(){
   var streak=0;var d=new Date();
@@ -4849,7 +4849,10 @@ function renderMobilityPage(){
   if(done){
     h+='<div style="background:rgba(61,214,140,0.1);border-radius:8px;padding:8px;font-size:12px;font-weight:600;color:var(--g)">✅ Completada hoy</div>';
   } else {
-    h+='<button class="btn btg" onclick="startMobSession()">▶ Iniciar sesión guiada (8 min)</button>';
+    h+='<div style="display:flex;gap:8px">';
+    h+='<button class="btn btg" style="flex:2" onclick="startMobSession()">▶ Iniciar sesión guiada (8 min)</button>';
+    h+='<button class="btn bth btn-sm" style="flex:1" onclick="resetMobSession()">↩ Reiniciar</button>';
+    h+='</div>';
   }
   h+='</div>';
   h+='<div id="mob-timer-section" style="display:none;margin-bottom:12px">';
@@ -4860,7 +4863,8 @@ function renderMobilityPage(){
   h+='<div style="font-size:11px;color:var(--m);margin-bottom:10px" id="mob-ex-desc"></div>';
   h+='<div style="display:flex;gap:8px;justify-content:center">';
   h+='<button class="btn bth btn-sm" id="mob-pause-btn" onclick="pauseMobTimer()">⏸ Pausa</button>';
-  h+='<button class="btn bth btn-sm" onclick="skipMobEx()">⏭ Siguiente</button></div>';
+  h+='<button class="btn bth btn-sm" onclick="skipMobEx()">⏭ Siguiente</button>';
+  h+='<button class="btn btr btn-sm" onclick="resetMobSession()">↩</button></div>';
   h+='<div style="background:var(--b);border-radius:4px;height:4px;margin-top:10px"><div id="mob-prog-bar" style="height:4px;border-radius:4px;background:var(--p);width:0%;transition:width 1s"></div></div>';
   h+='<div style="font-size:10px;color:var(--m);margin-top:4px" id="mob-ex-counter">—</div>';
   h+='</div></div>';
@@ -4880,12 +4884,13 @@ function mobToggle(i){var b=document.getElementById('mob-ex-'+i);if(b)b.style.di
 
 function startMobSession(){
   var sec=document.getElementById('mob-timer-section');if(sec)sec.style.display='block';
-  MOB_STATE.exIdx=0;MOB_STATE.running=true;
+  MOB_STATE.exIdx=0;MOB_STATE.running=true;MOB_STATE.stopped=false;
   startMobEx();
 }
 
 function startMobEx(){
   var s=MOB_STATE;
+  if(s.stopped) return;
   if(s.exIdx>=MOBILITY_PLAN.length){finishMobSession();return;}
   var ex=MOBILITY_PLAN[s.exIdx];
   s.timeLeft=ex.dur;s.running=true;
@@ -4896,15 +4901,20 @@ function startMobEx(){
   updateMobDisplay();
   if(s.interval)clearInterval(s.interval);
   s.interval=setInterval(function(){
+    if(s.stopped){clearInterval(s.interval);return;}
     if(!s.running)return;
     s.timeLeft--;updateMobDisplay();
-    if(s.timeLeft<=0){clearInterval(s.interval);s.exIdx++;setTimeout(startMobEx,800);}
+    if(s.timeLeft<=0){clearInterval(s.interval);if(!s.stopped) setTimeout(startMobEx,800);}
   },1000);
 }
 
 function updateMobDisplay(){
   var s=MOB_STATE;
+  if(s.exIdx>=MOBILITY_PLAN.length) return;
   var ex=MOBILITY_PLAN[s.exIdx];
+  // Only update if the mobility section is visible
+  var mobSec=document.getElementById('mob-timer-section');
+  if(!mobSec||mobSec.style.display==='none') return;
   var td=document.getElementById('mob-timer-display');if(td)td.textContent=s.timeLeft>0?s.timeLeft+'s':'✅';
   var pb=document.getElementById('mob-prog-bar');if(pb&&ex)pb.style.width=Math.round(((ex.dur-s.timeLeft)/ex.dur)*100)+'%';
 }
@@ -4913,6 +4923,21 @@ function pauseMobTimer(){
   MOB_STATE.running=!MOB_STATE.running;
   var btn=document.getElementById('mob-pause-btn');
   if(btn)btn.textContent=MOB_STATE.running?'⏸ Pausa':'▶ Continuar';
+}
+
+function stopMobTimer(){
+  if(MOB_STATE.interval) clearInterval(MOB_STATE.interval);
+  MOB_STATE.running=false;
+  MOB_STATE.stopped=true;
+  MOB_STATE.interval=null;
+}
+
+function resetMobSession(){
+  stopMobTimer();
+  MOB_STATE.exIdx=0;
+  MOB_STATE.timeLeft=0;
+  MOB_STATE.stopped=true;
+  renderMobilityPage();
 }
 
 function skipMobEx(){
@@ -4928,16 +4953,30 @@ function finishMobSession(){
 }
 
 function weightTab(t){
-  ['peso','medidas','movilidad'].forEach(function(x){
+  // 1. Kill the timer unconditionally
+  try{
+    if(MOB_STATE.interval){ clearInterval(MOB_STATE.interval); MOB_STATE.interval=null; }
+    MOB_STATE.running=false; MOB_STATE.stopped=true;
+  }catch(e){}
+
+  // 2. Switch tabs - always works
+  var tabs=['peso','medidas','movilidad'];
+  tabs.forEach(function(x){
     var el=document.getElementById('wt-'+x);
-    if(el) el.style.display=x===t?'block':'none';
+    if(el) el.style.display=(x===t)?'block':'none';
   });
   document.querySelectorAll('#pg-weight .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['peso','medidas','movilidad'][i]===t);
+    b.classList.toggle('active', tabs[i]===t);
   });
-  if(t==='movilidad') renderMobilityPage();
-  if(t==='peso') renderWeight();
-  if(t==='medidas') renderMedidas();
+
+  // 3. Render content after a small delay so DOM has repainted
+  setTimeout(function(){
+    try{
+      if(t==='peso') renderWeight();
+      else if(t==='medidas') renderMedidas();
+      else if(t==='movilidad') renderMobilityPage();
+    }catch(e){ console.warn('weightTab render:',e); }
+  }, 20);
 }
 
 
