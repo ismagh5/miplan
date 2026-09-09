@@ -1282,47 +1282,27 @@ const RUN_WEEKS=[
     // ── Seed running history ──
     var runHist=JSON.parse(localStorage.getItem('run_hist')||'[]');
     var hasJune30=runHist.some(function(s){return s.date==='2026-06-30';});
-    if(!hasJune30){
-      runHist.unshift({
-        date:'2026-06-30',week:1,duration:30,feeling:'bien',
-        notes:'Primera sesión completada',
-        work:'8 × [ 30 seg trote + 90 seg caminata ]',
-        workDetail:'Semana 1 completada con éxito. 8 repeticiones de 30seg trote + 90seg caminata de recuperación LENTA.',
-        title:'30s trote / 90s caminata',
-        tip:'El objetivo es que el cuerpo se acostumbre a salir.',
-        warmup:[],cooldown:[],
-        checks:{warmup:true,work:true,cooldown:true}
-      });
-      localStorage.setItem('run_hist',JSON.stringify(runHist.slice(0,50)));
-      localStorage.setItem('run_checks_2026-06-30',JSON.stringify({warmup:true,work:true,cooldown:true}));
-    }
+    
 
     // ── Seed weight history ──
     var wArr=JSON.parse(localStorage.getItem('weights')||'[]');
     var wDates=wArr.map(function(w){return w.date;});
     [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},
      {date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},
-     {date:'2026-06-22',val:89.4},{date:'2026-09-14',val:90.6}
+     {date:'2026-06-22',val:89.4}
     ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
     wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
     localStorage.setItem('weights',JSON.stringify(wArr));
 
-    // Set run start date to July 6 (week 2 starts July 13)
     if(!localStorage.getItem('run_start_date')){
       localStorage.setItem('run_start_date','2026-09-14');
     }
 
-    // Seed martes 15 julio sesión (corregido)
   if(!localStorage.getItem('gym_log_martes_2026-07-16_0')) localStorage.setItem('gym_log_martes_2026-07-16_0','{"blocks":[{"s":4,"r":"10-12","w":35}],"done":true}');
   if(!localStorage.getItem('gym_log_martes_2026-07-16_1')) localStorage.setItem('gym_log_martes_2026-07-16_1','{"blocks":[{"s":2,"r":"12-15","w":35},{"s":1,"r":"12-15","w":40}],"done":true}');
   if(!localStorage.getItem('gym_log_martes_2026-07-16_2')) localStorage.setItem('gym_log_martes_2026-07-16_2','{"blocks":[{"s":1,"r":"15-20","w":7.5},{"s":3,"r":"15-20","w":10}],"done":true}');
   if(!localStorage.getItem('gym_log_martes_2026-07-16_4')) localStorage.setItem('gym_log_martes_2026-07-16_4','{"blocks":[{"s":3,"r":"15-20","w":15},{"s":1,"r":"15-20","w":20}],"done":true}');
-  if(!localStorage.getItem('gym_log_martes_2026-07-16_6')) localStorage.setItem('gym_log_martes_2026-07-16_6','{"blocks":[{"s":4,"r":"15-20","w":12.5}],"done":true}');
-  // gym_hist martes 15 julio
-  var gh15=ld('gym_hist',[]);
-  if(!gh15.find(function(h){return h.date==='2026-07-16'&&h.day==='martes';})){gh15.unshift({date:'2026-07-16',day:'martes',name:'Pecho + Tríceps',emoji:'🏋️',exercises:[{name:'Press banca con barra',blocks:[{s:4,r:'10-12',w:35}]},{name:'Press inclinado con mancuernas',blocks:[{s:2,r:'12-15',w:35},{s:1,r:'12-15',w:40}]},{name:'Aperturas en maquina pec deck',blocks:[{s:1,r:'15-20',w:7.5},{s:3,r:'15-20',w:10}]},{name:'Extension triceps polea alta con cuerda',blocks:[{s:3,r:'15-20',w:15},{s:1,r:'15-20',w:20}]},{name:'Triceps en polea baja con cuerda',blocks:[{s:4,r:'15-20',w:12.5}]}]});sd('gym_hist',gh15.slice(0,60));}
-
-    localStorage.setItem(FLAG,'1');
+  localStorage.setItem(FLAG,'1');
   }catch(e){console.warn('Seed error:',e);}
 })();
 
@@ -1770,7 +1750,7 @@ var MEAL_PLAN={"semana1": {"lunes": {"comida": "Pollo al ajillo", "cena": "Revue
 
 function getCurrentMenuWeek(){
   // Alternates between semana1 and semana2 based on week number from July 6
-  var start=new Date(2026,6,6);
+  var start=new Date(2026,8,14);
   var week=Math.floor((new Date()-start)/(7*86400000));
   return week%2===0?'semana1':'semana2';
 }
