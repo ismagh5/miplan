@@ -2288,8 +2288,9 @@ function renderHome(){
   var mondayCard=document.getElementById('h-monday-card');
   if(mondayCard){
     var isMonday=new Date().getDay()===1;
-    var mondayDone=ld('monday_checkin_'+today(),false);
-    mondayCard.style.display=(isMonday&&!mondayDone)?'block':'none';
+    var pesoBool=ld('weights',[]).some(function(w){return w.date===today();});
+    var medidasBool=ld('medidas_hist',[]).some(function(e){return e.date===today();});
+    mondayCard.style.display=(isMonday&&!(pesoBool&&medidasBool))?'block':'none';
   }
   
 
@@ -2316,6 +2317,12 @@ function renderHome(){
   var habConf=document.getElementById('hab-confirm');
   if(habConf){
     var chips=[];
+    // Peso chip
+    var pesoDone2=ld('weights',[]).some(function(w){return w.date===today();});
+    if(pesoDone2) chips.push('<span onclick="nav(\'weight\');setTimeout(function(){weightTab(\'peso\')},100)" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:rgba(61,214,140,0.12);border:1px solid rgba(61,214,140,0.3);color:var(--g);font-size:11px;font-weight:600;cursor:pointer">⚖️ Peso anotado ✓</span>');
+    // Medidas chip
+    var medidasDone2=ld('medidas_hist',[]).some(function(e){return e.date===today();});
+    if(medidasDone2) chips.push('<span onclick="nav(\'weight\');setTimeout(function(){weightTab(\'medidas\')},100)" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);color:var(--p);font-size:11px;font-weight:600;cursor:pointer">📏 Medidas anotadas ✓</span>');
     if(habits.read) chips.push('<span onclick="toggleHabit(\'read\')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:rgba(61,214,140,0.12);border:1px solid rgba(61,214,140,0.3);color:var(--g);font-size:11px;font-weight:600;cursor:pointer">📖 Lectura hecha ✕</span>');
     if(habits.sun) chips.push('<span onclick="toggleHabit(\'sun\')" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:rgba(61,214,140,0.12);border:1px solid rgba(61,214,140,0.3);color:var(--g);font-size:11px;font-weight:600;cursor:pointer">☀️ Sol tomado ✕</span>');
     if(dow2===1&&photoState) chips.push('<span onclick="togglePhotoCheck()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;background:rgba(61,214,140,0.12);border:1px solid rgba(61,214,140,0.3);color:var(--g);font-size:11px;font-weight:600;cursor:pointer">📸 Foto hecha ✕</span>');
@@ -5298,9 +5305,7 @@ var MEDIDAS_DEF=[
 ];
 
 function saveMedida(){
-  var fecha=document.getElementById('med-fecha');
-  if(!fecha||!fecha.value){alert('Selecciona la fecha');return;}
-  var data={date:fecha.value};
+  var data={date:today()};
   var allFilled=true;
   MEDIDAS_DEF.forEach(function(m){
     var inp=document.getElementById('med-'+m.id);
@@ -5327,113 +5332,149 @@ function renderMedidas(){
   var hist=ld('medidas_hist',[]);
   var h='';
 
-  // Register form
-  h+='<div class="card" style="margin-bottom:10px">';
-  h+='<div class="ch"><span class="ci">📏</span><span class="ct">Registrar medidas</span>';
-  h+='<span class="cbadge bp">Cada lunes</span></div>';
-  h+='<div class="cb" style="padding:10px 14px">';
-  h+='<div style="margin-bottom:8px"><label class="il">Fecha</label>';
-  h+='<input type="date" class="if" id="med-fecha" value="'+today()+'"></div>';
+  // ── Formulario de registro ──
+  h+='<div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:14px">';
+  var todayStr=today();
+  var alreadySaved=hist.some(function(e){return e.date===todayStr;});
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+  h+='<div style="font-size:13px;font-weight:700;color:var(--t)">📏 Registrar medidas</div>';
+  h+='<div style="font-size:11px;color:var(--m)">'+fmtDate(todayStr)+(alreadySaved?' · <span style="color:var(--g)">✅ Ya guardado</span>':'')+'</div></div>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
   MEDIDAS_DEF.forEach(function(m){
-    var last=hist.length>0?hist[0][m.id]:0;
-    h+='<div><label class="il" style="font-size:11px">'+m.emoji+' '+m.label+' (cm)'+(last?' · último: '+last:'')+'</label>';
-    h+='<input type="number" class="if" id="med-'+m.id+'" placeholder="'+(last||'cm')+'" step="0.5" style="margin-bottom:0"></div>';
+    h+='<div><label style="font-size:11px;color:var(--m);display:block;margin-bottom:3px">'+m.emoji+' '+m.label+'</label>';
+    h+='<div style="display:flex;align-items:center;gap:4px">';
+    h+='<input type="number" step="0.1" class="if" id="med-'+m.id+'" placeholder="0.0" style="font-size:14px;width:100%">';
+    h+='<span style="font-size:11px;color:var(--m)">cm</span></div></div>';
   });
   h+='</div>';
-  h+='<button class="btn btg" onclick="saveMedida()">💾 Guardar medidas</button>';
-  h+='</div></div>';
+  h+='<button class="btn btg" style="width:100%" onclick="saveMedida()">💾 Guardar medidas</button>';
+  h+='</div>';
 
-  // Progress comparison
-  if(hist.length>=2){
-    var latest=hist[0];var prev=hist[1];
-    h+='<div style="font-size:11px;font-weight:700;color:var(--m);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">📊 Evolución vs semana anterior</div>';
-    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">';
+  // ── Gráfica de evolución ──
+  if(hist.length >= 2){
+    h+='<div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:14px">';
+    h+='<div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:12px">📈 Evolución</div>';
+    var colors={cintura:'#f97316',cadera:'#a855f7',muslo:'#3b82f6'};
     MEDIDAS_DEF.forEach(function(m){
-      var cur=latest[m.id]||0;var pre=prev[m.id]||0;
-      if(!cur) return;
-      var diff=parseFloat((cur-pre).toFixed(1));
-      var isGood=(m.id==='cintura'||m.id==='abdomen'||m.id==='cadera')?diff<0:diff>0;
-      var color=diff===0?'var(--m)':isGood?'var(--g)':'var(--r)';
-      var arrow=diff<0?'↓':diff>0?'↑':'→';
-      h+='<div style="background:var(--s2);border-radius:10px;padding:10px 12px">';
-      h+='<div style="font-size:11px;color:var(--m);margin-bottom:3px">'+m.emoji+' '+m.label+'</div>';
-      h+='<div style="font-size:18px;font-weight:700;color:var(--t)">'+cur+' cm</div>';
-      if(pre) h+='<div style="font-size:11px;font-weight:600;color:'+color+'">'+arrow+' '+(diff>0?'+':'')+diff+' cm</div>';
+      var vals=hist.filter(function(e){return e[m.id];}).map(function(e){return {d:e.date,v:parseFloat(e[m.id])};});
+      if(vals.length<2) return;
+      var first=vals[0].v; var last=vals[vals.length-1].v;
+      var diff=(last-first).toFixed(1);
+      var diffStr=(diff>0?'+':'')+diff+'cm';
+      var diffColor=m.id==='cintura'?(diff<0?'var(--g)':'var(--r)'):'var(--a)';
+      h+='<div style="margin-bottom:10px">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+      h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+m.emoji+' '+m.label+'</div>';
+      h+='<div style="font-size:12px;font-weight:700;color:'+diffColor+'">'+last+'cm <span style="font-size:10px">('+diffStr+')</span></div></div>';
+      h+='<canvas id="med-chart-'+m.id+'" height="48" style="width:100%;display:block"></canvas>';
       h+='</div>';
     });
     h+='</div>';
-
-    // Waist-hip ratio
-    if(latest.cintura&&latest.cadera){
-      var ratio=(latest.cintura/latest.cadera).toFixed(2);
-      var ratioOk=parseFloat(ratio)<0.9;
-      h+='<div style="background:'+(ratioOk?'rgba(61,214,140,0.08)':'rgba(239,68,68,0.08)')+';border:1px solid '+(ratioOk?'rgba(61,214,140,0.3)':'rgba(239,68,68,0.3)')+';border-radius:10px;padding:10px 12px;margin-bottom:12px">';
-      h+='<div style="font-size:11px;font-weight:700;color:var(--m);margin-bottom:4px">Ratio Cintura/Cadera</div>';
-      h+='<div style="font-size:24px;font-weight:800;color:'+(ratioOk?'var(--g)':'var(--r)')+'">'+ratio;
-      h+='<span style="font-size:13px;font-weight:400;color:var(--m);margin-left:6px">'+(ratioOk?'✅ Objetivo <0.9':'⚠️ Objetivo: <0.9')+'</span></div></div>';
-    }
   }
 
-  // Plan adjustment feedback based on trends
+  // ── Análisis del plan (≥3 semanas) ──
   if(hist.length>=3){
     var latest=hist[0];var prev=hist[1];var prev2=hist[2];
-    var cinturaTrend=hist.slice(0,4).map(function(e){return e.cintura||0;});
+    var cinturaTrend=(latest.cintura&&prev2.cintura)?(prev2.cintura-latest.cintura):0;
+    var musloUp=(latest.muslo&&prev.muslo&&parseFloat(latest.muslo)>parseFloat(prev.muslo));
     var pesoArr=ld('weights',[]);
     var curPeso=pesoArr.length>0?pesoArr[pesoArr.length-1].val:null;
     var prevPeso=pesoArr.length>1?pesoArr[pesoArr.length-2].val:null;
-
-    // Calculate weekly cintura rate
-    var cinturaDiff=(latest.cintura&&prev2.cintura)?(prev2.cintura-latest.cintura):0;
-    var musloUp=(latest.muslo&&prev.muslo&&latest.muslo>prev.muslo);
-    var brazoUp=(latest.brazo&&prev.brazo&&latest.brazo>prev.brazo);
-    var cinturaOk=cinturaTrend[0]>0&&cinturaTrend[1]>0&&cinturaTrend[0]<cinturaTrend[1];
-    var pesoOkRate=curPeso&&prevPeso&&(prevPeso-curPeso)<=0.8&&(prevPeso-curPeso)>=0;
     var pesoStagnant=curPeso&&prevPeso&&Math.abs(prevPeso-curPeso)<0.2;
-
-    var insights=[];
-    var adjustments=[];
-
-    // Recomposición indicator
-    if(musloUp&&brazoUp&&cinturaOk) insights.push({icon:'💪',color:'var(--g)',text:'Recomposición activa — muslo y brazo suben mientras la cintura baja. El plan está funcionando.'});
-    if(cinturaOk&&!pesoStagnant) insights.push({icon:'📉',color:'var(--g)',text:'Cintura bajando '+cinturaDiff.toFixed(1)+'cm en 3 semanas. Velocidad óptima.'});
-    if(pesoStagnant&&!cinturaOk) adjustments.push({icon:'⚠️',color:'var(--o)',text:'Peso y cintura estancados 2 semanas. Reduce carbohidratos en cena (120g→80g arroz). Añade 10 min de caminata suave post-cena.'});
-    if(curPeso&&prevPeso&&(prevPeso-curPeso)>1) adjustments.push({icon:'⚡',color:'var(--y)',text:'Pérdida rápida (>1kg/sem). Aumenta la cena en 80-100 kcal para proteger el músculo.'});
-    if(latest.cintura&&latest.cadera&&(latest.cintura/latest.cadera)>0.92) adjustments.push({icon:'🎯',color:'var(--a)',text:'Ratio cintura/cadera alto. Prioriza el vacuum abdominal diario y reduce azúcares simples.'});
-    if(musloUp&&brazoUp) insights.push({icon:'🏋️',color:'var(--a)',text:'Ganas masa muscular. El HIIT está estimulando hipertrofia. No bajes calorías.'});
-
-    if(insights.length>0||adjustments.length>0){
-      h+='<div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
-      h+='<div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:8px">🧠 ANÁLISIS DEL PLAN · Semana '+hist.length+'</div>';
-      insights.forEach(function(i_){
-        h+='<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 8px;background:rgba(61,214,140,0.05);border-radius:8px">';
-        h+='<span>'+i_.icon+'</span><div style="font-size:11px;color:'+i_.color+';line-height:1.5">'+i_.text+'</div></div>';
-      });
-      adjustments.forEach(function(a_){
-        h+='<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 8px;background:rgba(249,115,22,0.05);border-radius:8px">';
-        h+='<span>'+a_.icon+'</span><div style="font-size:11px;color:'+a_.color+';line-height:1.5">'+a_.text+'</div></div>';
+    var cinturaOk=latest.cintura&&prev.cintura&&parseFloat(latest.cintura)<parseFloat(prev.cintura);
+    var insights=[];var adjustments=[];
+    if(musloUp&&cinturaOk) insights.push({e:'💪',c:'var(--g)',t:'Recomposición activa — muslo sube mientras cintura baja. El plan funciona.'});
+    if(cinturaOk) insights.push({e:'📉',c:'var(--g)',t:'Cintura bajando. Velocidad óptima.'});
+    if(pesoStagnant&&!cinturaOk) adjustments.push({e:'⚠️',c:'var(--o)',t:'Peso y cintura estancados. Reduce carbos en cena (arroz 160g→120g). Añade caminata de 15min post-cena.'});
+    if(curPeso&&prevPeso&&(prevPeso-curPeso)>1) adjustments.push({e:'⚡',c:'var(--y)',t:'Pérdida rápida (>1kg/sem). Sube la cena 80-100kcal para proteger el músculo.'});
+    if(latest.cintura&&latest.cadera&&(parseFloat(latest.cintura)/parseFloat(latest.cadera))>0.92) adjustments.push({e:'🎯',c:'var(--a)',t:'Ratio cintura/cadera alto ('+parseFloat(latest.cintura/latest.cadera).toFixed(2)+'). Prioriza vacuum abdominal diario.'});
+    if(insights.length||adjustments.length){
+      h+='<div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:12px 14px;margin-bottom:14px">';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:8px">🧠 Análisis · Semana '+hist.length+'</div>';
+      insights.concat(adjustments).forEach(function(i_){
+        h+='<div style="display:flex;gap:8px;margin-bottom:6px;padding:6px 8px;background:rgba(255,255,255,0.02);border-radius:8px">';
+        h+='<span>'+i_.e+'</span><div style="font-size:11px;color:'+i_.c+';line-height:1.5">'+i_.t+'</div></div>';
       });
       h+='</div>';
     }
   }
 
-  // History table
+  // ── Historial en tabla ──
   if(hist.length>0){
-    h+='<div style="font-size:11px;font-weight:700;color:var(--m);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Historial</div>';
-    hist.slice(0,8).forEach(function(entry){
-      h+='<div style="border:1px solid var(--b);border-radius:10px;padding:10px 12px;margin-bottom:6px">';
-      h+='<div style="font-size:12px;font-weight:700;color:var(--t);margin-bottom:6px">📅 '+fmtDate(entry.date)+'</div>';
-      h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
-      MEDIDAS_DEF.forEach(function(m){
-        if(entry[m.id]) h+='<span style="font-size:11px;color:var(--m)">'+m.emoji+' '+m.label+': <strong style="color:var(--t)">'+entry[m.id]+'cm</strong></span>';
-      });
-      h+='</div></div>';
+    h+='<div style="background:var(--s2);border-radius:12px;padding:14px">';
+    h+='<div style="font-size:13px;font-weight:700;color:var(--t);margin-bottom:10px">🗓 Historial semanal</div>';
+    // Table header
+    h+='<div style="display:grid;grid-template-columns:1fr '+MEDIDAS_DEF.map(function(){return '1fr';}).join(' ')+';gap:4px;margin-bottom:6px">';
+    h+='<div style="font-size:10px;color:var(--m);font-weight:600">Fecha</div>';
+    MEDIDAS_DEF.forEach(function(m){
+      h+='<div style="font-size:10px;color:var(--m);font-weight:600;text-align:center">'+m.emoji+' '+m.label+'</div>';
     });
+    h+='</div>';
+    hist.forEach(function(entry, idx){
+      var prev_e=hist[idx+1];
+      h+='<div style="display:grid;grid-template-columns:1fr '+MEDIDAS_DEF.map(function(){return '1fr';}).join(' ')+';gap:4px;padding:7px 0;border-top:1px solid var(--b)">';
+      h+='<div style="font-size:11px;color:var(--m)">'+fmtDate(entry.date)+'</div>';
+      MEDIDAS_DEF.forEach(function(m){
+        var val=entry[m.id]?parseFloat(entry[m.id]):null;
+        var prevVal=prev_e&&prev_e[m.id]?parseFloat(prev_e[m.id]):null;
+        var arrow=''; var arrowColor='var(--m)';
+        if(val&&prevVal){
+          var diff=val-prevVal;
+          if(Math.abs(diff)>=0.2){
+            var isGood=(m.id==='cintura'&&diff<0)||(m.id!=='cintura'&&diff>0);
+            arrow=diff<0?' ↓':' ↑';
+            arrowColor=isGood?'var(--g)':'var(--r)';
+          }
+        }
+        h+='<div style="font-size:12px;font-weight:600;color:var(--t);text-align:center">';
+        if(val) h+=val+'<span style="font-size:10px;color:'+arrowColor+'">'+arrow+'</span>';
+        else h+='<span style="color:var(--m)">—</span>';
+        h+='</div>';
+      });
+      h+='</div>';
+    });
+    h+='</div>';
   } else {
-    h+='<div style="text-align:center;padding:20px;color:var(--m);font-size:13px">📏 Registra tus primeras medidas este lunes</div>';
+    h+='<div style="text-align:center;padding:30px;color:var(--m);font-size:13px">📏 Registra tus primeras medidas este lunes</div>';
   }
 
   el.innerHTML=h;
+
+  // Draw mini sparklines after render
+  if(hist.length>=2){
+    var colors_={cintura:'#f97316',cadera:'#a855f7',muslo:'#3b82f6'};
+    MEDIDAS_DEF.forEach(function(m){
+      var canvas=document.getElementById('med-chart-'+m.id);
+      if(!canvas) return;
+      var vals=hist.filter(function(e){return e[m.id];}).map(function(e){return parseFloat(e[m.id]);}).reverse();
+      if(vals.length<2) return;
+      var W=canvas.parentElement.offsetWidth-28||280; var H=48;
+      canvas.width=W; canvas.height=H;
+      var ctx=canvas.getContext('2d');
+      ctx.clearRect(0,0,W,H);
+      var minV=Math.min.apply(null,vals)-1; var maxV=Math.max.apply(null,vals)+1;
+      var pad=4; var step=(W-pad*2)/(vals.length-1);
+      var grad=ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0,colors_[m.id]+'55'); grad.addColorStop(1,colors_[m.id]+'00');
+      ctx.beginPath();
+      vals.forEach(function(v,i){
+        var x=pad+i*step; var y=pad+((maxV-v)/(maxV-minV))*(H-pad*2);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      });
+      ctx.lineTo(pad+(vals.length-1)*step,H); ctx.lineTo(pad,H); ctx.closePath();
+      ctx.fillStyle=grad; ctx.fill();
+      ctx.beginPath(); ctx.strokeStyle=colors_[m.id]; ctx.lineWidth=2; ctx.lineJoin='round';
+      vals.forEach(function(v,i){
+        var x=pad+i*step; var y=pad+((maxV-v)/(maxV-minV))*(H-pad*2);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+      // Last dot
+      var lx=pad+(vals.length-1)*step;
+      var ly=pad+((maxV-vals[vals.length-1])/(maxV-minV))*(H-pad*2);
+      ctx.fillStyle=colors_[m.id]; ctx.beginPath(); ctx.arc(lx,ly,4,0,Math.PI*2); ctx.fill();
+    });
+  }
 }
 
 // ═══════════════════════════════════════
