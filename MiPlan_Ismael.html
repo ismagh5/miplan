@@ -374,14 +374,14 @@ select.if{cursor:pointer;}
 
 <!-- RUNNING -->
 <div class="page" id="pg-run">
-  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">Plan 7 semanas · Empieza 6 julio</div></div>
+  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">Plan 7 semanas · Empieza 21 sept</div></div>
   <div class="tr">
-    <button class="tb active" onclick="runTab('today')">Hoy</button>
-    <button class="tb" onclick="runTab('plan')">Plan completo</button>
-    <button class="tb" onclick="runTab('history')">Historial</button>
+    <button class="tb active" id="run-tab-today" onclick="runTab('today')">📋 Sesión</button>
+    <button class="tb" id="run-tab-zones" onclick="runTab('zones')">🫁 Zonas</button>
+    <button class="tb" id="run-tab-plan" onclick="runTab('plan')">📅 Plan</button>
   </div>
   <!-- Date selector for run — static in DOM like weight page -->
-  <div id="rt-today">
+  <div id="run-today-content">
     <div style="display:flex;align-items:center;gap:6px;padding:8px 16px 4px;flex-wrap:wrap" id="run-date-row">
       <div style="flex:1;min-width:120px"><label class="il">Registrando día</label>
         <input type="date" class="if" id="run-log-date" style="font-size:13px" onchange="applyRunDate()">
@@ -397,10 +397,10 @@ select.if{cursor:pointer;}
         </select>
       </div>
     </div>
-    <div id="run-today-content"></div>
   </div>
-  <div id="rt-plan" style="display:none"><div id="run-plan-content"></div></div>
-  <div id="rt-history" style="display:none"><div id="run-history-content" style="padding:12px 16px"></div></div>
+  <div id="run-zones-content" style="display:none;padding:12px 16px"></div>
+  <div id="run-plan-content" style="display:none"v>
+  <div id="run-history-content" style="display:nonee="padding:12px 16px"></div></div>
   
 </div>
 
@@ -1140,7 +1140,7 @@ const RUN_WEEKS=[
       pos:"Rodilla trasera en el suelo.",
       exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
     ],
-   startDate:"2026-09-14"},
+   startDate:"2026-09-21"},
 
   {num:2,title:"45s trote / 90s caminata",sub:"Semana 2 · Fase Adaptación",
    work:"8 × [ 45s trote + 90s caminata ] · Total ~24 min",
@@ -1378,7 +1378,7 @@ const RUN_WEEKS=[
       {date:'2026-06-25',day:'jueves',name:'Espalda + Bíceps',exercises:espaldaEx(30,30,25,20,12.5,7.5)},
       {date:'2026-06-26',day:'viernes',name:'Pecho + Tríceps',exercises:pechoEx(15,15,7.5,10,15,10)},
       // ── Semana nueva 29/06 — nuevo plan completo ──
-      {date:'2026-09-14',day:'lunes',name:'Espalda + Bíceps',exercises:[
+      {date:'2026-09-21',day:'lunes',name:'Espalda + Bíceps',exercises:[
         {name:'Jalón al pecho',blocks:[{s:4,r:'12',w:32.5}]},
         {name:'Remo con barra',blocks:[{s:4,r:'10',w:70}]},
         {name:'Remo en máquina',blocks:[{s:3,r:'12',w:35}]},
@@ -1417,24 +1417,13 @@ const RUN_WEEKS=[
     var hasJune30=runHist.some(function(s){return s.date==='2026-06-30';});
     
 
-    // ── Seed weight history ──
-    var wArr=JSON.parse(localStorage.getItem('weights')||'[]');
-    var wDates=wArr.map(function(w){return w.date;});
-    [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},
-     {date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},
-     {date:'2026-06-22',val:89.4}
-    ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
-    wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
-    localStorage.setItem('weights',JSON.stringify(wArr));
+    // Weight history: user enters manually
 
     if(!localStorage.getItem('run_start_date')){
-      localStorage.setItem('run_start_date','2026-09-14');
+      localStorage.setItem('run_start_date','2026-09-21');
     }
 
-  if(!localStorage.getItem('gym_log_martes_2026-07-16_0')) localStorage.setItem('gym_log_martes_2026-07-16_0','{"blocks":[{"s":4,"r":"10-12","w":35}],"done":true}');
-  if(!localStorage.getItem('gym_log_martes_2026-07-16_1')) localStorage.setItem('gym_log_martes_2026-07-16_1','{"blocks":[{"s":2,"r":"12-15","w":35},{"s":1,"r":"12-15","w":40}],"done":true}');
-  if(!localStorage.getItem('gym_log_martes_2026-07-16_2')) localStorage.setItem('gym_log_martes_2026-07-16_2','{"blocks":[{"s":1,"r":"15-20","w":7.5},{"s":3,"r":"15-20","w":10}],"done":true}');
-  if(!localStorage.getItem('gym_log_martes_2026-07-16_4')) localStorage.setItem('gym_log_martes_2026-07-16_4','{"blocks":[{"s":3,"r":"15-20","w":15},{"s":1,"r":"15-20","w":20}],"done":true}');
+  
   localStorage.setItem(FLAG,'1');
   }catch(e){console.warn('Seed error:',e);}
 })();
@@ -1883,7 +1872,7 @@ var MEAL_PLAN={"semana1": {"lunes": {"comida": "Pollo al ajillo", "cena": "Revue
 
 function getCurrentMenuWeek(){
   // Alternates between semana1 and semana2 based on week number from July 6
-  var start=new Date(2026,8,14);
+  var start=new Date(2026,8,21);
   var week=Math.floor((new Date()-start)/(7*86400000));
   return week%2===0?'semana1':'semana2';
 }
@@ -1897,10 +1886,35 @@ function shopTab(t){
   if(t==='menu') renderShopMenu();
 }
 
+
+function saveShopDay(day, meal, value){
+  var saved = ld('shop_day_'+day, {com:'', cen:''});
+  saved[meal] = value;
+  sd('shop_day_'+day, saved);
+}
+
+function shopChoose(day, meal, optId){
+  saveShopDay(day, meal, optId);
+  renderShopMenu();
+}
+
+function toggleShopRecipe(name){
+  var recs = ld('shop_recipes', []);
+  var idx = recs.indexOf(name);
+  if(idx >= 0) recs.splice(idx, 1);
+  else recs.push(name);
+  sd('shop_recipes', recs);
+}
+
+function shopToggleRec(encodedName){
+  toggleShopRecipe(decodeURIComponent(encodedName));
+  renderShopMenu();
+}
+
 function renderShopMenu(){
   var el=document.getElementById('shop-menu-content');
   if(!el) return;
-  var start=new Date(2026,8,14);
+  var start=new Date(2026,8,21);
   var now=new Date();
   var daysDone=Math.max(0,Math.floor((now-start)/86400000));
   var d15Idx=daysDone%15;
@@ -2178,7 +2192,7 @@ function nav(id){
 // WEIGHT
 function getCurrentWeight(){
   var ws=ld('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
-  return ws.length?ws[ws.length-1].val:90.6;
+  return ws.length?ws[ws.length-1].val:null;
 }
 function getTargetKcal(){return 1800;}
 function getTargetProt(){return Math.round(getCurrentWeight()*1.8);}
@@ -2304,7 +2318,7 @@ function drawStreakChart(){
   ctx.clearRect(0,0,W,H);
 
   // Build last 12 weeks of activity data
-  var weeks=[]; var startDate=new Date(2026,8,14);
+  var weeks=[]; var startDate=new Date(2026,8,21);
   var now=new Date();
   var totalWeeks=Math.max(1,Math.ceil((now-startDate)/(7*86400000))+1);
   totalWeeks=Math.min(totalWeeks,12);
@@ -2410,8 +2424,6 @@ function renderHome(){
   var ws2=ld('weights',[{date:'2026-06-01',val:92.4}]);
   var peakW=ws2.reduce(function(mx,ww){return Math.max(mx,ww.val);},0);
   var lost=peakW-w;
-  var aug15=new Date('2026-08-15');
-  var dLeft=Math.max(0,Math.ceil((aug15-now)/86400000));
   var _hw2=document.getElementById('h-weight');if(_hw2)_hw2.textContent=w.toFixed(1)+' kg';
   
   
@@ -2556,7 +2568,7 @@ function getNextRunDay(now){
 function getRunStartDate(){
   var saved=ld('run_start_date',null);
   if(saved){var p=saved.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-  return new Date(2026,8,14);
+  return new Date(2026,8,21);
 }
 function resetRunPlan(){
   var btn=event.target;
@@ -2675,7 +2687,7 @@ function renderGymSession(){
   var gwSel=document.getElementById('gym-week-select');
   if(gwSel){var gwo=ld('gym_week_override',null);gwSel.value=gwo||'';}
   // Show weekly progression banner
-  var gWeek=getGymWeek();
+  var gWeek=getCurrentCasaWeek();
   var weekBanner=document.getElementById('gym-week-banner');
   if(!weekBanner){
     var banner=document.createElement('div');
@@ -3205,24 +3217,21 @@ function revertExercise(dk,i,origName){
 }
 
 // RUNNING
-function runTab(t){
-  ['today','plan','history','log'].forEach(function(x){
-    var el=document.getElementById('rt-'+x);
-    if(el) el.style.display=x===t?'block':'none';
-  });
-  document.querySelectorAll('#pg-run .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',['today','plan','history'][i]===t);
-  });
-  if(t==='today') renderRunToday();
-  if(t==='plan') renderRunPlan();
-  if(t==='history') renderRunHistory();
-}
+
 function toggleRunCheck(key){
   var checks=ld('run_checks_'+getLogDate(),{warmup:false,work:false,cooldown:false});
   checks[key]=!checks[key];
   sd('run_checks_'+getLogDate(),checks);
   renderRunToday();
 }
+
+function deleteRun(date){
+  var hist=ld('run_hist',[]);
+  hist=hist.filter(function(s){return s.date!==date;});
+  sd('run_hist',hist);
+  renderRunToday();
+}
+
 function autoSaveRun(){
   var logDs=getLogDate();
   var startR=getRunStartDate();
@@ -3347,7 +3356,7 @@ function renderRunToday(){
   var rfd=document.getElementById('run-force-day');
   if(rfd) rfd.value=ld('run_force_day','');
   var rps=document.getElementById('run-plan-start');
-  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-09-14';}
+  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-09-21';}
   var toggleHtml=isYesterday?'<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDateStr)+'</span></div>':'';
   var now=new Date(logDateStr+'T12:00:00');
   var dow=now.getDay();
@@ -3436,6 +3445,100 @@ function renderRunToday(){
   html+='<button class="btn btg" style="margin-top:10px;width:100%" onclick="autoSaveRun()">💾 Guardar sesión de running</button>';
   html+='</div>';
   el.innerHTML=html;
+}
+
+
+function runTab(tab){
+  ['today','zones','plan'].forEach(function(t){
+    var el=document.getElementById('run-'+t+'-content');
+    var btn=document.getElementById('run-tab-'+t);
+    if(el) el.style.display=t===tab?'block':'none';
+    if(btn) btn.classList.toggle('active',t===tab);
+  });
+  if(tab==='zones') renderRunZones();
+  if(tab==='today') renderRunToday();
+  if(tab==='plan') renderRunPlan();
+}
+
+function renderRunZones(){
+  var el=document.getElementById('run-zones-content');
+  if(!el) return;
+  var fcMax=193;
+  var h='';
+
+  // Header
+  h+='<div style="background:linear-gradient(135deg,rgba(79,142,247,0.1),rgba(99,102,241,0.06));border:1px solid rgba(79,142,247,0.3);border-radius:12px;padding:14px;margin-bottom:12px">';
+  h+='<div style="font-size:13px;font-weight:700;color:var(--a);margin-bottom:4px">🫁 Respiración durante el running</div>';
+  h+='<div style="font-size:12px;color:var(--m);line-height:1.7;margin-bottom:8px">';
+  h+='Tu técnica es la correcta: <strong style="color:var(--t)">inhala por nariz · exhala por boca</strong>.<br>';
+  h+='Mientras puedas entrar el aire por la nariz → vas en Zona 2. Si tienes que abrir la boca para inhalar → has subido de zona.';
+  h+='</div>';
+  h+='<div style="background:rgba(61,214,140,0.08);border:1px solid rgba(61,214,140,0.3);border-radius:8px;padding:10px;font-size:11px;color:var(--m)">';
+  h+='<div style="font-weight:700;color:var(--g);margin-bottom:6px">⭐ Patrón 3:2 para Zona 2 (el más importante)</div>';
+  h+='<div style="font-family:monospace;font-size:12px;line-height:2;color:var(--t)">';
+  h+='Zancada 1 → <span style="color:var(--a)">INHALA (nariz)</span><br>';
+  h+='Zancada 2 → <span style="color:var(--a)">INHALA (nariz)</span><br>';
+  h+='Zancada 3 → <span style="color:var(--a)">INHALA (nariz, termina)</span><br>';
+  h+='Zancada 4 → <span style="color:var(--o)">EXHALA (boca)</span><br>';
+  h+='Zancada 5 → <span style="color:var(--o)">EXHALA (boca, termina)</span><br>';
+  h+='Zancada 1 → <span style="color:var(--a)">INHALA...</span>';
+  h+='</div>';
+  h+='<div style="font-size:10px;color:var(--m);margin-top:6px">Ventaja del 3:2: alterna el pie en el que exhalas → distribuye el impacto → reduce el flato</div>';
+  h+='</div></div>';
+
+  // Zones table
+  var zones=[
+    {z:'Zona 1',pct:'50-60%',bpmLo:97,bpmHi:116,feel:'Paseo. Podrías cantar.',breath:'Nariz / Nariz',pattern:'Libre',uso:'Calentamiento · Vuelta a la calma',color:'var(--m)'},
+    {z:'Zona 2',pct:'60-70%',bpmLo:116,bpmHi:135,feel:'Cómodo. Hablas en frases completas.',breath:'Nariz / Boca ⭐',pattern:'3:2',uso:'80% de todo el plan. La base aeróbica.',color:'var(--g)'},
+    {z:'Zona 3',pct:'70-80%',bpmLo:135,bpmHi:155,feel:'Esfuerzo. Frases cortas.',breath:'Nariz / Boca',pattern:'2:2',uso:'Últimos km de sesiones largas',color:'var(--a)'},
+    {z:'Zona 4',pct:'80-90%',bpmLo:155,bpmHi:174,feel:'Incómodo. Solo palabras.',breath:'Boca / Boca',pattern:'2:1',uso:'Bloques de fartlek · Tempo runs',color:'var(--o)'},
+    {z:'Zona 5',pct:'90-100%',bpmLo:174,bpmHi:193,feel:'No puedes hablar.',breath:'Boca / Boca',pattern:'Libre',uso:'Sprints máximos · Final del 23D',color:'var(--r)'},
+  ];
+
+  h+='<div style="border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:12px">';
+  zones.forEach(function(z,i){
+    var barLo=Math.round(((z.bpmLo-97)/(fcMax-97))*100);
+    var barHi=Math.round(((z.bpmHi-97)/(fcMax-97))*100);
+    h+='<div style="padding:10px 14px;border-bottom:'+( i<zones.length-1?'1px solid var(--b)':'none')+'">'; 
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+    h+='<div style="font-size:12px;font-weight:700;color:'+z.color+'">'+z.z+' · '+z.pct+'</div>';
+    h+='<div style="font-size:11px;color:var(--t);font-weight:600">'+z.bpmLo+'-'+z.bpmHi+' bpm</div></div>';
+    // FC bar
+    h+='<div style="position:relative;height:6px;background:var(--b);border-radius:3px;margin-bottom:6px">';
+    h+='<div style="position:absolute;left:'+barLo+'%;width:'+(barHi-barLo)+'%;height:6px;border-radius:3px;background:'+z.color+'"></div></div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;color:var(--m)">';
+    h+='<div>👃 <strong>'+z.breath+'</strong></div>';
+    h+='<div>📐 Patrón: <strong>'+z.pattern+'</strong></div>';
+    h+='<div style="grid-column:1/-1">'+z.feel+'</div>';
+    h+='<div style="grid-column:1/-1;color:'+z.color+'">'+z.uso+'</div>';
+    h+='</div></div>';
+  });
+  h+='</div>';
+
+  // Mi Band section
+  h+='<div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
+  h+='<div style="font-size:12px;font-weight:700;color:var(--o);margin-bottom:8px">📱 Xiaomi Mi Band 10 — Cómo usarla</div>';
+  h+='<div style="font-size:11px;color:var(--m);line-height:1.8">';
+  h+='<div>⚙️ Antes de salir: activa pantalla de FC en tiempo real</div>';
+  h+='<div>👀 Mira la FC cada 3-4 min, no constantemente</div>';
+  h+='<div>📊 Al acabar: revisa el resumen de zonas — si más del 50% fue Z3+, ibas muy rápido</div>';
+  h+='<div>📈 El VO2max estimado te sirve como tendencia: si sube semana a semana → mejoras</div>';
+  h+='<div>😴 SpO2 por la mañana en ayunas: debe ser ≥95%. Si baja → recuperación insuficiente</div>';
+  h+='<div>⚠️ Sem 1-6: si superas 140 bpm → baja el ritmo inmediatamente</div>';
+  h+='</div></div>';
+
+  // Flat problem section
+  h+='<div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:12px 14px">';
+  h+='<div style="font-size:12px;font-weight:700;color:var(--p);margin-bottom:8px">⚡ Si te entra el flato</div>';
+  h+='<div style="font-size:11px;color:var(--m);line-height:1.8">';
+  h+='<div>1. No pares — baja a Zona 1 (camina)</div>';
+  h+='<div>2. Presiona con 2 dedos donde duele</div>';
+  h+='<div>3. Espira larga y fuerte 3 veces seguidas</div>';
+  h+='<div>4. En 30-60s desaparece</div>';
+  h+='<div style="margin-top:6px;color:var(--a)"><strong>Causa más común:</strong> salir demasiado rápido los primeros 2 minutos o haber comido menos de 2h antes</div>';
+  h+='</div></div>';
+
+  el.innerHTML=h;
 }
 
 function renderRunPlan(){
@@ -3672,7 +3775,7 @@ function renderFoodToday(){
 
 function checkFoodAlert(){
   var now=new Date();
-  var startTracking=new Date('2026-09-14');
+  var startTracking=new Date('2026-09-21');
   if(now<startTracking) return;
   var log=getFoodLog();
   var yesterday=getYesterday();
@@ -4014,19 +4117,7 @@ function addFoodEntry(){
   if(document.getElementById('ht-impact').style.display!=='none') renderHealthImpact();
 }
 
-function addManualFood(){
-  var name=document.getElementById('m-name').value.trim();
-  if(!name){alert('Introduce el nombre');return;}
-  var g=parseFloat(document.getElementById('m-g').value)||0;
-  var k=parseFloat(document.getElementById('m-k').value)||0;
-  var p=parseFloat(document.getElementById('m-p').value)||0;
-  var c=parseFloat(document.getElementById('m-c').value)||0;
-  var fat=parseFloat(document.getElementById('m-f').value)||0;
-  var meal=document.getElementById('food-meal').value;
-  var entry={id:Date.now().toString(),name:name,g:g,meal:meal,k:k,p:p,c:c,f:fat,impact:'moderate',impactMsg:''};
-  var log=getFoodLog();log.push(entry);saveFoodLog(log);
-  closeFood();renderFoodToday();
-}
+
 
 // POST FIESTA
 function openPostFiesta(){
@@ -4068,6 +4159,9 @@ function revertPostFiesta(){
 }
 
 // WEIGHT
+
+
+
 function addWeight(){
   var date=document.getElementById('w-date').value;
   var val=parseFloat(document.getElementById('w-val').value);
@@ -4088,7 +4182,7 @@ function addWeight(){
 
 function renderWeight(){
   var ws=ld('weights',[{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},{date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6}]);
-  var last=ws[ws.length-1];var cur=last?last.val:90.6;
+  var last=ws[ws.length-1];var cur=last?last.val:null;
   var peakVal=ws.reduce(function(mx,w){return Math.max(mx,w.val);},0);
   var lost=peakVal-cur;
   document.getElementById('w-cur').textContent=cur.toFixed(1)+' kg';
@@ -4600,7 +4694,7 @@ function casaToggleSec(id){
 
 function getCurrentCasaWeek(){
   var MIN_HOME=4;
-  var startDate=new Date(2026,8,14); // Sept 8
+  var startDate=new Date(2026,8,21); // Sept 21
   var now=new Date();
   var nowDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(nowDate<startDate) return 1;
@@ -4786,257 +4880,277 @@ function _casaCirc(items,prog){
 // DIETA QUINCENAL — 15 días
 // ════════════════════════════
 var DIETA15=[
+  // DES = desayuno fijo, MER = merienda fija, COM = comida, CEN = cena
+  // opts: A y B para elegir en la compra
   {dia:'Día 1',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Nueces 20g',kcal:380,p:22,c:34,f:21},
-   com:{kobj:580,opts:[
-     {id:'A',n:'Pollo al ajillo con arroz y brócoli',
-      i:[{n:'Pechuga pollo',g:130},{n:'Arroz cocido',g:160},{n:'Brócoli',g:200},{n:'AOVE',g:10}],
-      t:{kcal:581,p:50,c:59,f:16}},
-     {id:'B',n:'Albóndigas de ternera con champiñones y arroz',
-      i:[{n:'Carne picada ternera',g:160},{n:'Champiñones',g:150},{n:'Arroz cocido',g:120},{n:'AOVE',g:10}],
-      t:{kcal:519,p:36,c:39,f:25}}]},
-   mer:{desc:'Manzana 150g · Almendras 20g',kcal:194,p:4,c:25,f:10},
-   cen:{kobj:340,opts:[
-     {id:'A',n:'Tortilla francesa con champiñones salteados',
-      i:[{n:'Huevos enteros (2)',g:110},{n:'Claras (2)',g:70},{n:'Champiñones',g:200},{n:'AOVE',g:10}],
-      t:{kcal:322,p:25,c:8,f:21}},
-     {id:'B',n:'Pavo a la plancha con berenjena asada',
-      i:[{n:'Pechuga pavo',g:150},{n:'Berenjena',g:200},{n:'AOVE',g:10}],
-      t:{kcal:343,p:46,c:12,f:12}}]}},
-  {dia:'Día 2',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Kiwi 100g · Almendras 15g',kcal:368,p:22,c:48,f:14},
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
    com:{kobj:540,opts:[
-     {id:'A',n:'Salmón al horno con boniato y espinacas',
-      i:[{n:'Salmón fresco',g:150},{n:'Boniato asado',g:120},{n:'Espinacas',g:150},{n:'AOVE',g:10}],
-      t:{kcal:540,p:36,c:29,f:30}},
-     {id:'B',n:'Merluza en salsa verde con arroz',
-      i:[{n:'Merluza',g:200},{n:'Arroz cocido',g:160},{n:'AOVE',g:10}],
-      t:{kcal:477,p:41,c:47,f:12}}]},
-   mer:{desc:'Pera 150g · Nueces 15g',kcal:183,p:4,c:25,f:11},
-   cen:{kobj:355,opts:[
-     {id:'A',n:'Revuelto de gambas con espárragos',
-      i:[{n:'Gambas',g:120},{n:'Espárragos',g:150},{n:'Huevos (2)',g:110},{n:'AOVE',g:10}],
-      t:{kcal:378,p:37,c:8,f:22}},
-     {id:'B',n:'Merluza al vapor con brócoli y zanahoria',
-      i:[{n:'Merluza',g:160},{n:'Brócoli',g:200},{n:'Zanahoria',g:100},{n:'AOVE',g:10}],
-      t:{kcal:330,p:35,c:24,f:13}}]}},
-  {dia:'Día 3',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Almendras 15g',kcal:364,p:22,c:47,f:14},
-   com:{kobj:515,opts:[
-     {id:'A',n:'Pasta aglio e olio con gambas',
-      i:[{n:'Pasta integral',g:90},{n:'Gambas',g:130},{n:'Ajo',g:10},{n:'AOVE',g:12},{n:'Perejil',g:5}],
-      t:{kcal:487,p:36,c:48,f:14}},
-     {id:'B',n:'Pasta boloñesa casera',
+     {id:'A',n:'Arroz con pollo al horno',
+      i:[{n:'Pechuga pollo',g:150},{n:'Arroz',g:160},{n:'Tomate natural',g:100},{n:'Zanahoria',g:80},{n:'AOVE',g:10}],
+      t:{kcal:540,p:50,c:55,f:13}},
+     {id:'B',n:'Merluza al vapor con patata',
+      i:[{n:'Merluza',g:200},{n:'Patata',g:150},{n:'Judías verdes',g:150},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:490,p:44,c:40,f:14}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:520,opts:[
+     {id:'A',n:'Salmón al horno con boniato y brócoli',
+      i:[{n:'Salmón',g:150},{n:'Boniato',g:130},{n:'Brócoli',g:200},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:520,p:38,c:38,f:22}},
+     {id:'B',n:'Pollo a la plancha con boniato y espinacas',
+      i:[{n:'Pechuga pollo',g:180},{n:'Boniato',g:150},{n:'Espinacas',g:150},{n:'AOVE',g:8}],
+      t:{kcal:510,p:52,c:40,f:14}}]}},
+
+  {dia:'Día 2',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:541,opts:[
+     {id:'A',n:'Pasta boloñesa casera',
       i:[{n:'Pasta integral',g:90},{n:'Carne picada ternera magra',g:120},{n:'Tomate natural triturado',g:200},{n:'Cebolla',g:80},{n:'Ajo',g:10},{n:'AOVE',g:10}],
-      t:{kcal:541,p:42,c:52,f:16}}]},
-   mer:{desc:'🫐 Muffins de arándanos caseros (avena 40g · yogur · huevo · miel) — 2 uds',kcal:300,p:12,c:42,f:8},
-   cen:{kobj:360,opts:[
-     {id:'A',n:'Dorada al horno con judías verdes',
-      i:[{n:'Dorada',g:200},{n:'Judías verdes',g:150},{n:'AOVE',g:10}],
-      t:{kcal:329,p:39,c:11,f:15}},
-     {id:'B',n:'Steak tartar de ternera con brócoli al ajillo',
-      i:[{n:'Filete ternera crudo',g:150},{n:'Brócoli',g:200},{n:'AOVE',g:10}],
-      t:{kcal:383,p:45,c:14,f:18}}]}},
+      t:{kcal:541,p:42,c:52,f:16}},
+     {id:'B',n:'Pechuga de pollo con arroz y brócoli',
+      i:[{n:'Pechuga pollo',g:180},{n:'Arroz',g:150},{n:'Brócoli',g:200},{n:'AOVE',g:8}],
+      t:{kcal:530,p:54,c:52,f:12}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:380,opts:[
+     {id:'A',n:'Tortilla francesa con espinacas',
+      i:[{n:'Huevos',g:165},{n:'Espinacas',g:100},{n:'Tomate cherry',g:80},{n:'AOVE',g:8}],
+      t:{kcal:380,p:26,c:8,f:28}},
+     {id:'B',n:'Salmón a la plancha con ensalada',
+      i:[{n:'Salmón',g:150},{n:'Lechuga',g:80},{n:'Tomate',g:100},{n:'Pepino',g:80},{n:'AOVE',g:8}],
+      t:{kcal:420,p:38,c:8,f:26}}]}},
+
+  {dia:'Día 3',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:520,opts:[
+     {id:'A',n:'Dorada al horno con patata y judías verdes',
+      i:[{n:'Dorada',g:200},{n:'Patata',g:150},{n:'Judías verdes',g:150},{n:'AOVE',g:10},{n:'Ajo',g:10},{n:'Limón',g:20}],
+      t:{kcal:520,p:42,c:35,f:18}},
+     {id:'B',n:'Arroz con gambas al ajillo',
+      i:[{n:'Gambas',g:200},{n:'Arroz',g:150},{n:'Ajo',g:10},{n:'AOVE',g:10},{n:'Limón',g:20}],
+      t:{kcal:480,p:38,c:52,f:14}}]},
+   mer:{desc:'🫐 Muffins de arándanos caseros · Yogur griego 100g',kcal:280,p:12,c:38,f:8},
+   cen:{kobj:480,opts:[
+     {id:'A',n:'Gambas a la plancha con arroz',
+      i:[{n:'Gambas',g:200},{n:'Arroz',g:150},{n:'Ajo',g:8},{n:'AOVE',g:10},{n:'Limón',g:20}],
+      t:{kcal:480,p:38,c:52,f:14}},
+     {id:'B',n:'Huevos revueltos con setas y espárragos',
+      i:[{n:'Huevos',g:165},{n:'Setas',g:150},{n:'Espárragos',g:150},{n:'AOVE',g:8}],
+      t:{kcal:380,p:28,c:10,f:26}}]}},
+
   {dia:'Día 4',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Mango 100g · Almendras 15g',kcal:367,p:21,c:51,f:14},
-   com:{kobj:560,opts:[
-     {id:'A',n:'Pollo al curry con arroz basmati',
-      i:[{n:'Pechuga pollo',g:130},{n:'Arroz basmati cocido',g:160},{n:'Leche de coco',g:50}],
-      t:{kcal:547,p:48,c:54,f:15}},
-     {id:'B',n:'Wok de ternera con champiñones y arroz',
-      i:[{n:'Ternera en tiras',g:150},{n:'Champiñones',g:150},{n:'Zanahoria',g:100},{n:'Arroz cocido',g:120},{n:'AOVE',g:10}],
-      t:{kcal:545,p:48,c:49,f:18}}]},
-   mer:{desc:'Kiwi 100g · Almendras 15g',kcal:119,p:3,c:19,f:8},
-   cen:{kobj:330,opts:[
-     {id:'A',n:'Salmón a la plancha con espinacas salteadas',
-      i:[{n:'Salmón',g:130},{n:'Espinacas',g:150},{n:'AOVE',g:5}],
-      t:{kcal:350,p:30,c:5,f:23}},
-     {id:'B',n:'Tortilla francesa con espárragos',
-      i:[{n:'Huevos (2)',g:110},{n:'Claras (2)',g:70},{n:'Espárragos',g:150},{n:'AOVE',g:10}],
-      t:{kcal:308,p:22,c:7,f:21}}]}},
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:487,opts:[
+     {id:'A',n:'Pasta con gambas al ajillo',
+      i:[{n:'Pasta integral',g:90},{n:'Gambas',g:150},{n:'Ajo',g:10},{n:'AOVE',g:12},{n:'Guindilla',g:2},{n:'Perejil',g:5}],
+      t:{kcal:487,p:36,c:48,f:14}},
+     {id:'B',n:'Hamburguesa casera de ternera',
+      i:[{n:'Carne picada ternera magra',g:180},{n:'Lechuga',g:80},{n:'Tomate',g:100},{n:'Cebolla',g:50},{n:'AOVE',g:8}],
+      t:{kcal:482,p:46,c:12,f:28}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:380,opts:[
+     {id:'A',n:'Pechuga de pollo plancha con ensalada',
+      i:[{n:'Pechuga pollo',g:150},{n:'Lechuga',g:80},{n:'Tomate',g:100},{n:'Pepino',g:80},{n:'Zanahoria',g:60},{n:'AOVE',g:8}],
+      t:{kcal:380,p:42,c:12,f:16}},
+     {id:'B',n:'Tortilla de espinacas con tomate',
+      i:[{n:'Huevos',g:165},{n:'Espinacas',g:150},{n:'Tomate',g:100},{n:'AOVE',g:8}],
+      t:{kcal:360,p:26,c:10,f:24}}]}},
+
   {dia:'Día 5',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Naranja 150g · Nueces 15g',kcal:388,p:22,c:58,f:17},
-   com:{kobj:590,opts:[
-     {id:'A',n:'Arroz con pollo al horno y pimientos',
-      i:[{n:'Pechuga pollo',g:150},{n:'Arroz cocido',g:160},{n:'Pimiento rojo',g:100},{n:'Tomate',g:100},{n:'AOVE',g:10}],
-      t:{kcal:558,p:50,c:55,f:13}},
-     {id:'B',n:'Pasta carbonara con pavo',
-      i:[{n:'Pasta integral cocida',g:220},{n:'Pechuga pavo',g:80},{n:'Huevo (1)',g:55},{n:'AOVE',g:8}],
-      t:{kcal:531,p:40,c:51,f:16}}]},
-   mer:{desc:'Frutos rojos 100g · Nueces 15g',kcal:155,p:3,c:17,f:11},
-   cen:{kobj:342,opts:[
-     {id:'A',n:'Huevos revueltos con champiñones y espinacas',
-      i:[{n:'Huevos (3)',g:165},{n:'Champiñones',g:150},{n:'Espinacas',g:100},{n:'AOVE',g:8}],
-      t:{kcal:362,p:26,c:10,f:25}},
-     {id:'B',n:'Bacalao al horno con brócoli',
-      i:[{n:'Bacalao',g:200},{n:'Brócoli',g:200},{n:'AOVE',g:10}],
-      t:{kcal:322,p:42,c:14,f:13}}]}},
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:558,opts:[
+     {id:'A',n:'Pollo al curry con arroz',
+      i:[{n:'Pechuga pollo',g:150},{n:'Arroz',g:160},{n:'Leche de coco light',g:100},{n:'Cúrcuma',g:3},{n:'Curry',g:3},{n:'AOVE',g:8}],
+      t:{kcal:558,p:50,c:55,f:16}},
+     {id:'B',n:'Poke bowl de salmón',
+      i:[{n:'Salmón',g:130},{n:'Arroz',g:130},{n:'Edamame',g:80},{n:'Aguacate',g:60},{n:'Pepino',g:60},{n:'Zanahoria',g:60},{n:'Tamari',g:10}],
+      t:{kcal:540,p:36,c:48,f:20}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:480,opts:[
+     {id:'A',n:'Salmón a la plancha con espárragos y huevos revueltos',
+      i:[{n:'Salmón',g:130},{n:'Espárragos',g:150},{n:'Huevos',g:110},{n:'AOVE',g:8}],
+      t:{kcal:480,p:46,c:6,f:30}},
+     {id:'B',n:'Merluza al horno con judías verdes',
+      i:[{n:'Merluza',g:200},{n:'Judías verdes',g:200},{n:'Ajo',g:8},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:380,p:42,c:14,f:14}}]}},
+
   {dia:'Día 6',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Pera 150g · Almendras 15g',kcal:392,p:22,c:62,f:14},
-   com:{kobj:590,opts:[
-     {id:'A',n:'Filete de ternera con brócoli y arroz',
-      i:[{n:'Filete ternera',g:160},{n:'Arroz cocido',g:150},{n:'Brócoli',g:200},{n:'AOVE',g:10}],
-      t:{kcal:593,p:51,c:56,f:19}},
-     {id:'B',n:'Pollo en pepitoria con arroz',
-      i:[{n:'Muslo pollo sin piel',g:160},{n:'Arroz cocido',g:150},{n:'AOVE',g:8}],
-      t:{kcal:585,p:45,c:43,f:24}}]},
-   mer:{desc:'🍪 Cookies de avena y chocolate negro 85% — 3 uds',kcal:340,p:9,c:38,f:16},
-   cen:{kobj:360,opts:[
-     {id:'A',n:'Gambas a la plancha con brócoli al ajillo',
-      i:[{n:'Gambas',g:200},{n:'Brócoli',g:200},{n:'AOVE',g:10}],
-      t:{kcal:328,p:42,c:16,f:13}},
-     {id:'B',n:'Sardinas al horno con espinacas salteadas',
-      i:[{n:'Sardinas frescas',g:150},{n:'Espinacas',g:150},{n:'AOVE',g:5}],
-      t:{kcal:392,p:42,c:5,f:22}}]}},
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:620,opts:[
+     {id:'A',n:'Paella valenciana casera',
+      i:[{n:'Arroz',g:160},{n:'Muslo pollo sin piel',g:120},{n:'Conejo',g:80},{n:'Judía verde',g:80},{n:'Tomate natural',g:60},{n:'Azafrán',g:1},{n:'AOVE',g:12}],
+      t:{kcal:620,p:48,c:62,f:18}},
+     {id:'B',n:'Arroz con pollo y setas',
+      i:[{n:'Arroz',g:160},{n:'Pechuga pollo',g:150},{n:'Setas',g:150},{n:'Caldo',g:400},{n:'Cebolla',g:60},{n:'AOVE',g:10}],
+      t:{kcal:560,p:48,c:58,f:14}}]},
+   mer:{desc:'🥞 Tortitas de avena con plátano · Miel 10g',kcal:320,p:14,c:52,f:8},
+   cen:{kobj:380,opts:[
+     {id:'A',n:'Revuelto de gambas y espárragos',
+      i:[{n:'Gambas',g:150},{n:'Espárragos',g:100},{n:'Huevos',g:110},{n:'AOVE',g:8}],
+      t:{kcal:380,p:36,c:6,f:24}},
+     {id:'B',n:'Anchoas con ensalada y huevo duro',
+      i:[{n:'Anchoas en aceite',g:80},{n:'Lechuga',g:100},{n:'Tomate',g:100},{n:'Huevos duros',g:110},{n:'AOVE',g:6}],
+      t:{kcal:360,p:28,c:8,f:24}}]}},
+
   {dia:'Día 7',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Nueces 20g',kcal:380,p:22,c:46,f:21},
-   com:{kobj:550,opts:[
-     {id:'A',n:'Arroz meloso de gambas',
-      i:[{n:'Gambas',g:180},{n:'Arroz cocido',g:200},{n:'AOVE',g:10}],
-      t:{kcal:503,p:38,c:58,f:12}},
-     {id:'B',n:'Costillas de cerdo con arroz y judías verdes',
-      i:[{n:'Costillas cerdo',g:180},{n:'Arroz cocido',g:120},{n:'Judías verdes',g:150}],
-      t:{kcal:577,p:38,c:45,f:27}}]},
-   mer:{desc:'Pera 150g · Almendras 15g',kcal:143,p:3,c:22,f:8},
-   cen:{kobj:320,opts:[
-     {id:'A',n:'Pavo a la plancha con judías verdes',
-      i:[{n:'Pechuga pavo',g:150},{n:'Judías verdes',g:200},{n:'AOVE',g:8}],
-      t:{kcal:337,p:47,c:14,f:10}},
-     {id:'B',n:'Dorada al horno con espárragos',
-      i:[{n:'Dorada',g:180},{n:'Espárragos',g:200},{n:'AOVE',g:10}],
-      t:{kcal:303,p:37,c:7,f:15}}]}},
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:490,opts:[
+     {id:'A',n:'Merluza al vapor con patata y judías verdes',
+      i:[{n:'Merluza',g:200},{n:'Patata',g:150},{n:'Judías verdes',g:150},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:490,p:44,c:40,f:14}},
+     {id:'B',n:'Bacalao al horno con patata',
+      i:[{n:'Bacalao',g:200},{n:'Patata',g:160},{n:'Tomate',g:80},{n:'Ajo',g:8},{n:'AOVE',g:10}],
+      t:{kcal:490,p:44,c:38,f:16}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:420,opts:[
+     {id:'A',n:'Huevos revueltos con setas y jamón serrano',
+      i:[{n:'Huevos',g:165},{n:'Setas',g:150},{n:'Jamón serrano',g:40},{n:'AOVE',g:8}],
+      t:{kcal:420,p:32,c:6,f:28}},
+     {id:'B',n:'Pechuga de pavo a la plancha con espárragos',
+      i:[{n:'Pavo',g:200},{n:'Espárragos',g:200},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:380,p:48,c:8,f:16}}]}},
+
   {dia:'Día 8',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Kiwi 100g · Nueces 15g',kcal:368,p:21,c:48,f:17},
-   com:{kobj:570,opts:[
-     {id:'A',n:'Pollo en pepitoria con arroz',
-      i:[{n:'Muslo pollo sin piel',g:160},{n:'Arroz cocido',g:150},{n:'AOVE',g:8}],
-      t:{kcal:585,p:45,c:43,f:24}},
-     {id:'B',n:'Pasta con gambas al ajillo',
-      i:[{n:'Pasta integral',g:90},{n:'Gambas',g:150},{n:'Ajo',g:10},{n:'AOVE',g:12},{n:'Guindilla',g:2}],
-      t:{kcal:487,p:38,c:48,f:14}}]},
-   mer:{desc:'Manzana 150g · Almendras 20g',kcal:194,p:4,c:25,f:10},
-   cen:{kobj:340,opts:[
-     {id:'A',n:'Tortilla francesa con berenjena a la plancha',
-      i:[{n:'Huevos (2)',g:110},{n:'Claras (2)',g:70},{n:'Berenjena',g:200},{n:'AOVE',g:10}],
-      t:{kcal:328,p:21,c:13,f:21}},
-     {id:'B',n:'Revuelto de gambas con brócoli',
-      i:[{n:'Gambas',g:120},{n:'Brócoli',g:200},{n:'Huevos (2)',g:110},{n:'AOVE',g:8}],
-      t:{kcal:398,p:39,c:16,f:21}}]}},
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:540,opts:[
+     {id:'A',n:'Poke bowl de salmón',
+      i:[{n:'Salmón',g:130},{n:'Arroz',g:130},{n:'Edamame',g:80},{n:'Aguacate',g:60},{n:'Pepino',g:60},{n:'Zanahoria',g:60},{n:'Tamari',g:10}],
+      t:{kcal:540,p:36,c:48,f:20}},
+     {id:'B',n:'Sardinas al horno con boniato',
+      i:[{n:'Sardinas frescas',g:200},{n:'Boniato',g:150},{n:'Tomate cherry',g:80},{n:'Ajo',g:8},{n:'AOVE',g:10},{n:'Limón',g:20}],
+      t:{kcal:520,p:38,c:38,f:24}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:520,opts:[
+     {id:'A',n:'Pollo a la plancha con boniato y brócoli',
+      i:[{n:'Pechuga pollo',g:180},{n:'Boniato',g:150},{n:'Brócoli',g:150},{n:'AOVE',g:8}],
+      t:{kcal:520,p:50,c:42,f:16}},
+     {id:'B',n:'Salmón al horno con espinacas salteadas',
+      i:[{n:'Salmón',g:150},{n:'Espinacas',g:200},{n:'Ajo',g:8},{n:'AOVE',g:8}],
+      t:{kcal:460,p:40,c:6,f:30}}]}},
+
   {dia:'Día 9',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Manzana 150g · Almendras 15g',kcal:387,p:22,c:58,f:14},
-   com:{kobj:560,opts:[
-     {id:'A',n:'Wok de ternera con verduras y arroz',
-      i:[{n:'Ternera en tiras',g:150},{n:'Champiñones',g:100},{n:'Zanahoria',g:100},{n:'Arroz cocido',g:150},{n:'AOVE',g:10}],
-      t:{kcal:573,p:47,c:55,f:18}},
-     {id:'B',n:'Pasta alla norma con champiñones',
-      i:[{n:'Pasta integral cocida',g:220},{n:'Berenjena',g:150},{n:'Champiñones',g:150},{n:'AOVE',g:12}],
-      t:{kcal:452,p:17,c:65,f:15}}]},
-   mer:{desc:'🥞 Tortitas de avena y plátano (1 plátano · 2 huevos · avena 30g) — 4 tortitas',kcal:310,p:14,c:44,f:8},
-   cen:{kobj:325,opts:[
-     {id:'A',n:'Merluza al vapor con judías verdes',
-      i:[{n:'Merluza',g:180},{n:'Judías verdes',g:200},{n:'AOVE',g:10}],
-      t:{kcal:300,p:36,c:14,f:12}},
-     {id:'B',n:'Filete de ternera a la plancha con espinacas',
-      i:[{n:'Filete ternera',g:150},{n:'Espinacas',g:150},{n:'AOVE',g:10}],
-      t:{kcal:350,p:43,c:5,f:18}}]}},
-  {dia:'Día 10',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Frutos rojos 100g · Almendras 15g',kcal:364,p:22,c:47,f:14},
-   com:{kobj:555,opts:[
-     {id:'A',n:'Hamburguesa casera de ternera con ensalada',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:482,opts:[
+     {id:'A',n:'Hamburguesa casera de ternera',
       i:[{n:'Carne picada ternera magra',g:180},{n:'Lechuga',g:80},{n:'Tomate',g:100},{n:'Cebolla',g:50},{n:'AOVE',g:8}],
       t:{kcal:482,p:46,c:12,f:28}},
-     {id:'B',n:'Pollo al ajillo con brócoli y arroz',
-      i:[{n:'Pechuga pollo',g:130},{n:'Brócoli',g:200},{n:'Arroz cocido',g:150},{n:'AOVE',g:10}],
-      t:{kcal:568,p:50,c:56,f:16}}]},
-   mer:{desc:'Naranja 150g · Almendras 20g',kcal:186,p:5,c:21,f:10},
-   cen:{kobj:380,opts:[
-     {id:'A',n:'Steak tartar de ternera con brócoli',
-      i:[{n:'Filete ternera crudo',g:150},{n:'Brócoli',g:200},{n:'AOVE',g:8}],
-      t:{kcal:365,p:45,c:14,f:16}},
-     {id:'B',n:'Huevos revueltos con espárragos y champiñones',
-      i:[{n:'Huevos (3)',g:165},{n:'Espárragos',g:150},{n:'Champiñones',g:100},{n:'AOVE',g:8}],
-      t:{kcal:358,p:24,c:10,f:25}}]}},
-  {dia:'Día 11',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Naranja 150g · Almendras 15g',kcal:387,p:22,c:57,f:14},
-   com:{kobj:534,opts:[
-     {id:'A',n:'Bacalao al horno con espárragos y arroz',
-      i:[{n:'Bacalao',g:200},{n:'Espárragos',g:150},{n:'Arroz cocido',g:150},{n:'AOVE',g:10}],
-      t:{kcal:479,p:43,c:48,f:12}},
-     {id:'B',n:'Conejo al horno con judías verdes y zanahoria',
-      i:[{n:'Conejo',g:180},{n:'Judías verdes',g:150},{n:'Zanahoria',g:100},{n:'AOVE',g:10}],
-      t:{kcal:489,p:56,c:21,f:21}}]},
-   mer:{desc:'Kiwi 100g · Almendras 15g',kcal:119,p:3,c:19,f:8},
-   cen:{kobj:342,opts:[
-     {id:'A',n:'Salmón a la plancha con judías verdes',
-      i:[{n:'Salmón',g:130},{n:'Judías verdes',g:150},{n:'AOVE',g:5}],
-      t:{kcal:362,p:29,c:11,f:22}},
-     {id:'B',n:'Tortilla francesa con champiñones',
-      i:[{n:'Huevos (2)',g:110},{n:'Claras (2)',g:70},{n:'Champiñones',g:200},{n:'AOVE',g:10}],
-      t:{kcal:322,p:25,c:8,f:21}}]}},
-  {dia:'Día 12',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Pera 150g · Nueces 15g',kcal:372,p:21,c:59,f:17},
-   com:{kobj:523,opts:[
-     {id:'A',n:'Pasta aglio e olio con gambas',
-      i:[{n:'Pasta integral cocida',g:220},{n:'Gambas',g:130},{n:'AOVE',g:12}],
-      t:{kcal:502,p:35,c:54,f:16}},
-     {id:'B',n:'Filete de ternera con champiñones y arroz',
-      i:[{n:'Filete ternera',g:150},{n:'Champiñones',g:150},{n:'Arroz cocido',g:150},{n:'AOVE',g:10}],
-      t:{kcal:543,p:48,c:47,f:18}}]},
-   mer:{desc:'🍫 Brownie de boniato y cacao (boniato 150g · cacao puro · huevos · miel) — 1 ración',kcal:280,p:10,c:48,f:7},
-   cen:{kobj:316,opts:[
-     {id:'A',n:'Bacalao al horno con espinacas',
-      i:[{n:'Bacalao',g:200},{n:'Espinacas',g:150},{n:'AOVE',g:10}],
-      t:{kcal:289,p:40,c:5,f:13}},
-     {id:'B',n:'Pavo a la plancha con berenjena asada',
-      i:[{n:'Pechuga pavo',g:150},{n:'Berenjena',g:200},{n:'AOVE',g:10}],
-      t:{kcal:343,p:46,c:12,f:12}}]}},
-  {dia:'Día 13',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Mango 100g · Nueces 20g',kcal:389,p:22,c:55,f:21},
-   com:{kobj:555,opts:[
+     {id:'B',n:'Pollo al ajillo con arroz',
+      i:[{n:'Muslo pollo sin piel',g:180},{n:'Arroz',g:150},{n:'Ajo',g:15},{n:'AOVE',g:10},{n:'Perejil',g:5}],
+      t:{kcal:540,p:48,c:52,f:16}}]},
+   mer:{desc:'⚡ Energy balls dátil y cacao · 3 unidades',kcal:240,p:8,c:32,f:10},
+   cen:{kobj:554,opts:[
      {id:'A',n:'Pollo a la cerveza con arroz y brócoli',
-      i:[{n:'Muslo pollo sin piel',g:150},{n:'Arroz cocido',g:140},{n:'Brócoli',g:150},{n:'Cerveza (30ml para cocinar)',g:30},{n:'AOVE',g:8}],
+      i:[{n:'Muslo pollo sin piel',g:150},{n:'Arroz',g:130},{n:'Brócoli',g:150},{n:'Cerveza',g:30},{n:'AOVE',g:8}],
       t:{kcal:554,p:46,c:50,f:18}},
-     {id:'B',n:'Arroz meloso de gambas',
-      i:[{n:'Gambas',g:180},{n:'Arroz cocido',g:200},{n:'AOVE',g:10}],
-      t:{kcal:503,p:38,c:58,f:12}}]},
-   mer:{desc:'Manzana 150g · Nueces 15g',kcal:177,p:3,c:24,f:10},
-   cen:{kobj:360,opts:[
-     {id:'A',n:'Revuelto de gambas con espárragos',
-      i:[{n:'Gambas',g:120},{n:'Espárragos',g:150},{n:'Huevos (2)',g:110},{n:'AOVE',g:8}],
-      t:{kcal:360,p:37,c:8,f:20}},
-     {id:'B',n:'Dorada al horno con brócoli al ajillo',
-      i:[{n:'Dorada',g:200},{n:'Brócoli',g:200},{n:'AOVE',g:10}],
-      t:{kcal:350,p:42,c:14,f:16}}]}},
-  {dia:'Día 14',
-   des:{desc:'Yogur griego 200g · Plátano 100g · Kiwi 100g · Almendras 15g',kcal:368,p:22,c:48,f:14},
-   com:{kobj:520,opts:[
-     {id:'A',n:'Hamburguesa de ternera con boniato asado',
-      i:[{n:'Carne picada ternera magra',g:180},{n:'Boniato',g:150},{n:'Lechuga y tomate',g:80},{n:'AOVE',g:8}],
-      t:{kcal:521,p:46,c:38,f:19}},
-     {id:'B',n:'Merluza en salsa verde con arroz',
-      i:[{n:'Merluza',g:200},{n:'Arroz cocido',g:160},{n:'AOVE',g:10}],
-      t:{kcal:462,p:40,c:45,f:12}}]},
-   mer:{desc:'🍌 Bizcocho de plátano y avena (1 ración) — avena 50g · huevos · miel · canela',kcal:290,p:11,c:46,f:6},
+     {id:'B',n:'Ternera a la plancha con patata asada',
+      i:[{n:'Filete ternera',g:180},{n:'Patata',g:150},{n:'Judías verdes',g:100},{n:'AOVE',g:8}],
+      t:{kcal:520,p:48,c:38,f:18}}]}},
+
+  {dia:'Día 10',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:490,opts:[
+     {id:'A',n:'Bacalao al horno con patata',
+      i:[{n:'Bacalao',g:200},{n:'Patata',g:160},{n:'Tomate',g:80},{n:'Ajo',g:8},{n:'AOVE',g:10}],
+      t:{kcal:490,p:44,c:38,f:16}},
+     {id:'B',n:'Arroz con pollo al horno',
+      i:[{n:'Pechuga pollo',g:150},{n:'Arroz',g:160},{n:'Tomate',g:100},{n:'Zanahoria',g:80},{n:'AOVE',g:10}],
+      t:{kcal:540,p:50,c:55,f:13}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
    cen:{kobj:380,opts:[
-     {id:'A',n:'Sardinas al horno con espinacas',
-      i:[{n:'Sardinas frescas',g:150},{n:'Espinacas',g:150},{n:'AOVE',g:5}],
-      t:{kcal:392,p:42,c:5,f:22}},
-     {id:'B',n:'Filete de ternera con champiñones y espárragos',
-      i:[{n:'Filete ternera',g:150},{n:'Champiñones',g:100},{n:'Espárragos',g:100},{n:'AOVE',g:10}],
-      t:{kcal:357,p:44,c:7,f:18}}]}},
-  {dia:'Día 15 — 🍕 CHEAT MEAL',
-   des:{desc:'Yogur griego 200g · Plátano · Lo que apetezca',kcal:249,p:19,c:31,f:8},
+     {id:'A',n:'Anchoas con ensalada y huevo duro',
+      i:[{n:'Anchoas en aceite',g:80},{n:'Lechuga',g:100},{n:'Tomate',g:100},{n:'Huevos duros',g:110},{n:'AOVE',g:6}],
+      t:{kcal:360,p:28,c:8,f:24}},
+     {id:'B',n:'Mejillones al vapor con arroz',
+      i:[{n:'Mejillones',g:300},{n:'Arroz',g:130},{n:'Ajo',g:8},{n:'Limón',g:20}],
+      t:{kcal:420,p:34,c:48,f:10}}]}},
+
+  {dia:'Día 11',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:560,opts:[
+     {id:'A',n:'Risotto de setas con pollo',
+      i:[{n:'Arroz',g:150},{n:'Setas',g:150},{n:'Pechuga pollo',g:120},{n:'Caldo',g:400},{n:'Cebolla',g:60},{n:'AOVE',g:10},{n:'Parmesano',g:15}],
+      t:{kcal:560,p:44,c:54,f:16}},
+     {id:'B',n:'Pasta con atún y tomate natural',
+      i:[{n:'Pasta integral',g:90},{n:'Atún natural',g:120},{n:'Tomate natural triturado',g:150},{n:'Ajo',g:8},{n:'AOVE',g:10}],
+      t:{kcal:490,p:38,c:50,f:12}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:480,opts:[
+     {id:'A',n:'Tortilla de patata ligera con ensalada',
+      i:[{n:'Huevos',g:165},{n:'Patata',g:150},{n:'Cebolla',g:60},{n:'AOVE',g:10},{n:'Lechuga',g:80},{n:'Tomate',g:80}],
+      t:{kcal:480,p:26,c:35,f:26}},
+     {id:'B',n:'Dorada a la plancha con espárragos',
+      i:[{n:'Dorada',g:200},{n:'Espárragos',g:200},{n:'Ajo',g:8},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:380,p:42,c:8,f:18}}]}},
+
+  {dia:'Día 12',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:520,opts:[
+     {id:'A',n:'Sardinas al horno con boniato',
+      i:[{n:'Sardinas frescas',g:200},{n:'Boniato',g:150},{n:'Tomate cherry',g:80},{n:'Ajo',g:8},{n:'AOVE',g:10},{n:'Limón',g:20}],
+      t:{kcal:520,p:38,c:38,f:24}},
+     {id:'B',n:'Salmón con patata al horno',
+      i:[{n:'Salmón',g:150},{n:'Patata',g:150},{n:'Brócoli',g:150},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:530,p:40,c:40,f:22}}]},
+   mer:{desc:'🍌 Bizcocho de plátano casero · 2 porciones',kcal:280,p:10,c:42,f:8},
+   cen:{kobj:420,opts:[
+     {id:'A',n:'Mejillones al vapor con arroz',
+      i:[{n:'Mejillones',g:300},{n:'Arroz',g:130},{n:'Ajo',g:8},{n:'Limón',g:20}],
+      t:{kcal:420,p:34,c:48,f:10}},
+     {id:'B',n:'Revuelto de huevos con espárragos y gambas',
+      i:[{n:'Huevos',g:110},{n:'Espárragos',g:150},{n:'Gambas',g:100},{n:'AOVE',g:8}],
+      t:{kcal:380,p:32,c:6,f:24}}]}},
+
+  {dia:'Día 13',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:540,opts:[
+     {id:'A',n:'Wok de ternera con verduras y arroz',
+      i:[{n:'Ternera magra',g:150},{n:'Arroz',g:150},{n:'Brócoli',g:100},{n:'Zanahoria',g:60},{n:'Tamari',g:15},{n:'Jengibre',g:5},{n:'AOVE',g:8}],
+      t:{kcal:540,p:46,c:52,f:14}},
+     {id:'B',n:'Arroz con gambas y setas',
+      i:[{n:'Gambas',g:180},{n:'Arroz',g:150},{n:'Setas',g:100},{n:'Ajo',g:8},{n:'AOVE',g:10}],
+      t:{kcal:500,p:38,c:54,f:14}}]},
+   mer:{desc:'2 tortitas de arroz · 3 lonchas pavo · Fruta temporada',kcal:180,p:14,c:22,f:3},
+   cen:{kobj:370,opts:[
+     {id:'A',n:'Pechuga de pavo a la plancha con espárragos',
+      i:[{n:'Pavo',g:200},{n:'Espárragos',g:200},{n:'AOVE',g:8},{n:'Limón',g:20}],
+      t:{kcal:370,p:48,c:8,f:16}},
+     {id:'B',n:'Bacalao al horno con espinacas',
+      i:[{n:'Bacalao',g:200},{n:'Espinacas',g:200},{n:'Ajo',g:8},{n:'AOVE',g:8}],
+      t:{kcal:360,p:44,c:6,f:16}}]}},
+
+  {dia:'Día 14',
+   des:{desc:'Yogur griego 0% 200g · Plátano · Nueces 25g · Crema cacahuete 15g',kcal:430,p:27,c:40,f:18},
+   com:{kobj:521,opts:[
+     {id:'A',n:'Hamburguesa de ternera con boniato asado',
+      i:[{n:'Carne picada ternera magra',g:180},{n:'Boniato',g:150},{n:'Lechuga',g:60},{n:'Tomate',g:80},{n:'AOVE',g:8}],
+      t:{kcal:521,p:46,c:38,f:19}},
+     {id:'B',n:'Pollo al curry con arroz y brócoli',
+      i:[{n:'Pechuga pollo',g:150},{n:'Arroz',g:150},{n:'Brócoli',g:150},{n:'Leche de coco light',g:80},{n:'Cúrcuma',g:3},{n:'AOVE',g:8}],
+      t:{kcal:540,p:50,c:52,f:16}}]},
+   mer:{desc:'🍪 Cookies de avena y nueces · 3 unidades',kcal:260,p:10,c:34,f:12},
+   cen:{kobj:460,opts:[
+     {id:'A',n:'Salmón al horno con espinacas salteadas',
+      i:[{n:'Salmón',g:150},{n:'Espinacas',g:200},{n:'Ajo',g:8},{n:'AOVE',g:8}],
+      t:{kcal:460,p:40,c:6,f:30}},
+     {id:'B',n:'Pechuga de pollo con ensalada completa',
+      i:[{n:'Pechuga pollo',g:180},{n:'Lechuga',g:100},{n:'Tomate',g:100},{n:'Pepino',g:80},{n:'Aguacate',g:60},{n:'AOVE',g:8}],
+      t:{kcal:440,p:46,c:10,f:22}}]}},
+
+  {dia:'Día 15 🎉',
+   des:{desc:'Desayuno libre — mereces un break',kcal:0,p:0,c:0,f:0},
    com:{kobj:0,opts:[
-     {id:'A',n:'🍕 CHEAT MEAL — Sin restricciones',i:[],t:{kcal:0,p:0,c:0,f:0}},
-     {id:'B',n:'Lo que apetezca hoy',i:[],t:{kcal:0,p:0,c:0,f:0}}]},
-   mer:{desc:'Lo que apetezca — te lo has ganado',kcal:0,p:0,c:0,f:0},
+     {id:'A',n:'🍕 CHEAT MEAL — Lo que apetezca',
+      i:[],t:{kcal:0,p:0,c:0,f:0}},
+     {id:'B',n:'🍔 Hamburguesa / Pizza / Pasta — Sin restricciones',
+      i:[],t:{kcal:0,p:0,c:0,f:0}}]},
+   mer:{desc:'Lo que quieras',kcal:0,p:0,c:0,f:0},
    cen:{kobj:0,opts:[
-     {id:'A',n:'🍕 Cena libre',i:[],t:{kcal:0,p:0,c:0,f:0}},
-     {id:'B',n:'Sin restricciones',i:[],t:{kcal:0,p:0,c:0,f:0}}]}},
+     {id:'A',n:'Cena libre — sin restricciones',
+      i:[],t:{kcal:0,p:0,c:0,f:0}},
+     {id:'B',n:'Repite lo que más te gustó hoy',
+      i:[],t:{kcal:0,p:0,c:0,f:0}}]}},
 ];
 
 function _dietDate(idx){
-  var s=new Date(2026,8,14);
+  var s=new Date(2026,8,21);
   var d=new Date(s.getTime()+idx*86400000);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
@@ -5044,7 +5158,7 @@ function _dietDate(idx){
 function renderDietPlan(){
   var el=document.getElementById('food-plan-content');
   if(!el) return;
-  var start=new Date(2026,8,14);
+  var start=new Date(2026,8,21);
   var now=new Date();
   var todayIdx=Math.max(0,Math.floor((now-start)/86400000)%15);
   var h='';
@@ -5272,8 +5386,20 @@ function skipMobEx(){
 function finishMobSession(){
   sd('mob_done_'+today(),true);
   var sec=document.getElementById('mob-timer-section');
-  if(sec)sec.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:36px">✅</div><div style="font-size:15px;font-weight:700;color:var(--g);margin-top:6px">Sesión completada</div></div>';
-  renderMobilityPage();
+  if(sec){
+    var h='<div style="text-align:center;padding:20px">';
+    h+='<div style="font-size:40px;margin-bottom:8px">✅</div>';
+    h+='<div style="font-size:14px;font-weight:700;color:var(--g);margin-bottom:4px">Sesión completada</div>';
+    h+='<div style="font-size:11px;color:var(--m);margin-bottom:12px">8 min · Lumbar, isquios, psoas y pecho liberados</div>';
+    h+='<button class="btn btr btn-sm" onclick="resetMobDone()">↩ Desmarcar</button>';
+    h+='</div>';
+    sec.innerHTML=h;
+  }
+}
+
+function resetMobDone(){
+  sd('mob_done_'+today(),false);
+  resetMobSession();
 }
 
 function weightTab(t){
@@ -5382,7 +5508,7 @@ function renderMealOfMoment(){
   var titleEl=document.getElementById('h-meal-title');
   if(emojiEl) emojiEl.textContent=meal.emoji;
   if(titleEl) titleEl.textContent=meal.title+' · '+meal.timeLabel;
-  var planStart=new Date(2026,8,14);
+  var planStart=new Date(2026,8,21);
   var dayIdx=Math.max(0,Math.floor((new Date()-planStart)/86400000)%15);
   var day=typeof DIETA15!=='undefined'?DIETA15[dayIdx]:null;
   if(!day){el.innerHTML='<div style="font-size:12px;color:var(--m)">Plan empieza el 7 de septiembre</div>';return;}
@@ -5442,6 +5568,14 @@ var MEDIDAS_DEF=[
    desc:'A mitad del muslo derecho, pierna recta.',
    why:'Sube si ganas músculo con el HIIT. Buena señal si la cintura baja a la vez.'},
 ];
+
+
+function deleteMedida(date){
+  var hist=ld('medidas_hist',[]);
+  hist=hist.filter(function(e){return e.date!==date;});
+  sd('medidas_hist',hist);
+  renderMedidas();
+}
 
 function saveMedida(){
   var data={date:today()};
@@ -5625,7 +5759,7 @@ function renderRetoCountdown(){
     if(!el) return;
     var now=new Date();
     var meta=new Date(2026,11,23);
-    var start=new Date(2026,8,14);
+    var start=new Date(2026,8,21);
     var daysLeft=Math.max(0,Math.ceil((meta-now)/86400000));
     var totalDays=Math.ceil((meta-start)/86400000);
     var daysDone=Math.max(0,Math.ceil((now-start)/86400000));
@@ -5700,7 +5834,7 @@ function init(){
     if(gd) gd.value=today();
     if(rd) rd.value=today();
     var srd=ld('run_start_date',null);
-    if(rps) rps.value=srd||'2026-09-14';
+    if(rps) rps.value=srd||'2026-09-21';
   }, 50);
   sd('active_food_log_date',today());
 
@@ -5723,15 +5857,7 @@ function init(){
 
   document.getElementById('w-date').value=today();
 
-  // Seed weight history including user's real entries
-  var wArr=ld('weights',[]);
-  var wDates=wArr.map(function(w){return w.date;});
-  [{date:'2026-05-05',val:93},{date:'2026-05-11',val:92.7},{date:'2026-06-01',val:92.4},{date:'2026-06-08',val:91.8},
-   {date:'2026-06-15',val:91.2},{date:'2026-06-20',val:90.6},{date:'2026-06-22',val:89.4},
-   {date:'2026-09-14',val:90.6}
-  ].forEach(function(e){if(wDates.indexOf(e.date)<0) wArr.push(e);});
-  wArr.sort(function(a,b){return a.date.localeCompare(b.date);});
-  sd('weights',wArr);
+  // Weight history managed by user only
   // Supplements reset: they key includes today's date so yesterday's data is ignored automatically
   // Health tab Sunday only
   var healthNb=document.getElementById('nb-health');
@@ -5747,7 +5873,7 @@ function init(){
 
   // 22:00 alert check
   var now=new Date();
-  var startTracking=new Date('2026-09-14');
+  var startTracking=new Date('2026-09-21');
   if(now>=startTracking&&now.getHours()>=22){
     var log=getFoodLog();
     if(!log.length){
@@ -6305,4 +6431,5 @@ function generateShopListFromPlan(){
   </div>
 </div>
 </body>
-</html>
+</html
+</div>>
