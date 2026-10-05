@@ -379,7 +379,7 @@ select.if{cursor:pointer;}
 
 <!-- RUNNING -->
 <div class="page" id="pg-run">
-  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">Plan 7 semanas · Empieza 21 sept</div></div>
+  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">Plan 7 semanas · Empieza 5 oct</div></div>
   <div class="tr">
     <button class="tb active" id="run-tab-today" onclick="runTab('today')">📋 Sesión</button>
     <button class="tb" id="run-tab-zones" onclick="runTab('zones')">🫁 Zonas</button>
@@ -1092,14 +1092,19 @@ const RUN_WEEKS=[
 
     // Weight history: user enters manually
 
-    if(!localStorage.getItem('run_start_date')){
-      localStorage.setItem('run_start_date','2026-09-21');
-    }
 
   
   localStorage.setItem(FLAG,'1');
   }catch(e){console.warn('Seed error:',e);}
 })();
+// Migración única: el plan de running empieza el lunes 5 oct 2026. Descarta fechas antiguas (seed 21-sep, resets previos…)
+(function(){try{
+  if(localStorage.getItem('run_start_fix_oct5')) return;
+  var raw=localStorage.getItem('run_start_date'),cur=null;
+  if(raw){try{cur=JSON.parse(raw);}catch(e){cur=raw;}}
+  if(typeof cur!=='string'||cur<'2026-10-05') localStorage.setItem('run_start_date',JSON.stringify('2026-10-05'));
+  localStorage.setItem('run_start_fix_oct5','1');
+}catch(e){}})();
 
 // ANALYTIC VALUES
 const ANALYTICS={
@@ -2328,8 +2333,11 @@ function getNextRunDay(now){
 
 function getRunStartDate(){
   var saved=ld('run_start_date',null);
-  if(saved){var p=saved.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-  return new Date(2026,9,5);
+  var d=new Date(2026,9,5);
+  if(typeof saved==='string'&&saved>='2026-10-05'){var p=saved.split('-');if(p.length===3) d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
+  // la semana 1 empieza siempre en lunes (lunes de la semana de la fecha elegida)
+  d.setDate(d.getDate()-((d.getDay()+6)%7));
+  return d;
 }
 function resetRunPlan(){
   var btn=event.target;
@@ -3138,7 +3146,7 @@ function renderRunToday(){
   var rfd=document.getElementById('run-force-day');
   if(rfd) rfd.value=ld('run_force_day','');
   var rps=document.getElementById('run-plan-start');
-  if(rps){var srd=ld('run_start_date',null);rps.value=srd?srd:'2026-10-05';}
+  if(rps){var srd=ld('run_start_date',null);rps.value=(typeof srd==='string'&&srd)?srd:'2026-10-05';}
   var toggleHtml=isYesterday?'<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDateStr)+'</span></div>':'';
   var now=new Date(logDateStr+'T12:00:00');
   var dow=now.getDay();
@@ -3156,7 +3164,7 @@ function renderRunToday(){
   var pfActive=ld('pf_'+getYesterday(),null);
 
   // Allow registering sessions from up to 7 days before start (in case of date reset)
-  var effectiveStart=new Date(startRunDate2.getTime()-7*86400000);
+  var effectiveStart=ld('run_force_day','')==='force'?new Date(startRunDate2.getTime()-7*86400000):startRunDate2;
   if(now<effectiveStart){
     el.innerHTML=toggleHtml+'<div class="al alb" style="margin:12px 16px"><span class="ali">📅</span><span>El running empieza el <strong>'+_fmtLongDate(getRunStartDate())+'</strong>.</span></div>';return;
   }
@@ -5908,7 +5916,7 @@ function init(){
     if(gd) gd.value=today();
     if(rd) rd.value=today();
     var srd=ld('run_start_date',null);
-    if(rps) rps.value=srd||'2026-09-21';
+    if(rps) rps.value=(typeof srd==='string'&&srd)||'2026-10-05';
   }, 50);
   sd('active_food_log_date',today());
 
