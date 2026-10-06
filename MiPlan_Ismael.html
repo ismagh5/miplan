@@ -5475,7 +5475,7 @@ function renderRecetasCaseras(){
   el.innerHTML=h;
 }
 function casToggle(i){var b=document.getElementById('cas-'+i);if(b)b.style.display=b.style.display==='none'?'block':'none';}
-function mobToggle(i){var b=document.getElementById('mob-'+i);if(b)b.style.display=b.style.display==='none'?'block':'none';}
+function mobToggle(i){var b=document.getElementById('mob-ex-'+i)||document.getElementById('mob-'+i);if(b)b.style.display=(b.style.display==='none'||!b.style.display)?'block':'none';}
 
 var _recCatSel='';
 function recetasSubTab(t){
