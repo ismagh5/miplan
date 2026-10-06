@@ -1394,11 +1394,11 @@ function removeHistSeries(exIdx, si){
 
 var DAILY_SCHEDULE={
   base:[
-    {id:'ducha',time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
-    {id:'estudio1',time:'09:15',emoji:'💻',label:'Estudio — 2h'},
-    {id:'pregym',time:'10:00',emoji:'💪',label:'Pre-gym: whey + colágeno + kiwi + plátano'},
+    {id:'ducha',time:'09:30',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'pregym',time:'10:00',emoji:'💪',label:'Pre-gym (~300 kcal · P30 H40 G3)'},
+    {id:'estudio1',time:'10:30',emoji:'💻',label:'Estudio — 1h'},
     {id:'entreno',time:'11:30',emoji:'🏋️',label:'Gym 11:30-13:00 + movilidad post-gym'},
-    {id:'postgym',time:'13:15',emoji:'🌅',label:'Post-gym: desayuno fijo + creatina + D3'},
+    {id:'postgym',time:'13:15',emoji:'🌅',label:'Post-gym (~550 kcal · P40 H60 G18) + creatina + D3'},
     {id:'estudio2',time:'13:45',emoji:'💻',label:'Estudio — 2h'},
     {id:'comida',time:'16:00',emoji:'🍽️',label:'Comida'},
     {id:'estudio3',time:'16:45',emoji:'💻',label:'Estudio — 3h'},
@@ -1411,15 +1411,15 @@ var DAILY_SCHEDULE={
     {id:'dormir',time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
   running:[
-    {id:'ducha',time:'09:00',emoji:'🚿',label:'Levantarse + ducha'},
-    {id:'estudio1',time:'09:15',emoji:'💻',label:'Estudio — 2h'},
-    {id:'pregym',time:'10:00',emoji:'💪',label:'Pre-gym: whey + colágeno + kiwi + plátano'},
+    {id:'ducha',time:'09:30',emoji:'🚿',label:'Levantarse + ducha'},
+    {id:'pregym',time:'10:00',emoji:'💪',label:'Pre-gym (~300 kcal · P30 H40 G3)'},
+    {id:'estudio1',time:'10:30',emoji:'💻',label:'Estudio — 1h'},
     {id:'entreno',time:'11:30',emoji:'🏋️',label:'Gym 11:30-13:00 + movilidad post-gym'},
-    {id:'postgym',time:'13:15',emoji:'🌅',label:'Post-gym: desayuno fijo + creatina + D3'},
+    {id:'postgym',time:'13:15',emoji:'🌅',label:'Post-gym (~550 kcal · P40 H60 G18) + creatina + D3'},
     {id:'estudio2',time:'13:45',emoji:'💻',label:'Estudio — 2h'},
     {id:'comida',time:'16:00',emoji:'🍽️',label:'Comida con hidratos'},
     {id:'estudio3',time:'16:45',emoji:'💻',label:'Estudio — 3h'},
-    {id:'precarrera',time:'18:30',emoji:'🍌',label:'Pre-carrera: plátano + tortitas/pan con miel'},
+    {id:'precarrera',time:'18:30',emoji:'🍌',label:'Pre-carrera (~200 kcal · solo hidratos)'},
     {id:'running',time:'20:00',emoji:'🏃',label:'Running 20:00-21:30 + movilidad post-carrera'},
     {id:'cena',time:'22:00',emoji:'🌙',label:'Cena post-carrera'},
     {id:'dj',time:'23:00',emoji:'🎧',label:'DJ — 1h'},
@@ -1434,7 +1434,7 @@ var DAILY_SCHEDULE={
     {id:'libre',time:'15:30',emoji:'🛋️',label:'Tarde libre'},
     {id:'precarrera',time:'18:30',emoji:'🍌',label:'Pre-carrera: solo hidratos'},
     {id:'running',time:'20:00',emoji:'🏃',label:'Running 20:00 + movilidad post-carrera en casa'},
-    {id:'cena',time:'22:00',emoji:'🍕',label:'Cena libre controlada (~750 kcal)'},
+    {id:'cena',time:'22:00',emoji:'🍕',label:'Cena (~750 kcal · P66 H55 G30)'},
     {id:'dj',time:'23:00',emoji:'🎧',label:'DJ — 1h'},
     {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad antes de dormir (obligatoria)'},
     {id:'lectura',time:'00:15',emoji:'📚',label:'Lectura — 30 min'},
@@ -1444,7 +1444,7 @@ var DAILY_SCHEDULE={
     {id:'ducha',time:'09:30',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'desayuno',time:'10:00',emoji:'🌅',label:'Desayuno'},
     {id:'movilidad40',time:'11:00',emoji:'🧘',label:'Movilidad completa — 40 min'},
-    {id:'comida',time:'14:30',emoji:'🥘',label:'Paella'},
+    {id:'comida',time:'14:30',emoji:'🍽️',label:'Comida (~750 kcal · P40 H90 G25)'},
     {id:'libre',time:'15:30',emoji:'🛋️',label:'Tarde libre'},
     {id:'merienda',time:'18:00',emoji:'🥛',label:'Merienda proteica'},
     {id:'cena',time:'21:30',emoji:'🌙',label:'Cena'},
@@ -1903,39 +1903,35 @@ function getCurrentWeight(){
 // ═══ NUTRICIÓN POR TIPO DE DÍA (calorías y macros por momento) ═══
 // Gasto estimado (vida sedentaria + entreno): solo gym ~2.600 · gym+carrera ~2.850 · sábado ~2.500 · domingo ~2.260 kcal
 // Déficit medio ~550 kcal/día → ~0,5 kg/semana (0,6% del peso). Revisar cada 2-3 semanas con el peso medio.
-var _M_PRE={id:'pre-gym',time:'10:00',icon:'💪',name:'Pre-gym',kcal:300,p:30,c:40,f:3,tip:'Whey 30g + colágeno 10g + 1 kiwi + 1 plátano.'};
-var _M_POST={id:'desayuno',time:'13:15',icon:'🌅',name:'Post-gym',kcal:550,p:40,c:60,f:18,tip:'Yogur griego 0% o proteico ~300g + avena 35-40g + crema de cacahuete 10g + nueces 15g + 1 fruta + creatina 5g + D3. Ojo: el yogur griego cremoso normal tiene un 10% de grasa y apenas 4g de proteína por 100g.'};
+var _M_PRE={id:'pre-gym',time:'10:00',icon:'💪',name:'Desayuno pre-gym',kcal:300,p:30,c:40,f:3,tip:'Proteína rápida + hidratos de fácil digestión, poca grasa.'};
+var _M_POST={id:'desayuno',time:'13:15',icon:'🌅',name:'Post-gym',kcal:550,p:40,c:60,f:18,tip:'Proteína + hidratos + algo de grasa. Creatina 5g + D3.'};
 var NUTRI_DAYS={
   gym:{label:'Solo gym',days:'Lunes · Miércoles · Viernes',icon:'🏋️',meals:[
     _M_PRE,_M_POST,
-    {id:'comida',time:'16:00',icon:'🍽️',name:'Comida',kcal:550,p:45,c:50,f:17,tip:'Ejemplo: 2 raciones de proteína + 1¼ de hidratos + 1½ de grasa + verdura libre.'},
-    {id:'merienda',time:'19:00',icon:'🍊',name:'Merienda ligera',kcal:150,p:5,c:20,f:5,tip:'1 fruta + un puñadito de frutos secos, o café con leche y una pieza de fruta.'},
-    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:450,p:36,c:25,f:22,tip:'Proteína (pescado, huevos o carne) + verdura + un poco de hidrato.'}
+    {id:'comida',time:'16:00',icon:'🍽️',name:'Comida',kcal:550,p:45,c:50,f:17,tip:'Cumple los macros de arriba + verdura libre.'},
+    {id:'merienda',time:'19:00',icon:'🍊',name:'Merienda ligera',kcal:150,p:5,c:20,f:5,tip:'Ligera: sobre todo hidratos con algo de proteína y grasa.'},
+    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:450,p:36,c:25,f:22,tip:'Prioriza proteína + verdura; pocos hidratos.'}
   ]},
   gymrun:{label:'Gym + carrera',days:'Martes · Jueves',icon:'🏃',meals:[
     _M_PRE,_M_POST,
-    {id:'comida',time:'16:00',icon:'🍽️',name:'Comida',kcal:550,p:45,c:50,f:17,tip:'Con hidratos completos (arroz, pasta o patata): son el combustible de la carrera de la noche.'},
-    {id:'merienda',time:'18:30',icon:'🍌',name:'Pre-carrera',kcal:200,p:5,c:40,f:2,tip:'Solo hidratos rápidos: 1 plátano + 2 tortitas de arroz con miel, o 40g de pan con membrillo. Sin grasa ni fibra.'},
+    {id:'comida',time:'16:00',icon:'🍽️',name:'Comida',kcal:550,p:45,c:50,f:17,tip:'Con buenos hidratos: son el combustible de la carrera de la noche.'},
+    {id:'merienda',time:'18:30',icon:'🍌',name:'Pre-carrera',kcal:200,p:5,c:40,f:2,tip:'Solo hidratos rápidos, sin grasa ni fibra.'},
     {id:'cena',time:'22:00',icon:'🌙',name:'Cena post-carrera',kcal:600,p:36,c:60,f:25,tip:'Proteína + hidratos + verdura. 600ml de agua al volver de correr.'}
   ]},
   longrun:{label:'Sábado · carrera',days:'Sábado',icon:'🏃',meals:[
-    {id:'desayuno',time:'10:00',icon:'🌅',name:'Desayuno',kcal:500,p:40,c:50,f:15,tip:'Tu desayuno de post-gym + 1 scoop de whey.'},
+    {id:'desayuno',time:'10:00',icon:'🌅',name:'Desayuno',kcal:500,p:40,c:50,f:15,tip:'Mismo reparto que tu desayuno de post-gym, con un extra de proteína.'},
     {id:'comida',time:'14:30',icon:'🍽️',name:'Comida',kcal:650,p:45,c:70,f:20,tip:'Comida completa con hidratos.'},
     {id:'merienda',time:'18:30',icon:'🍌',name:'Pre-carrera',kcal:200,p:5,c:40,f:2,tip:'Solo hidratos rápidos, sin grasa ni fibra.'},
-    {id:'cena',time:'22:00',icon:'🍕',name:'Cena libre controlada',kcal:750,p:66,c:55,f:30,tip:'Aquí entra la pizza o la hamburguesa casera. Que lleve mucha proteína (carne, queso, huevo).'}
+    {id:'cena',time:'22:00',icon:'🌙',name:'Cena',kcal:750,p:66,c:55,f:30,tip:'La más grande de la semana, pero con mucha proteína.'}
   ]},
   rest:{label:'Domingo · movilidad',days:'Domingo',icon:'🧘',meals:[
-    {id:'desayuno',time:'10:00',icon:'🌅',name:'Desayuno',kcal:450,p:40,c:45,f:12,tip:'Yogur proteico + avena + fruta, o tostadas con huevos y pavo.'},
-    {id:'comida',time:'14:30',icon:'🥘',name:'Paella',kcal:750,p:40,c:90,f:25,tip:'~100g de arroz en crudo por ración. Mide el aceite.'},
-    {id:'merienda',time:'18:00',icon:'🥛',name:'Merienda proteica',kcal:200,p:25,c:10,f:6,tip:'Queso fresco batido 0% 250g + fruta, o 1 scoop de whey.'},
-    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:600,p:51,c:40,f:27,tip:'Cena con mucha proteína para cerrar el día en ~156g.'}
+    {id:'desayuno',time:'10:00',icon:'🌅',name:'Desayuno',kcal:450,p:40,c:45,f:12,tip:'Proteína + hidratos, grasa moderada.'},
+    {id:'comida',time:'14:30',icon:'🍽️',name:'Comida',kcal:750,p:40,c:90,f:25,tip:'La comida fuerte del domingo. Mide el aceite.'},
+    {id:'merienda',time:'18:00',icon:'🥤',name:'Merienda proteica',kcal:200,p:25,c:10,f:6,tip:'Casi todo proteína.'},
+    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:600,p:51,c:40,f:27,tip:'Con mucha proteína para cerrar el día en ~156g.'}
   ]}
 };
-var NUTRI_EQUIV=[
-  {t:'~25g de proteína',c:'var(--a)',o:'120g de pollo o pavo · 150g de merluza u otro pescado blanco · 110g de salmón (+14g grasa) · 130g de ternera magra · 1 scoop de whey · 250g de queso fresco batido 0% · 4 huevos (+20g grasa) · 2 latas de mejillones o agujas'},
-  {t:'~40g de hidratos',c:'var(--o)',o:'50g de arroz o pasta (en crudo) · 230g de patata · 80g de pan · 65g de avena · 1 plátano grande + 1 kiwi'},
-  {t:'~10g de grasa',c:'var(--p)',o:'1 cucharada (10ml) de aceite de oliva · 15g de nueces · 20g de crema de cacahuete · ⅓ de aguacate'}
-];
+var NUTRI_EQUIV=[];
 function getNutriType(ds){
   var d=ds?new Date(ds+'T12:00:00').getDay():todayDow();
   if(d===0) return 'rest';
@@ -3198,7 +3194,7 @@ function renderRunToday(){
   } else html+='<div class="note"><strong>Calentamiento:</strong> Camina 5 min a paso ligero antes de empezar.</div>';
 
   // Pre-running nutrition
-  html+='<div class="al alo" style="margin:8px 0"><span class="ali">🍽️</span><span><strong>18:30 · Pre-carrera (~200 kcal, ~40g hidratos):</strong> 1 plátano + 2 tortitas de arroz con miel, o 40g de pan con membrillo. Sin grasa ni fibra. 300ml de agua.</span></div>';
+  html+='<div class="al alo" style="margin:8px 0"><span class="ali">🍽️</span><span><strong>18:30 · Pre-carrera (~200 kcal, ~40g hidratos):</strong> Solo hidratos rápidos, sin grasa ni fibra. 300ml de agua.</span></div>';
 
   html+='<div style="background:rgba(61,214,140,0.1);border:1px solid rgba(61,214,140,0.25);border-radius:12px;padding:14px;margin:10px 0">';
   html+='<div style="font-size:11px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🏃 Bloque de trabajo</div>';
@@ -3426,7 +3422,7 @@ function renderSupplements(){
 
   html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0">';
   html+='<span style="font-size:13px;color:var(--t)">⚡ Creatina 5g</span>';
-  html+='<span style="font-size:11px;color:var(--m)">Post-gym con yogur</span>';
+  html+='<span style="font-size:11px;color:var(--m)">Post-gym</span>';
   html+='<div style="width:28px;height:28px;border-radius:6px;border:2px solid '+(suppl.creatina?'var(--g)':'var(--b)')+';background:'+(suppl.creatina?'rgba(61,214,140,0.15)':'var(--s2)')+';display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px" onclick="toggleSuppl(\'creatina\')">'+(suppl.creatina?'✅':'')+'</div></div>\n';
   html+='</div>';
   document.getElementById('suppl-section').innerHTML=html;
@@ -3697,7 +3693,7 @@ function renderFoodModalBody(mode){
 
   // POSTGYM MODE (quick add)
   if(mode==='postgym'){
-    el.innerHTML='<div class="al alg"><span class="ali">🌅</span><span><strong>Post-gym</strong> — ~570 kcal · P:38g · C:62g · G:18g<br><span style="font-size:11px">Yogur griego 0%/proteico 300g + avena 35g + crema de cacahuete 10g + nueces 15g + plátano</span></span></div><button class="btn btg" style="margin-top:10px" onclick="addPostGym()">Añadir desayuno</button>';
+    el.innerHTML='<div class="al alg"><span class="ali">🌅</span><span><strong>Post-gym</strong> — ~570 kcal · P:38g · C:62g · G:18g<br><span style="font-size:11px">Objetivo del post-gym</span></span></div><button class="btn btg" style="margin-top:10px" onclick="addPostGym()">Añadir desayuno</button>';
     return;
   }
 
@@ -4305,7 +4301,7 @@ function _weekStart(){
 
 var GYM_PLAN={
   lunes:{n:'Push A · Pecho + Tríceps + Core',emoji:'💪',obj:'Pectoral · Tríceps · Deltoides ant. · Core',
-    preNut:'Pre-gym 10:00: whey 30g + colágeno 10g + kiwi + plátano (~300 kcal · 30g proteína). Cafeína opcional 30-40 min antes. Lo que construye músculo es el total de proteína del día (1,6-2,2 g/kg, ~156g para ti) repartido en 4-5 tomas, no la hora exacta. Agua 500ml durante la sesión.',
+    preNut:'Pre-gym 10:00: ~300 kcal · P30 H40 G3. Cafeína opcional 30-40 min antes. Lo que construye músculo es el total de proteína del día (1,6-2,2 g/kg, ~156g para ti) repartido en 4-5 tomas, no la hora exacta. Agua 500ml durante la sesión.',
     cal:[
       {n:'Foam roller pecho y zona torácica',dur:'2 min',desc:'Tumbado con el rolo transversal a la espalda media (omóplatos). Apoya la cabeza con las manos. Deja caer el pecho hacia el suelo y respira profundo. Mueve 2-3cm arriba y abajo. Los pectorales tensos por el ordenador robarán rango al press — el rolo los libera antes de empezar.'},
       {n:'Rotaciones de hombro con banda',dur:'30s cada dirección',desc:'Banda con agarre amplio. Brazos estirados, lleva la banda de delante hacia atrás por encima de la cabeza sin doblar los codos. Activa el manguito rotador antes de cargar el press. Imprescindible para proteger el hombro.'},
@@ -4330,10 +4326,10 @@ var GYM_PLAN={
       {n:'Cross-arm shoulder stretch',dur:'30s por lado',desc:'Brazo recto al hombro contrario a la altura del pecho. La mano libre presiona el codo hacia tu cuerpo. Estira el deltoides posterior que trabaja como estabilizador en el press.'},
       {n:'Cat-Cow lento',dur:'60s',desc:'A cuatro patas (o en el banco si quedan colchonetas libres), 8-10 repeticiones lentas. Arqueado máximo 2s, extensión máxima 2s. Restaura la movilidad espinal después del arco lumbar del press.'},
     ],
-    postNut:'Post-gym 13:15: yogur griego 0% o proteico + avena + crema de cacahuete + nueces + fruta + creatina 5g + D3 (~550 kcal · 40g proteína). Tienes 1-2 h de margen: la "ventana de 30 min" está sobrevalorada (Aragon & Schoenfeld 2013). Lo que cuenta es llegar al total de proteína del día.'},
+    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Tienes 1-2 h de margen: la "ventana de 30 min" está sobrevalorada (Aragon & Schoenfeld 2013). Lo que cuenta es llegar al total de proteína del día.'},
 
   miercoles:{n:'Pull A · Espalda + Bíceps + Core',emoji:'🏋️',obj:'Dorsal · Romboides · Bíceps · Core',
-    preNut:'Pre-gym 10:00: whey 30g + colágeno 10g + kiwi + plátano (~300 kcal · 30g proteína). Ayer fue pierna + carrera: si notas agujetas en las piernas es normal, hoy no se usan.',
+    preNut:'Pre-gym 10:00: ~300 kcal · P30 H40 G3. Ayer fue pierna + carrera: si notas agujetas en las piernas es normal, hoy no se usan.',
     cal:[
       {n:'Foam roller dorsales',dur:'2 min',desc:'Rolo transversal a la espalda media, a la altura de los omóplatos. Apoya la cabeza con las manos. Deja caer el pecho hacia el suelo con cada exhalación. 3-4 puntos desde la zona media hasta las escápulas. Los dorsales tensos por el ordenador roban rango al jalón y al remo — el rolo los libera.'},
       {n:'Band pull-apart (20 reps)',dur:'20 reps',desc:'Sostén la banda a la altura del pecho con ambas manos, agarre pronado. Tira de los extremos separando los brazos hasta que la banda toque el pecho. Las manos van hacia atrás y hacia afuera — los codos NO se doblan. Activa romboides y deltoides posterior antes de la sesión. Buen preventivo para el hombro.'},
@@ -4357,10 +4353,10 @@ var GYM_PLAN={
       {n:'Doorway bicep stretch',dur:'30s por lado',desc:'Brazo extendido al lado del cuerpo, palma apoyada en el marco de la puerta (o poste del rack). Gira lentamente el cuerpo hacia adelante hasta sentir el bíceps y el pectoral. Los bíceps tras el curl quedan en acortamiento adaptativo — el estiramiento los devuelve a su longitud funcional.'},
       {n:'Band pull-apart final (10 reps lentas)',dur:'10 reps',desc:'Cierra la sesión de pull exactamente como empezó. Las 10 reps lentas a baja intensidad llevan sangre oxigenada al deltoides posterior y romboides.'},
     ],
-    postNut:'Post-gym 13:15: yogur griego 0% o proteico + avena + crema de cacahuete + nueces + fruta + creatina 5g + D3 (~550 kcal · 40g proteína). Mañana: Push B (hombros) por la mañana y carrera a las 20:00.'},
+    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Mañana: Push B (hombros) por la mañana y carrera a las 20:00.'},
 
   martes:{n:'Legs · Cuádriceps + Isquios + Glúteo',emoji:'🦵',obj:'Cuádriceps · Isquios · Glúteo · Gemelos',
-    preNut:'Día doble: pierna 11:30 y carrera 20:00. Pre-gym 10:00: whey 30g + colágeno 10g + kiwi + plátano (~300 kcal · 30g proteína). Hoy tocan 2.200 kcal: los 200 extra van en hidratos (merienda pre-carrera de las 18:30 y cena).',
+    preNut:'Día doble: pierna 11:30 y carrera 20:00. Pre-gym 10:00: ~300 kcal · P30 H40 G3. Hoy tocan 2.200 kcal: los 200 extra van en hidratos (merienda pre-carrera de las 18:30 y cena).',
     cal:[
       {n:'Foam roller cuádriceps e isquios',dur:'2 min',desc:'Rolo bajo el muslo delantero (cuádriceps). Rueda desde la cadera hasta encima de la rodilla. Para 20-30s en cada punto de tensión y respira. Luego rola la parte trasera del muslo (isquios). El tejido frío tiene más riesgo de rotura — el rolo reduce ese riesgo y aumenta el rango de la sentadilla.'},
       {n:'Foam roller glúteos',dur:'90s por lado',desc:'Sentado en el rolo con un glúteo. Cruza el tobillo sobre la rodilla contraria (posición de figura-4). Rueda buscando el punto más tenso y para 20-30s. El glúteo tenso limita la profundidad de la sentadilla y el hip thrust — liberarlo antes multiplica el trabajo muscular.'},
@@ -4385,10 +4381,10 @@ var GYM_PLAN={
       {n:'Estiramiento isquios activo',dur:'45s por pierna',desc:'Tumbado boca arriba, pierna estirada hacia arriba sujetada con las manos (o cuerda). Rodilla ligeramente doblada. Aguanta sin rebotar. 45s de estiramiento prolongado relaja el reflejo miotático — el isquio se alarga más que con un estiramiento de 20s.'},
       {n:'Estiramiento gemelos en rampa',dur:'45s por pierna',desc:'Toes apoyadas en el talón de una mancuerna o borde del escalón del gym. Talón bajando hacia el suelo. Rodilla extendida (gastrocnemio) luego ligeramente doblada (sóleo). Ambas cabezas del tríceps sural necesitan estirarse por separado.'},
     ],
-    postNut:'Post-gym 13:15: yogur griego 0% o proteico + avena + crema de cacahuete + nueces + fruta + creatina 5g + D3 (~550 kcal · 40g proteína). Comida 16:00 con hidratos (arroz, pasta o patata) para llegar con glucógeno a la carrera. 18:30: plátano + tortitas o pan con miel. Correr esta noche, 8 h después de la pierna, es mejor que correr mañana: las agujetas aparecen a partir de las 24 h.'},
+    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Comida 16:00 con hidratos para llegar con glucógeno a la carrera. 18:30: ~200 kcal solo hidratos. Correr esta noche, 8 h después de la pierna, es mejor que correr mañana: las agujetas aparecen a partir de las 24 h.'},
 
   jueves:{n:'Push B · Hombros + Pecho (variantes)',emoji:'🔥',obj:'Deltoides · Pectoral · Tríceps',
-    preNut:'Día doble: hombros 11:30 y carrera 20:00. Pre-gym 10:00: whey 30g + colágeno 10g + kiwi + plátano (~300 kcal · 30g proteína). Hoy tocan 2.200 kcal: hidratos extra en la merienda pre-carrera y en la cena.',
+    preNut:'Día doble: hombros 11:30 y carrera 20:00. Pre-gym 10:00: ~300 kcal · P30 H40 G3. Hoy tocan 2.200 kcal: hidratos extra en la merienda pre-carrera y en la cena.',
     cal:[
       {n:'Rotadores del manguito con banda (15 reps/lado)',dur:'15 reps por lado',desc:'Banda anclada al rack a la altura del codo. Codo a 90°. Rotación externa sin mover el codo del costado. Luego rotación interna. El manguito rotador es el primero en lesionarse si se sobrecarga sin calentar — hoy es Push B, el segundo día de empuje.'},
       {n:'Rotaciones de hombro con barra ligera (10 reps)',dur:'10 reps',desc:'Barra vacía o con 5kg. Movimiento de remo alto lento — codos suben hasta la barbilla, luego presionas hacia arriba. Activa el trapecio y los deltoides antes del press militar.'},
@@ -4409,10 +4405,10 @@ var GYM_PLAN={
       {n:'Estiramiento pectoral en rack (45° y 90°)',dur:'30s por lado en cada posición',desc:'Dos posiciones: antebrazo a 90° del tronco (fibras medias del pectoral) y antebrazo a 45° mirando hacia arriba (fibras superiores). Ambas posiciones en cada sesión de empuje para cubrir todas las fibras.'},
       {n:'Thoracic extension en foam roller',dur:'60s',desc:'Rolo transversal a la espalda media. Manos detrás de la cabeza. Deja caer el pecho hacia el suelo lentamente. El press acorta los pectorales y la zona torácica — esta extensión es el antídoto.'},
     ],
-    postNut:'Post-gym 13:15: yogur griego 0% o proteico + avena + crema de cacahuete + nueces + fruta + creatina 5g + D3 (~550 kcal · 40g proteína). 18:30 merienda pre-carrera (solo hidratos). Cena después de correr con proteína + hidratos. Mañana: Pull B + Core.'},
+    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. 18:30 merienda pre-carrera (solo hidratos). Cena después de correr con proteína + hidratos. Mañana: Pull B + Core.'},
 
   viernes:{n:'Pull B + Core · Espalda ancha + Core runner',emoji:'⚡',obj:'Dorsal ancho · Core anti-rotación · Funcional',
-    preNut:'Pre-gym 10:00: whey 30g + colágeno 10g + kiwi + plátano (~300 kcal · 30g proteína). El core va al final de la sesión: los estabilizadores tienen que estar frescos para el jalón y el remo.',
+    preNut:'Pre-gym 10:00: ~300 kcal · P30 H40 G3. El core va al final de la sesión: los estabilizadores tienen que estar frescos para el jalón y el remo.',
     cal:[
       {n:'Foam roller dorsal completo',dur:'2 min',desc:'Toda la espalda desde lumbar hasta la base del cuello. Especialmente la zona entre los omóplatos. Después de 4 días de gym la espalda acumula tensión bilateral — el rolo la libera antes del jalón y las dominadas.'},
       {n:'Cat-Cow (10 reps lentas)',dur:'60s',desc:'A cuatro patas, 10 repeticiones lentas. Arqueado máximo (cat) 2s, extensión máxima (cow) 2s. Restaura la movilidad espinal y activa el transverso abdominal antes del trabajo de core.'},
@@ -4434,7 +4430,7 @@ var GYM_PLAN={
       {n:'Pigeon Pose bilateral',dur:'75s por lado',desc:'El estiramiento de cierre de semana más completo. Glúteo, piriforme, rotadores externos. Deja que el cuerpo se rinda completamente. Mañana es sábado — puedes recuperarte.'},
       {n:'Supine twist (torsión espinal)',dur:'40s por lado',desc:'Tumbado boca arriba. Lleva la rodilla derecha al pecho y déjala caer al lado izquierdo. Brazo derecho en cruz. Respira profundo y deja que la gravedad haga el trabajo. Restaura la movilidad rotacional de la columna que 5 días de gym reduce.'},
     ],
-    postNut:'Post-gym 13:15: yogur griego 0% o proteico + avena + crema de cacahuete + nueces + fruta + creatina 5g + D3 (~550 kcal · 40g proteína). Semana de gym completada. Mañana sábado: carrera a las 20:00 y cena libre controlada (~750 kcal, pizza u hamburguesa casera). Duerme 7-9 h: es cuando se recupera el músculo.'},
+    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Semana de gym completada. Mañana sábado: carrera a las 20:00 y cena de ~750 kcal. Duerme 7-9 h: es cuando se recupera el músculo.'},
 
   sabado:{n:'Movilidad Post-Running · Recuperación activa',emoji:'🏃',obj:'Flexibilidad · Fascia · Prevención lesiones running',
     preNut:'Sin gym. Carrera a las 20:00 (sesión de la semana en la pestaña Running). Hoy 2.100 kcal: desayuno 10:00, comida 14:30, pre-carrera 18:30 (solo hidratos) y cena libre controlada después de correr.',
@@ -4450,10 +4446,10 @@ var GYM_PLAN={
       {n:'Supine twist profundo',dur:'60s por lado',desc:'Tumbado boca arriba. Lleva la rodilla al pecho con la mano contraria. Déjala caer hacia el lado. Brazo contrario en cruz. Respira profundo y deja que la gravedad haga el trabajo en cada exhalación. El running genera una compresión rotacional en la columna lumbar que solo la torsión pasiva restaura.'},
       {n:'Respiración 4-2-6 de cierre',dur:'3 minutos',desc:'Tumbado boca arriba. Inhala 4s, aguanta 2s, exhala 6s. 15 ciclos. Ayuda a bajar pulsaciones y a pasar al modo descanso después de correr.'},
     ],
-    postNut:'Cena después de correr (~750 kcal, 60g+ de proteína): aquí entra la pizza o la hamburguesa casera. 600ml de agua al volver. Creatina 5g también hoy.'},
+    postNut:'Cena después de correr (~750 kcal, 60g+ de proteína): la más grande de la semana. 600ml de agua al volver. Creatina 5g también hoy.'},
 
   domingo:{n:'Descanso activo · Movilidad completa 40min',emoji:'🧘',obj:'Movilidad articular · Fascia · Sistema nervioso parasimpático',
-    preNut:'Sin gym ni carrera. 2.000 kcal: la paella cabe en la comida (~100g de arroz en crudo por ración, mide el aceite). Proteína ~156g repartida en 4 tomas. Creatina 5g también hoy.',
+    preNut:'Sin gym ni carrera. 2.000 kcal: comida fuerte de ~750 kcal, mide el aceite. Proteína ~156g repartida en 4 tomas. Creatina 5g también hoy.',
     cal:[],
     exer:[],
     postMob:[
@@ -4467,7 +4463,7 @@ var GYM_PLAN={
       {n:'Cat-Cow con respiración segmentaria',dur:'2 minutos — 12 ciclos lentos',desc:'A cuatro patas. Pero esta versión es segmentaria: empieza arqueando SOLO la zona lumbar, luego añade la dorsal, luego la cervical (cat). En la vuelta (cow): primero la cervical, luego la dorsal, luego la lumbar. 2s por segmento. 12 ciclos completos. Esta versión trabaja la movilidad articular segmento a segmento — mucho más efectiva que el cat-cow estándar para restaurar la función.'},
       {n:'Respiración diafragmática de cierre',dur:'3 minutos — 15 ciclos',desc:'Tumbado boca arriba. 4s inhala, 2s aguanta, 6s exhala. Este protocolo al final de la sesión de domingo ayuda a bajar pulsaciones y a cerrar la semana relajado antes de los 5 días de entreno que empiezan mañana. Es el reset semanal del sistema.'},
     ],
-    postNut:'Cena con mucha proteína (pescado, carne o huevos) para cerrar el día en ~156g. Mañana empieza la semana con Push A.'},
+    postNut:'Cena con mucha proteína para cerrar el día en ~156g. Mañana empieza la semana con Push A.'},
 };
 
 
@@ -5159,7 +5155,7 @@ function renderNutriPlan(sel){
   var t=_nutriSel||todayType;
   var day=t===todayType?getNutriDay(today()):getNutriDay(null,t);
   var h='';
-  h+='<div style="font-size:11px;color:var(--m);margin-bottom:8px;line-height:1.5">Calorías y macros por momento del día. Tú eliges los alimentos con las equivalencias de abajo; lo único fijo es el pre-gym y el post-gym.</div>';
+  h+='<div style="font-size:11px;color:var(--m);margin-bottom:8px;line-height:1.5">Calorías y macros por momento del día. Tú eliges qué comer y lo registras en Yazio; aquí solo tienes el objetivo de cada momento.</div>';
   h+='<div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none">';
   ['gym','gymrun','longrun','rest'].forEach(function(k){
     var b=NUTRI_DAYS[k];var a=k===t;
@@ -5182,10 +5178,6 @@ function renderNutriPlan(sel){
     h+='</div>';
   });
   h+='</div>';
-  h+='<div style="font-size:12px;font-weight:700;color:var(--t);margin:12px 0 6px">🔁 Equivalencias (pesos en crudo)</div>';
-  NUTRI_EQUIV.forEach(function(q){
-    h+='<div style="background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:9px 12px;margin-bottom:6px"><div style="font-size:12px;font-weight:700;color:'+q.c+';margin-bottom:3px">'+q.t+'</div><div style="font-size:11px;color:var(--m);line-height:1.6">'+q.o+'</div></div>';
-  });
   h+='<div style="font-size:12px;font-weight:700;color:var(--t);margin:12px 0 6px">📌 Reglas</div>';
   h+='<div style="font-size:11px;color:var(--m);line-height:1.7;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:9px 12px">'+
     '• <strong style="color:var(--t)">El aceite de cocinar cuenta.</strong> Mídelo con cuchara: es la caloría que más se escapa.<br>'+
@@ -5194,8 +5186,7 @@ function renderNutriPlan(sel){
     '• <strong style="color:var(--t)">Pasos:</strong> 7.000-8.000 al día los días sin carrera (lo ves en la pulsera).<br>'+
     '• <strong style="color:var(--t)">Ajuste:</strong> si en 2-3 semanas tu peso medio no baja, recorta 150 kcal en hidratos. Si bajas más de 1 kg/semana, súmalas.'+
     '</div>';
-  h+='<div style="font-size:12px;font-weight:700;color:var(--t);margin:14px 0 2px">💡 Ideas de platos (opcional)</div>';
-  h+='<div style="font-size:11px;color:var(--m);margin-bottom:4px">Sirven para la lista de la compra. Ajusta las cantidades a los macros de cada momento.</div>';
+  h+='<div style="font-size:11px;color:var(--m);margin-top:10px">📱 Registra lo que comes en Yazio: aquí solo tienes el objetivo de cada momento.</div>';
   el.innerHTML=h;
 }
 var _nutriSel=null;
@@ -5203,6 +5194,7 @@ var _nutriSel=null;
 function renderDietPlan(){
   var el=document.getElementById('food-plan-content');
   if(!el) return;
+  el.innerHTML='';return;
   var start=new Date(2026,9,1);
   var now=new Date();
   var todayIdx=Math.max(0,Math.floor((now-start)/86400000)%15);
@@ -5600,19 +5592,6 @@ function renderMealOfMoment(){
     '<span style="font-size:11px;font-weight:700;color:var(--p)">G '+mm.f+'g</span>'+
     '<span style="font-size:10px;color:var(--m);margin-left:auto">'+meal.day.icon+' '+meal.day.label+'</span></div>';
   h+='<div style="font-size:12px;color:var(--t);line-height:1.5;margin-bottom:6px">'+mm.tip+'</div>';
-  if(day&&(meal.key==='comida'||meal.key==='cena')&&meal.day.type!=='rest'&&!(meal.day.type==='longrun'&&meal.key==='cena')){
-    var mData=meal.key==='comida'?day.com:day.cen;
-    var mk=meal.key==='comida'?'com':'cen';
-    var chosen=ld('dc_'+mk+'_'+_dietDate(dayIdx),'');
-    h+='<div style="font-size:11px;color:var(--m);margin:4px 0 6px">Ideas (opcional):</div>';
-    mData.opts.forEach(function(opt){
-      var isC=chosen===opt.id;
-      h+='<div style="border:1px solid '+(isC?'var(--g)':'var(--b)')+';border-radius:8px;padding:7px 9px;margin-bottom:5px">';
-      h+='<div style="font-size:11px;font-weight:600;color:var(--t);margin-bottom:3px">'+opt.id+'. '+opt.n+'</div>';
-      if(opt.t&&opt.t.kcal) h+='<div style="font-size:10px;color:var(--m)">🔥'+opt.t.kcal+'kcal · P:'+opt.t.p+'g C:'+opt.t.c+'g</div>';
-      h+='</div>';
-    });
-  }
   h+='<div style="margin-top:6px"><button class="btn bth btn-sm" onclick="nav(\'food\');setTimeout(function(){foodTab(\'plan\')},100)" style="font-size:11px">Ver el día completo →</button></div>';
   el.innerHTML=h;
 }
@@ -5978,7 +5957,7 @@ if(document.readyState==='loading'){
 
 
 function addPostGym(){
-  var entry={id:Date.now().toString(),name:"Post-gym (yogur griego 0% + avena + cacahuete + nueces + plátano)",g:0,meal:"desayuno",k:570,p:38,c:62,f:18,impact:"good",impactMsg:"Desayuno fijo post-gym. Proteína + hidratos para la recuperación."};
+  var entry={id:Date.now().toString(),name:"Post-gym",g:0,meal:"desayuno",k:570,p:38,c:62,f:18,impact:"good",impactMsg:"Desayuno fijo post-gym. Proteína + hidratos para la recuperación."};
   var log=getFoodLog();log.push(entry);saveFoodLog(log);
   closeFood();renderFoodToday();
 }
