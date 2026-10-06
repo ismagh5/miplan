@@ -5313,6 +5313,42 @@ var MOBILITY_PLAN=[
    desc:'<strong>Cómo:</strong> Arrodillado en el suelo. Siéntate sobre los talones (o entre ellos si la movilidad lo permite). Extiende los brazos al frente con las palmas hacia abajo. Deja que el pecho y la frente caigan hacia el suelo con cada exhalación. No hay esfuerzo — es rendición. Respira profundo 8-10 veces desde esta posición.<br><br><strong>Por qué:</strong> Es el estiramiento simultáneo de dorsal, cuadrado lumbar, oblicuos, glúteos y caderas. En una sola postura cierra todos los grupos musculares del torso que el gym y el running activaron. El sistema nervioso lo interpreta como señal de seguridad — al terminar aquí, la transición al sueño es más rápida.<br><br><strong>Variante si los talones no llegan:</strong> Pon una manta o almohada entre los glúteos y los talones. No dejes que la incomodidad corte el tiempo de estiramiento.'},
 ];
 
+var MOB_X={
+  figura4:{n:'Figura 4 (glúteo y piriforme)',dur:'45s por lado',emoji:'🔢',
+   desc:'<strong>Cómo:</strong> Tumbado boca arriba, rodillas dobladas y pies en el suelo. Cruza el tobillo derecho sobre la rodilla izquierda. Agarra detrás del muslo izquierdo y tira hacia el pecho hasta notar el estiramiento en el glúteo derecho. 45s y cambia.<br><br><strong>Por qué:</strong> Glúteo y rotadores de cadera cargados tras sentadilla, prensa, hip thrust y carrera. Una cadera libre protege lumbar y rodillas.'},
+  cuadriceps:{n:'Estiramiento de cuádriceps',dur:'40s por pierna',emoji:'🦵',
+   desc:'<strong>Cómo:</strong> De pie o tumbado de lado. Lleva el talón al glúteo y sujeta el pie con la mano del mismo lado. Rodillas juntas, pelvis metida (glúteo apretado) para que no se arquee la lumbar. 40s y cambia.<br><br><strong>Por qué:</strong> Cuádriceps y recto femoral cortos tiran de la pelvis hacia delante y cargan la lumbar. Tras piernas y carrera es el que más lo necesita.'},
+  gemelos:{n:'Gemelos y sóleo en pared',dur:'40s por pierna',emoji:'🦶',
+   desc:'<strong>Cómo:</strong> Manos en la pared, una pierna atrás con el talón pegado al suelo y la rodilla estirada: 20s (gemelo). Luego flexiona un poco la rodilla trasera sin levantar el talón: 20s (sóleo). Cambia de pierna.<br><br><strong>Por qué:</strong> Los gemelos soportan el impacto de cada zancada. Estirarlos reduce la carga en tendón de Aquiles y espinilla.'},
+  tobillo:{n:'Movilidad de tobillo y pie',dur:'60s por pie',emoji:'🦶',
+   desc:'<strong>Cómo:</strong> Sentado, pierna cruzada sobre la otra. Dibuja 10 círculos grandes con el tobillo en cada sentido. Después flexiona y extiende el pie 10 veces y masajea la planta con el pulgar 20s.<br><br><strong>Por qué:</strong> Un tobillo y un pie móviles mejoran la absorción del impacto al correr y bajan la carga sobre rodilla y cadera.'},
+  hombro:{n:'Hombro posterior cruzado',dur:'30s por brazo',emoji:'🤲',
+   desc:'<strong>Cómo:</strong> De pie o sentado. Cruza el brazo derecho por delante del pecho y tira de él con el izquierdo, sin elevar el hombro. 30s y cambia.<br><br><strong>Por qué:</strong> Descarga el deltoides posterior y la zona del omóplato, castigados en press y elevaciones, y que se cierran con el ordenador.'},
+  triceps:{n:'Tríceps sobre la cabeza',dur:'30s por brazo',emoji:'💪',
+   desc:'<strong>Cómo:</strong> Sentado o de pie. Lleva el codo derecho hacia el techo y la mano a la espalda, empuja suavemente el codo con la otra mano. Costillas abajo, sin arquear la lumbar. 30s y cambia.<br><br><strong>Por qué:</strong> El tríceps trabaja en todos los empujes y limita la movilidad del hombro por encima de la cabeza si queda corto.'},
+  dorsal:{n:'Dorsal en child\'s pose lateral',dur:'40s por lado',emoji:'🧘',
+   desc:'<strong>Cómo:</strong> En posición de child\'s pose con los brazos al frente. Camina ambas manos hacia la derecha hasta notar el estiramiento en el costado izquierdo, desde la axila hasta la cadera. Respira hacia ese costado 40s y cambia.<br><br><strong>Por qué:</strong> Dorsal ancho y cuadrado lumbar son los grandes protagonistas de los días de tirón (remos, dominadas, jalones).'},
+  biceps:{n:'Bíceps y antebrazo',dur:'30s por brazo',emoji:'💪',
+   desc:'<strong>Cómo:</strong> De rodillas, palmas en el suelo con los dedos hacia las rodillas y los brazos estirados. Sienta la cadera hacia atrás poco a poco hasta notar tensión en antebrazo y bíceps: 30s. Luego gira las manos con el dorso en el suelo otros 30s.<br><br><strong>Por qué:</strong> El agarre en remos y jalones fatiga flexores de antebrazo y bíceps; estirarlos previene molestias de codo.'},
+  cuello:{n:'Cuello y trapecio superior',dur:'30s por lado',emoji:'🙆',
+   desc:'<strong>Cómo:</strong> Sentado y erguido. Inclina la oreja derecha hacia el hombro derecho; con la mano derecha añade un peso muy suave. El hombro izquierdo baja. 30s y cambia.<br><br><strong>Por qué:</strong> El trapecio acumula tensión con los tirones y con las horas de estudio. Relajarlo mejora el sueño.'},
+  toracica:{n:'Apertura torácica (open book)',dur:'8 reps por lado',emoji:'📖',
+   desc:'<strong>Cómo:</strong> Tumbado de lado, rodillas dobladas a 90° y brazos juntos al frente. Abre el brazo de arriba hacia el otro lado siguiendo la mano con la mirada, sin despegar las rodillas. Pausa 2s arriba y vuelve. 8 repeticiones y cambia.<br><br><strong>Por qué:</strong> La rotación de la columna dorsal hace que la lumbar no tenga que compensar al correr y remar.'}
+};
+var MOB_KEY={resp:0,knees:1,twist:2,psoas:3,isquios:4,pectoral:5,child:6};
+function _mobItem(k){return MOB_KEY.hasOwnProperty(k)?MOBILITY_PLAN[MOB_KEY[k]]:MOB_X[k];}
+var MOB_BY_DAY={
+  lunes:{foco:'Push A + Core: pecho, hombro y tríceps',min:14,ex:['resp','knees','twist','pectoral','hombro','triceps','psoas','isquios','child']},
+  martes:{foco:'Piernas + running: cadera, cuádriceps, isquios y gemelos',min:15,ex:['resp','knees','figura4','psoas','cuadriceps','isquios','gemelos','child']},
+  miercoles:{foco:'Pull A + Core: dorsal, antebrazo, cuello y cadera',min:14,ex:['resp','knees','twist','dorsal','biceps','cuello','psoas','isquios','child']},
+  jueves:{foco:'Push B (hombros) + running: hombro, tríceps y piernas',min:14,ex:['resp','knees','pectoral','hombro','triceps','psoas','cuadriceps','gemelos','child']},
+  viernes:{foco:'Pull B + Core: dorsal, torácica y cadera',min:14,ex:['resp','knees','twist','toracica','dorsal','biceps','psoas','isquios','child']},
+  sabado:{foco:'Running: piernas largas, cadera, tobillo y pie',min:15,ex:['resp','knees','figura4','psoas','cuadriceps','isquios','gemelos','tobillo','child']},
+  domingo:{foco:'Descarga: la sesión larga de movilidad ya está hecha, aquí solo lumbar y relajación',min:9,ex:['resp','knees','twist','psoas','isquios','child']}
+};
+function _mobDayKey(){return GYM_DOW[new Date(today()+'T12:00:00').getDay()];}
+function getMobList(){var d=MOB_BY_DAY[_mobDayKey()]||MOB_BY_DAY.domingo;return d.ex.map(_mobItem);}
+
 var MOB_STATE={running:false,stopped:true,exIdx:0,timeLeft:0,interval:null};
 
 function getMobStreak(){
@@ -5335,7 +5371,7 @@ function renderMobilityPage(){
   var h='<div style="background:linear-gradient(135deg,rgba(167,139,250,0.1),rgba(99,102,241,0.05));border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
   h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
   h+='<div><div style="font-size:12px;font-weight:700;color:var(--p)">🧘 MOVILIDAD · Antes de dormir</div>';
-  h+='<div style="font-size:11px;color:var(--m)">Lumbar · Psoas · Isquios · Pectoral · Respiración</div></div>';
+  var _md=MOB_BY_DAY[_mobDayKey()]||MOB_BY_DAY.domingo;h+='<div style="font-size:11px;color:var(--m)">Hoy: '+_md.foco+' · ≈'+_md.min+' min</div><div style="font-size:10px;color:var(--m);margin-top:2px">Siempre: lumbar · psoas · isquios · respiración</div></div>';
   h+='<div style="text-align:right"><div style="font-size:28px;font-weight:800;color:var(--p)">'+streak+'</div><div style="font-size:10px;color:var(--m)">días racha</div></div></div>';
   if(done){
     h+='<div style="background:rgba(61,214,140,0.1);border-radius:8px;padding:8px;display:flex;align-items:center;gap:8px">';
@@ -5347,7 +5383,7 @@ function renderMobilityPage(){
   }
   h+='</div>';
   // Static exercise list with full descriptions
-  MOBILITY_PLAN.forEach(function(ex,i){
+  getMobList().forEach(function(ex,i){
     h+='<div style="border:1px solid var(--b);border-radius:10px;margin-bottom:8px;overflow:hidden">';
     h+='<div style="padding:10px 12px;background:var(--s2);cursor:pointer" onclick="mobToggle('+i+')">';
     h+='<div style="display:flex;justify-content:space-between;align-items:center">';
