@@ -1175,7 +1175,7 @@ function buildMealOpts(){
     {v:'pre-gym',l:'💪 Pre-gym'},
     {v:'desayuno',l:'🌅 Post-gym / Desayuno'},
     {v:'comida',l:'🍽️ Comida'},
-    {v:'merienda',l:'🍊 Merienda / Pre-carrera'},
+    {v:'merienda',l:'🥫 Merienda'},
     {v:'cena',l:'🌙 Cena'},
     {v:'otro',l:'🍴 Otro'},
   ];
@@ -1462,7 +1462,8 @@ function getDaySchedule(){
   else if(dow===6) list=DAILY_SCHEDULE.sabado;
   else if(dow===2||dow===4) list=DAILY_SCHEDULE.running;
   else list=DAILY_SCHEDULE.base;
-  var dk=GYM_DOW[dow];
+  var dk=_gymDkOnDate(today());
+  if(dow===6&&dk!=='sabado') list=DAILY_SCHEDULE.base;
   return list.map(function(it){
     var o={id:it.id,time:it.time,emoji:it.emoji,label:it.label};
     if(o.id==='entreno'&&typeof GYM_PLAN!=='undefined'&&GYM_PLAN[dk]) o.label='Gym 11:30 · '+GYM_PLAN[dk].n+' + movilidad';
@@ -1903,32 +1904,31 @@ function getCurrentWeight(){
 // ═══ NUTRICIÓN POR TIPO DE DÍA (calorías y macros por momento) ═══
 // Gasto estimado (vida sedentaria + entreno): solo gym ~2.600 · gym+carrera ~2.850 · sábado ~2.500 · domingo ~2.260 kcal
 // Déficit medio ~550 kcal/día → ~0,5 kg/semana (0,6% del peso). Revisar cada 2-3 semanas con el peso medio.
-var _M_PRE={id:'pre-gym',time:'10:00',icon:'💪',name:'Desayuno pre-gym',kcal:300,p:30,c:40,f:3,tip:'Proteína rápida + hidratos de fácil digestión, poca grasa.'};
-var _M_POST={id:'desayuno',time:'13:15',icon:'🌅',name:'Post-gym',kcal:550,p:40,c:60,f:18,tip:'Proteína + hidratos + algo de grasa. Creatina 5g + D3.'};
+var _M_PRE={id:'pre-gym',time:'11:00',icon:'💪',name:'Pre-gym (5 min)',kcal:100,p:1,c:23,f:0,tip:'Una cosa de nada: 1 plátano o 2-3 tortitas de arroz. Sin leche ni cocinar.'};
+var _M_POST={id:'desayuno',time:'13:15',icon:'🌅',name:'Post-gym',kcal:470,p:50,c:58,f:4,tip:'Sin cocinar: 1 scoop de whey con agua + 250 g de skyr natural + 1 plátano + 4 tortitas de arroz solas. Creatina 5g + D3.'};
 var NUTRI_DAYS={
   gym:{label:'Solo gym',days:'Lunes · Miércoles · Viernes',icon:'🏋️',meals:[
     _M_PRE,_M_POST,
-    {id:'comida',time:'16:00',icon:'🍽️',name:'Comida',kcal:550,p:45,c:50,f:17,tip:'Cumple los macros de arriba + verdura libre.'},
-    {id:'merienda',time:'19:00',icon:'🍊',name:'Merienda ligera',kcal:150,p:5,c:20,f:5,tip:'Ligera: sobre todo hidratos con algo de proteína y grasa.'},
-    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:450,p:36,c:25,f:22,tip:'Prioriza proteína + verdura; pocos hidratos.'}
+    {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:800,p:55,c:64,f:36,tip:'Cocinas tú (1 h). Proteína grande (pollo, pescado, ternera o cerdo magro) + patata o arroz + verdura. Aceite: 10-12 g, pesado.'},
+    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:750,p:52,c:55,f:36,tip:'Cocinas el mismo día, ≤15 min: salmón, caballa o pescado blanco, tortilla… + verdura. Aceite: 8-10 g como máximo.'}
   ]},
   gymrun:{label:'Gym + carrera',days:'Martes · Jueves',icon:'🏃',meals:[
     _M_PRE,_M_POST,
-    {id:'comida',time:'16:00',icon:'🍽️',name:'Comida',kcal:550,p:45,c:50,f:17,tip:'Con buenos hidratos: son el combustible de la carrera de la noche.'},
-    {id:'merienda',time:'18:30',icon:'🍌',name:'Pre-carrera',kcal:200,p:5,c:40,f:2,tip:'Solo hidratos rápidos, sin grasa ni fibra.'},
-    {id:'cena',time:'22:00',icon:'🌙',name:'Cena post-carrera',kcal:600,p:36,c:60,f:25,tip:'Proteína + hidratos + verdura. 600ml de agua al volver de correr.'}
+    {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:700,p:45,c:60,f:32,tip:'Cocinas tú (1 h). Proteína + buenos hidratos: son el combustible de la carrera. Aceite: 10-12 g.'},
+    {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'1 lata de atún al natural o sardinas con 3 tortitas de arroz, o 200 g de skyr natural con fruta. Ligero antes de correr.'},
+    {id:'cena',time:'21:30',icon:'🌙',name:'Cena post-carrera',kcal:650,p:42,c:50,f:30,tip:'Cocinas el mismo día, ≤15 min. Ejemplo: 150-180 g de salmón + aguacate + espárragos. Agua al volver de correr.'}
   ]},
   longrun:{label:'Sábado · carrera',days:'Sábado',icon:'🏃',meals:[
-    {id:'desayuno',time:'10:00',icon:'🌅',name:'Desayuno',kcal:500,p:40,c:50,f:15,tip:'Mismo reparto que tu desayuno de post-gym, con un extra de proteína.'},
-    {id:'comida',time:'14:30',icon:'🍽️',name:'Comida',kcal:650,p:45,c:70,f:20,tip:'Comida completa con hidratos.'},
-    {id:'merienda',time:'18:30',icon:'🍌',name:'Pre-carrera',kcal:200,p:5,c:40,f:2,tip:'Solo hidratos rápidos, sin grasa ni fibra.'},
-    {id:'cena',time:'22:00',icon:'🌙',name:'Cena',kcal:750,p:66,c:55,f:30,tip:'La más grande de la semana, pero con mucha proteína.'}
+    {id:'desayuno',time:'11:30',icon:'🌅',name:'Desayuno (sin cocinar)',kcal:450,p:45,c:50,f:8,tip:'Como el post-gym: whey con agua + skyr natural + fruta + tortitas de arroz.'},
+    {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:750,p:45,c:70,f:30,tip:'Cocinas tú. Comida completa con hidratos. Aceite: 10-12 g.'},
+    {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'Atún o sardinas con tortitas, o skyr con fruta. Ligero antes de correr.'},
+    {id:'cena',time:'22:00',icon:'🌙',name:'Cena',kcal:700,p:50,c:55,f:32,tip:'Cocinas el mismo día, ≤15 min. Proteína grande + verdura.'}
   ]},
   rest:{label:'Domingo · movilidad',days:'Domingo',icon:'🧘',meals:[
-    {id:'desayuno',time:'10:00',icon:'🌅',name:'Desayuno',kcal:450,p:40,c:45,f:12,tip:'Proteína + hidratos, grasa moderada.'},
-    {id:'comida',time:'14:30',icon:'🍽️',name:'Comida',kcal:750,p:40,c:90,f:25,tip:'La comida fuerte del domingo. Mide el aceite.'},
-    {id:'merienda',time:'18:00',icon:'🥤',name:'Merienda proteica',kcal:200,p:25,c:10,f:6,tip:'Casi todo proteína.'},
-    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:600,p:51,c:40,f:27,tip:'Con mucha proteína para cerrar el día en ~156g.'}
+    {id:'desayuno',time:'11:30',icon:'🌅',name:'Desayuno (sin cocinar)',kcal:450,p:45,c:50,f:8,tip:'Whey con agua + skyr natural + fruta + tortitas de arroz.'},
+    {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:800,p:50,c:70,f:36,tip:'La comida fuerte del domingo. Mide el aceite (10-12 g).'},
+    {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'Atún o sardinas con tortitas, o skyr con fruta.'},
+    {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:650,p:45,c:45,f:32,tip:'Cocinas el mismo día, ≤15 min. Proteína + verdura.'}
   ]}
 };
 var NUTRI_EQUIV=[];
@@ -2320,7 +2320,7 @@ function getNextRunDay(now){
       if(d>=start){
         var days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
         var months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-        return days[dow]+' '+d.getDate()+' '+months[d.getMonth()];
+        return days[dow]+' '+String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
       }
     }
   }
@@ -2427,7 +2427,7 @@ function gymTab(t){
   document.querySelectorAll('#gym-tabs-row .tb').forEach(function(b,i){
     b.classList.toggle('active',['session','plan','pesos','history'][i]===t);
   });
-  if(t==='plan'){planDay(GYM_DOW[new Date().getDay()]);renderGymProgression();}
+  if(t==='plan'){planDay(_gymDkOnDate(today()));renderGymProgression();}
   if(t==='history') renderGymHistory();
   if(t==='pesos') renderGymPesos();
 }
@@ -2436,6 +2436,12 @@ function getGymDayData(dk){
   return _baseFromPlan(dk);
 }
 var GYM_DOW=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+// Semana 2 desplazada un día: el lunes 12/10/2026 fue festivo (gym cerrado), la rutina empieza el martes 13/10/2026.
+function _gymDkOnDate(ds){
+  var SHIFT={'2026-10-13':'lunes','2026-10-14':'martes','2026-10-15':'miercoles','2026-10-16':'jueves','2026-10-17':'viernes'};
+  if(SHIFT[ds]) return SHIFT[ds];
+  return ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date(ds+'T12:00:00').getDay()];
+}
 var GYM_DAY_ORDER=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
 // Antes del 1-oct la semana era: martes=Pull A, miércoles=Legs. Sirve para migrar el historial de pesos.
 var GYM_LEGACY_DAY={lunes:'lunes',martes:'miercoles',miercoles:'martes',jueves:'jueves',viernes:'viernes'};
@@ -2464,7 +2470,7 @@ function _gymOverride(logDate){
 }
 function _gymDkFor(){
   var logDate=getLogDate();
-  return _gymOverride(logDate)||GYM_DOW[new Date(logDate+'T12:00:00').getDay()];
+  return _gymOverride(logDate)||_gymDkOnDate(logDate);
 }
 function _fmtLongDate(d){
   var months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -2915,7 +2921,7 @@ function renderGymHistory(){
     if(s.exercises&&s.exercises.length){
       exHtml=s.exercises.map(function(e){
         var blocks=e.blocks||[{s:e.s||3,r:e.r||'12',w:e.w||0}];
-        var blStr=blocks.map(function(b){return b.s+'×'+b.r+' @ '+b.w+'kg';}).join(' · ');
+        var blStr=blocks.map(function(b){return b.s+' × '+b.r+' × '+(b.w===null||b.w===''||b.w===undefined?'—':(parseFloat(b.w)>0?b.w+' kg':'peso corporal'));}).join(' · ');
         return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--b);font-size:12px">'+
           '<span style="color:var(--t)">'+e.name+'</span>'+
           '<span style="color:var(--o);font-weight:600;font-size:11px">'+blStr+'</span></div>';
@@ -3178,7 +3184,7 @@ function renderRunToday(){
   var rw=RUN_WEEKS[wn-1];
   var html=toggleHtml+'<div style="padding:12px 16px">';
   html+='<div class="al alg"><span class="ali">🏃</span><span><strong>Semana '+wn+' · '+rw.title+'</strong></span></div>';
-  var _rdn=RUN_DAY_NOTE[GYM_DOW[dow]];
+  var _rdn=RUN_DAY_NOTE[_gymDkOnDate(logDateStr)];
   if(_rdn) html+='<div class="al alb" style="margin:8px 0"><span class="ali">📅</span><span><strong>'+['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][dow]+' · 20:00.</strong> '+_rdn+'</span></div>';
 
   if(rw.warmup&&rw.warmup.length){
@@ -3710,7 +3716,7 @@ function renderFoodModalBody(mode){
 
   // POSTGYM MODE (quick add)
   if(mode==='postgym'){
-    el.innerHTML='<div class="al alg"><span class="ali">🌅</span><span><strong>Post-gym</strong> — ~570 kcal · P:38g · C:62g · G:18g<br><span style="font-size:11px">Objetivo del post-gym</span></span></div><button class="btn btg" style="margin-top:10px" onclick="addPostGym()">Añadir desayuno</button>';
+    el.innerHTML='<div class="al alg"><span class="ali">🌅</span><span><strong>Post-gym</strong> — ~470 kcal · P:50g · C:58g · G:4g<br><span style="font-size:11px">Objetivo del post-gym</span></span></div><button class="btn btg" style="margin-top:10px" onclick="addPostGym()">Añadir desayuno</button>';
     return;
   }
 
@@ -4332,16 +4338,15 @@ var GYM_PLAN={
       {n:'Aperturas con cable en polea baja o media',muscle:'Pectoral · Tensión continua',sets:'3×12-15',rir:'RIR 2',desc:'POLEA: ajusta a la altura de la cadera para que la línea de tracción sea diagonal hacia arriba al final. Agarra los cables con las palmas mirando hacia arriba. POSICIÓN: paso adelante, ligera inclinación de torso, codos fijos con una pequeña flexión (no los extiendas ni los dobles). MOVIMIENTO: cierra los brazos como si abrazaras un gran árbol — el pico de contracción es cuando las manos se cruzan en el centro. Abre 3s controlado sintiendo el estiramiento del pecho. Las aperturas con cable dan tensión continua que el mancuerna libre no da — eso es más tiempo bajo tensión y más hipertrofia.'},
       {n:'Press militar con mancuernas (hombros)',muscle:'Deltoides · Tríceps',sets:'3×10-12',rir:'RIR 2-3',desc:'POSICIÓN: sentado con el banco en vertical o de pie (de pie activa más core). Las mancuernas arrancan a la altura de los hombros, palmas al frente. SUBIDA: empuja hacia arriba y ligeramente hacia dentro convergiendo al final — no vayan completamente verticales. No bloquees los codos arriba. BAJADA: 3s hasta que el codo esté a 90°. ERROR COMÚN: arquear la lumbar al empujar — si ocurre, baja el peso. El press de hombros es el complemento natural del press banca en la misma sesión.'},
       {n:'Extensión de tríceps en polea alta',muscle:'Tríceps (cabeza larga)',sets:'3×12-15',rir:'RIR 2',desc:'CABLE: polea alta con cuerda o barra. Agarre neutro con la cuerda. POSICIÓN: inclinado ligeramente hacia adelante, codos fijos junto a la cabeza. MOVIMIENTO: extiende completamente abriendo los dedos de la cuerda al final para aislar la cabeza lateral. Regresa controlado. El tríceps es aproximadamente dos tercios del volumen del brazo — trabajarlo bien da más brazo visible que el bíceps. La cabeza larga solo se estira cuando el brazo está elevado, de ahí este ejercicio con los codos arriba.'},
-      {n:'Elevación de rodillas en paralelas (captain\'s chair)',muscle:'Recto abdominal inferior · Psoas · Core',sets:'3×10-12',rir:'RIR 2',desc:'POSICIÓN: antebrazos apoyados en la silla romana (paralelas), espalda pegada al respaldo. MOVIMIENTO: sube las rodillas hacia el pecho enrollando ligeramente la pelvis (que el coxis se despegue del respaldo). Baja en 2-3 s sin balancear. PROGRESIÓN: cuando hagas 3×12 limpias, estira las piernas a 90° y después pásate a la barra (hanging leg raise), que es uno de tus objetivos.'},
-      {n:'Plancha frontal RKC',muscle:'Core anterior · Glúteo · Anti-extensión',sets:'3×20-30s',rir:'N/A (tiempo)',desc:'POSICIÓN: antebrazos en el suelo, codos bajo los hombros, pies juntos. CLAVE: aprieta glúteos y abdomen al máximo y tira de los codos hacia los pies sin moverlos. Es una plancha corta e intensa: 20-30 s bien hechos valen más que 2 minutos con la cadera caída. Trabaja el core que evita que la lumbar se hunda al correr.'},
-      {n:'Suitcase carry (paseo con mancuerna a un lado)',muscle:'Oblicuos · Cuadrado lumbar · Agarre',sets:'3×30m por lado',rir:'RIR 2',desc:'Coge una mancuerna pesada con una sola mano y camina 30 m con el torso completamente recto, sin inclinarte hacia la mancuerna. Cambia de mano. Trabaja la estabilidad lateral del tronco, la misma que necesitas en cada apoyo al correr.'}
+      {n:'Pallof press en cable (anti-rotación)',muscle:'CORE · Oblicuos · Transverso (anti-rotación)',sets:'3×10 por lado',rir:'RIR 3-4',desc:'POLEA: a la altura del ombligo. De pie lateral a la polea, un paso lateral alejado. Agarra el cable con ambas manos frente al pecho. MOVIMIENTO: extiende los brazos completamente hacia adelante sin girar el torso. El cable tira de ti hacia la polea — tu core resiste. Aguanta 2s extendido. Vuelve a la posición inicial. El Pallof press es el ejercicio de core más específico para corredores — entrena la resistencia rotacional de cada zancada.'},
+      {n:'Woodchop en cable (de alto a bajo)',muscle:'CORE · Oblicuos · Transverso · Cadena rotacional',sets:'3×12 por lado',rir:'RIR 3-4',desc:'POSICIÓN: polea alta con agarre en D o cuerda. De pie de lado a la polea, pies a la anchura de caderas y rodillas ligeramente flexionadas. Agarra el asa con las dos manos sobre el hombro más cercano a la polea. MOVIMIENTO: baja el asa en diagonal hacia la cadera contraria girando el tronco desde las costillas y las caderas, con los brazos casi estirados. Pivota el pie de atrás. Controla la vuelta en 2-3 s sin dejar que el peso tire de ti. PESO: ligero; el objetivo es controlar la rotación, no mover mucho peso. POR QUÉ: entrena el tronco para transmitir fuerza en rotación, justo lo que hace el cuerpo al correr y al jugar. ERROR COMÚN: girar solo los brazos o arquear la lumbar al final.'},
+      {n:'Dead bug con pausa',muscle:'CORE · Core profundo · Transverso',sets:'2×8 por lado',rir:'RIR 3-4',desc:'AÑADE UNA PAUSA DE 3 s con el brazo y la pierna extendidos antes de volver. POSICIÓN: tumbado boca arriba, brazos al techo, rodillas a 90°. MOVIMIENTO: exhala lentamente y baja el brazo derecho y la pierna izquierda simultáneamente sin que la lumbar se despegue del suelo. La presión lumbar en el suelo es constante en todo momento — si se despega, el recorrido es demasiado largo. 3s bajar, pausa, volver. 8 por lado. El dead bug trabaja el core en extensión — el mismo patrón que el running cuando el pie impacta el suelo.'},
     ],
     postMob:[
-      {n:'Foam roller zona torácica',dur:'90s',desc:'Rolo transversal a la espalda media. 2-3 pasadas desde la lumbar hasta los omóplatos. El press banca comprime los discos — el rolo los descomprime y restaura la movilidad torácica.'},
-      {n:'Estiramiento pectoral en poste del rack',dur:'30s por lado',desc:'Antebrazo apoyado a 90° en el poste. Gira lentamente el cuerpo hasta sentir el pecho. Prueba 3 alturas diferentes. Los pectorales tras el press quedan acortados — este estiramiento los devuelve a su longitud funcional.'},
-      {n:'Estiramiento tríceps sobre la cabeza',dur:'30s por lado',desc:'Codo doblado detrás de la cabeza, mano cayendo entre los omóplatos. La mano libre empuja suavemente el codo hacia abajo. Sientes el estiramiento en la parte posterior del brazo y la axila.'},
-      {n:'Cross-arm shoulder stretch',dur:'30s por lado',desc:'Brazo recto al hombro contrario a la altura del pecho. La mano libre presiona el codo hacia tu cuerpo. Estira el deltoides posterior que trabaja como estabilizador en el press.'},
-      {n:'Cat-Cow lento',dur:'60s',desc:'A cuatro patas (o en el banco si quedan colchonetas libres), 8-10 repeticiones lentas. Arqueado máximo 2s, extensión máxima 2s. Restaura la movilidad espinal después del arco lumbar del press.'},
+      {n:'Pecho en marco de puerta',dur:'30 s por lado',desc:'POSICIÓN: de pie en un marco de puerta o junto a un poste del rack, antebrazo apoyado con el codo a la altura del hombro. CÓMO: da un pequeño paso hacia delante y gira el cuerpo hacia el lado contrario hasta notar el estiramiento en el pecho. Respira lento 30 s y cambia. POR QUÉ: el press acorta el pectoral y cierra los hombros; este estiramiento devuelve el rango y facilita respirar profundo. ERROR COMÚN: subir el codo por encima del hombro: la tensión pasa al hombro y no al pecho.'},
+      {n:'Hombro posterior cruzado',dur:'30 s por brazo',desc:'POSICIÓN: de pie o sentado, espalda erguida. CÓMO: cruza el brazo por delante del pecho y tira de él suavemente con el otro, sin subir el hombro. 30 s y cambia. POR QUÉ: descarga el deltoides posterior y la zona del omóplato, muy usados en press, laterales y remos. ERROR COMÚN: encoger el hombro hacia la oreja o girar el tronco.'},
+      {n:'Tríceps sobre la cabeza',dur:'30 s por brazo',desc:'POSICIÓN: sentado o de pie, costillas abajo. CÓMO: lleva el codo hacia el techo con la mano detrás de la cabeza y empuja el codo suavemente con la otra mano. 30 s y cambia. POR QUÉ: el tríceps trabaja en todos los empujes y, si queda corto, limita el movimiento del hombro por encima de la cabeza. ERROR COMÚN: arquear la lumbar para llegar más: mantén el abdomen firme.'},
+      {n:'Respiración de cierre',dur:'60 s',desc:'POSICIÓN: de pie o sentado, una mano en el vientre. CÓMO: 5 respiraciones lentas: inspira 4 s por la nariz hinchando el vientre y espira 6 s por la boca con los labios fruncidos. POR QUÉ: baja pulsaciones tras la serie final y marca el paso del modo entreno al modo recuperación. ERROR COMÚN: levantar el pecho al inspirar: el vientre es el que sube.'},
     ],
     postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Tienes 1-2 h de margen: la "ventana de 30 min" está sobrevalorada (Aragon & Schoenfeld 2013). Lo que cuenta es llegar al total de proteína del día.'},
 
@@ -4360,15 +4365,15 @@ var GYM_PLAN={
       {n:'Face pull en polea alta con cuerda',muscle:'Deltoides posterior · Romboides · Rotadores ext.',sets:'3×15',rir:'RIR 2',desc:'POLEA: alta, con cuerda. Agarre neutro (pulgares hacia ti). POSICIÓN: un paso atrás para crear ángulo de tirón. MOVIMIENTO: tira hacia la cara separando la cuerda al final (manos van a los lados de la cara), codos POR ENCIMA de los hombros al final. Los antebrazos apuntan hacia el techo en el pico. Este ejercicio reconstruye el deltoides posterior que el ordenador destruye. Fundamental para salud del hombro. Hacerlo en cada sesión de pull ayuda a mantener el hombro sano.'},
       {n:'Curl bíceps con barra EZ o recta',muscle:'Bíceps braquial · Braquial',sets:'3×10-12',rir:'RIR 2',desc:'AGARRE: barra EZ (más cómoda para las muñecas) o barra recta si no molesta. Anchura de hombros. POSICIÓN: codos fijos pegados al costado durante todo el movimiento. SUBIDA: gira la muñeca ligeramente hacia fuera al subir (supinación) para activar el bíceps completamente. En el pico aprieta el bíceps 1s. BAJADA: 3s completamente controlada — la fase excéntrica es donde más crece el músculo. ERROR COMÚN: balancear el torso para subir el peso — reduce el peso y hazlo estricto. La supinación es una de las funciones del bíceps: girar la muñeca al subir lo trabaja completo.'},
       {n:'Curl martillo con mancuernas',muscle:'Braquiorradial · Bíceps (agarre neutro)',sets:'3×10-12',rir:'RIR 2',desc:'AGARRE: neutro (como sujetar un martillo). Los pulgares apuntan hacia el techo durante todo el movimiento. POSICIÓN: igual que el curl estándar — codos fijos. Esta variante trabaja el braquiorradial (músculo del antebrazo que da grosor visual al brazo) y el bíceps en una posición de agarre más funcional. Alterna: una serie de curl bíceps, una de martillo — descansas mientras el otro trabaja.'},
-      {n:'Dead Bug',muscle:'Core profundo · Transverso · Coordinación',sets:'3×8 por lado',rir:'N/A (control)',desc:'POSICIÓN: tumbado boca arriba, brazos al techo, rodillas a 90°. MOVIMIENTO: exhala lentamente y baja el brazo derecho y la pierna izquierda simultáneamente sin que la lumbar se despegue del suelo. La presión lumbar en el suelo es constante en todo momento — si se despega, el recorrido es demasiado largo. 3s bajar, pausa, volver. 8 por lado. El dead bug trabaja el core en extensión — el mismo patrón que el running cuando el pie impacta el suelo.'},
-      {n:'McGill Curl-up',muscle:'Recto abdominal · Transverso (lumbar neutral)',sets:'3×10',rir:'N/A (técnica)',desc:'POSICIÓN: tumbado boca arriba. UNA pierna extendida, la OTRA con la rodilla doblada y el pie apoyado. Manos bajo la lumbar manteniendo la lordosis natural — NO la aplanes. MOVIMIENTO: levanta la cabeza y los hombros del suelo con los codos ligeramente adelante. La lumbar NO se despega de las manos. Aguanta 8-10s. A diferencia del crunch, este ejercicio no flexiona la columna — trabaja el core con la espalda neutral. Parte del Big 3 de McGill para espalda sana en corredores.'},
-      {n:'Plancha lateral (Side Bridge)',muscle:'Oblicuos · Glúteo medio · Cuadrado lumbar',sets:'3×20-30s por lado',rir:'N/A (tiempo)',desc:'POSICIÓN: antebrazo en el suelo, codo bajo el hombro, pies apilados. Cadera elevada en línea recta. Aprieta el glúteo del lado de apoyo. CLAVE: si tiemblas antes de 20s, baja la rodilla (versión modificada) sin romper la línea. El oblicuo resiste la caída lateral — el mismo músculo que estabiliza el tronco en cada zancada al correr. Segundo pilar del Big 3 de McGill.'},
+      {n:'Suitcase carry (paseo con mancuerna a un lado)',muscle:'CORE · Oblicuos · Cuadrado lumbar',sets:'3×30 m por lado',rir:'RIR 3-4',desc:'Coge una mancuerna pesada con una sola mano y camina 30 m con el torso completamente recto, sin inclinarte hacia la mancuerna. Cambia de mano. Trabaja la estabilidad lateral del tronco, la misma que necesitas en cada apoyo al correr.'},
+      {n:'Bird Dog (extensión cruzada)',muscle:'CORE · Core · Lumbar · Glúteo',sets:'3×8 por lado',rir:'RIR 3-4',desc:'A cuatro patas en el suelo del gym. Rodillas bajo las caderas, manos bajo los hombros. MOVIMIENTO: extiende el brazo derecho y la pierna izquierda simultáneamente hasta que queden paralelos al suelo — la columna completamente neutral (sin rotar ni lateralizar la cadera). Aguanta 3-4s. Vuelve controlado y cambia. Si la cadera rota al subir la pierna, aprieta el glúteo de esa pierna. El Bird Dog trabaja la cadena cruzada hombro-cadera — el mismo patrón de la zancada al correr. Es el tercer pilar del Big 3 de McGill.'},
+      {n:'McGill Curl-up',muscle:'CORE · Recto abdominal · Transverso',sets:'2×10',rir:'RIR 3-4',desc:'POSICIÓN: tumbado boca arriba. UNA pierna extendida, la OTRA con la rodilla doblada y el pie apoyado. Manos bajo la lumbar manteniendo la lordosis natural — NO la aplanes. MOVIMIENTO: levanta la cabeza y los hombros del suelo con los codos ligeramente adelante. La lumbar NO se despega de las manos. Aguanta 8-10s. A diferencia del crunch, este ejercicio no flexiona la columna — trabaja el core con la espalda neutral. Parte del Big 3 de McGill para espalda sana en corredores.'},
     ],
     postMob:[
-      {n:'Foam roller dorsales completo',dur:'2 min',desc:'Desde la zona lumbar hasta la cervical baja. Incluye la zona lateral (dorsal lateral). El remo y el jalón generan una fatiga muscular profunda en el dorsal — el rolo acelera la recuperación y previene la rigidez del día siguiente.'},
-      {n:'Estiramiento dorsal en rack',dur:'45s',desc:'Agarra el poste del rack a la altura de la cadera con ambas manos. Deja caer el peso del cuerpo hacia atrás (rodillas ligeramente dobladas). Sientes el estiramiento desde la axila hasta la cadera. Un estiramiento de dorsal muy completo.'},
-      {n:'Doorway bicep stretch',dur:'30s por lado',desc:'Brazo extendido al lado del cuerpo, palma apoyada en el marco de la puerta (o poste del rack). Gira lentamente el cuerpo hacia adelante hasta sentir el bíceps y el pectoral. Los bíceps tras el curl quedan en acortamiento adaptativo — el estiramiento los devuelve a su longitud funcional.'},
-      {n:'Band pull-apart final (10 reps lentas)',dur:'10 reps',desc:'Cierra la sesión de pull exactamente como empezó. Las 10 reps lentas a baja intensidad llevan sangre oxigenada al deltoides posterior y romboides.'},
+      {n:'Dorsal en el rack o poste',dur:'45 s',desc:'POSICIÓN: de pie frente a un poste del rack, agarrándolo con las dos manos a la altura de la cadera. CÓMO: deja caer el peso del cuerpo hacia atrás con las rodillas ligeramente flexionadas y los brazos estirados, y empuja la cadera atrás hasta notar el estiramiento desde la axila hasta la cadera. 45 s. POR QUÉ: el remo y el jalón fatigan el dorsal; liberarlo evita rigidez al día siguiente. ERROR COMÚN: redondear la lumbar: lleva la cadera atrás, no la espalda.'},
+      {n:'Bíceps y antebrazo en la pared',dur:'30 s por brazo',desc:'POSICIÓN: de pie junto a una pared, brazo extendido a la altura del hombro con la palma apoyada y los dedos hacia atrás. CÓMO: gira el cuerpo hacia el lado contrario hasta notar el bíceps y el antebrazo. 30 s y cambia. POR QUÉ: el agarre en remos, jalones y curl deja el antebrazo y el bíceps cargados. ERROR COMÚN: doblar el codo: el brazo debe quedar estirado.'},
+      {n:'Cuello y trapecio superior',dur:'30 s por lado',desc:'POSICIÓN: sentado y erguido, hombros relajados. CÓMO: inclina la oreja hacia el hombro del mismo lado y añade un peso muy suave con la mano. El hombro contrario baja. 30 s y cambia. POR QUÉ: el trapecio acumula tensión con los tirones y con las horas de estudio; relajarlo ayuda al sueño. ERROR COMÚN: encoger el hombro del lado estirado o tirar fuerte con la mano.'},
+      {n:'Respiración de cierre',dur:'60 s',desc:'POSICIÓN: de pie o sentado, una mano en el vientre. CÓMO: 5 respiraciones lentas: inspira 4 s por la nariz hinchando el vientre y espira 6 s por la boca con los labios fruncidos. POR QUÉ: baja pulsaciones tras la serie final y marca el paso del modo entreno al modo recuperación. ERROR COMÚN: levantar el pecho al inspirar: el vientre es el que sube.'},
     ],
     postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Mañana: Push B (hombros) por la mañana y carrera a las 20:00.'},
 
@@ -4390,14 +4395,16 @@ var GYM_PLAN={
       {n:'Hip Thrust con barra (o máquina)',muscle:'Glúteo mayor · Isquios',sets:'3×10-12',rir:'RIR 2',desc:'POSICIÓN: hombros apoyados en el banco (a la altura de los omóplatos, no el cuello), barra en el pliegue de la cadera (usa almohadilla), pies planos en el suelo con las rodillas a 90° en la posición alta. MOVIMIENTO: empuja la barra subiendo la cadera hasta que hombro-cadera-rodilla formen una línea. Aprieta el glúteo MÁXIMO 2s arriba. Baja sin tocar el suelo (mantén tensión). Las rodillas empujan hacia afuera durante todo el movimiento. Activa el glúteo mayor más que la sentadilla (Contreras et al. 2015) sin cargar la columna.'},
       {n:'Gemelos de pie en máquina (o con barra)',muscle:'Gastrocnemio · Sóleo',sets:'4×15-20',rir:'RIR 2',desc:'POSICIÓN: toes en la plataforma, talones en el aire, rodillas completamente extendidas. RANGO COMPLETO: baja el talón hasta el máximo estiramiento (sientes el tirón), pausa 1s abajo. Sube de puntillas al máximo. Pausa 1s arriba apretando el gemelo. El rango completo es imprescindible — medio rango no construye fuerza funcional. Los gemelos absorben 6-8 veces el peso corporal en cada zancada — son el músculo protector número uno del runner y se entrenan con altas repeticiones.'},
       {n:'Zancadas con mancuernas',muscle:'Cuádriceps · Glúteo',sets:'3×10 por pierna',rir:'RIR 3',desc:'POSICIÓN: mancuernas a los lados, torso erguido. MOVIMIENTO: da un paso largo hacia delante y baja hasta que la rodilla trasera roce casi el suelo; la rodilla delantera queda sobre el tobillo, sin pasar de la punta del pie. Empuja con el talón delantero para volver. Alterna las piernas, 10 por lado. Ejercicio unilateral que corrige desequilibrios y encaja con la carrera. Empieza con poco peso.'},
+      {n:'Rueda abdominal desde las rodillas',muscle:'CORE · Recto abdominal · Transverso (anti-extensión)',sets:'3×8',rir:'RIR 3-4',desc:'POSICIÓN: de rodillas sobre una esterilla, manos en la rueda justo bajo los hombros. Pelvis ligeramente metida hacia atrás (glúteo apretado) y costillas bajas. MOVIMIENTO: rueda hacia delante despacio hasta donde puedas mantener la lumbar sin hundirse; no hace falta llegar al suelo. Vuelve tirando con el abdomen, no con los brazos. 3 s hacia delante, 2 s de vuelta. REGLA CLAVE: en cuanto la lumbar se hunda, acorta el recorrido. POR QUÉ: es anti-extensión pura: enseña al abdomen a evitar que la lumbar se arquee, que es lo que pasa al cansarte corriendo. ERROR COMÚN: ir demasiado lejos y arquear la lumbar.'},
+      {n:'Elevación de rodillas en silla romana',muscle:'CORE · Flexores de cadera · Recto abdominal inferior',sets:'3×10',rir:'RIR 3-4',desc:'POSICIÓN: antebrazos sobre los soportes de la silla romana, espalda pegada al respaldo y hombros bajos (no encogidos). MOVIMIENTO: sube las rodillas hacia el pecho enrollando ligeramente la pelvis hacia las costillas, pausa de 1 s arriba y baja en 3 s sin balancear. Si te balanceas, para y reinicia. POR QUÉ: trabaja la parte baja del abdomen y la flexión de cadera, que da la zancada al correr. ERROR COMÚN: usar el impulso del balanceo. Si te cuesta, hazlo con las rodillas flexionadas y sube solo hasta 90°.'},
+      {n:'Plancha lateral (rodilla apoyada si hace falta)',muscle:'CORE · Oblicuos · Glúteo medio · Cuadrado lumbar',sets:'2×20-30 s por lado',rir:'RIR 3-4',desc:'POSICIÓN: antebrazo en el suelo con el codo justo bajo el hombro y las piernas dobladas o estiradas. Si todavía no tienes la fuerza, deja la rodilla de abajo apoyada y las piernas dobladas. Cadera arriba, en línea recta de la cabeza a las rodillas (o a los pies). Aprieta el glúteo. TIEMPO: 20-30 s por lado. Cuando aguantes 30 s con la rodilla apoyada sin temblar, pasa a la versión con las piernas estiradas. POR QUÉ: refuerza el costado, que estabiliza la pelvis en cada paso al correr. ERROR COMÚN: dejar caer la cadera o girar el pecho hacia el suelo.'},
     ],
     postMob:[
-      {n:'Foam roller cuádriceps',dur:'90s por pierna',desc:'Boca abajo con el rolo bajo los muslos. Rueda desde la cadera hasta encima de la rodilla. Para 20-30s en los puntos más tensos. Tras la sentadilla, el rolo reduce la rigidez y las agujetas percibidas.'},
-      {n:'Foam roller isquios y zona poplítea',dur:'90s por pierna',desc:'Sentado con el rolo bajo los isquios, cruza la pierna contraria encima para más presión. Rueda lentamente desde el glúteo hasta detrás de la rodilla. Especialmente importante tras el Nordic curl — el isquio en acortamiento adaptativo después del excéntrico necesita ser liberado.'},
-      {n:'Foam roller banda iliotibial (IT band)',dur:'60s por pierna',desc:'Tumbado de lado, rolo bajo la cara lateral del muslo. Desde la cadera hasta la rodilla. Es incómodo — eso indica tensión. Para en los puntos duros. La IT band tensa altera la biomecánica de la rodilla al correr.'},
-      {n:'Pigeon Pose en el suelo o banco',dur:'75s por lado',desc:'Rodilla delantera en el suelo (o sobre el banco), pierna trasera estirada. Baja el pecho hacia el suelo. Este estiramiento trabaja simultáneamente el glúteo, el piriforme y los rotadores externos de cadera — todos sobreactivados tras el legs.'},
-      {n:'Estiramiento isquios activo',dur:'45s por pierna',desc:'Tumbado boca arriba, pierna estirada hacia arriba sujetada con las manos (o cuerda). Rodilla ligeramente doblada. Aguanta sin rebotar. 45s de estiramiento prolongado relaja el reflejo miotático — el isquio se alarga más que con un estiramiento de 20s.'},
-      {n:'Estiramiento gemelos en rampa',dur:'45s por pierna',desc:'Toes apoyadas en el talón de una mancuerna o borde del escalón del gym. Talón bajando hacia el suelo. Rodilla extendida (gastrocnemio) luego ligeramente doblada (sóleo). Ambas cabezas del tríceps sural necesitan estirarse por separado.'},
+      {n:'Cuádriceps de pie',dur:'40 s por pierna',desc:'POSICIÓN: de pie junto a una pared o rack para apoyarte con una mano. CÓMO: flexiona una rodilla, lleva el talón hacia el glúteo y agárrate el pie con la mano del mismo lado. Rodillas juntas y pelvis metida (glúteo apretado). 40 s y cambia. POR QUÉ: tras sentadillas, prensa y zancadas el cuádriceps queda cargado; si queda corto, tira de la pelvis hacia delante y carga la lumbar. ERROR COMÚN: arquear la lumbar o separar la rodilla del cuerpo.'},
+      {n:'Isquios con pierna en banco',dur:'40 s por pierna',desc:'POSICIÓN: de pie frente a un banco o escalón, una pierna estirada encima con el talón apoyado y el pie flexionado. CÓMO: inclina el torso hacia delante con la espalda recta, desde la cadera, hasta notar la parte trasera del muslo. 40 s y cambia. Si no llegas, flexiona un poco la rodilla. POR QUÉ: los isquios acortados tiran de la pelvis hacia atrás y limitan la zancada al correr; 30-60 s de mantenimiento mejoran el rango más que los estiramientos cortos. ERROR COMÚN: redondear la espalda para llegar más lejos: la tensión debe sentirse en el muslo.'},
+      {n:'Glúteo y piriforme (figura 4)',dur:'40 s por lado',desc:'POSICIÓN: tumbado boca arriba con las rodillas dobladas y los pies en el suelo. CÓMO: cruza el tobillo derecho sobre la rodilla izquierda, agarra detrás del muslo izquierdo y tira hacia el pecho hasta notar el glúteo derecho. 40 s y cambia. POR QUÉ: el glúteo y los rotadores de cadera se cargan en sentadilla, hip thrust y carrera; una cadera libre protege lumbar y rodillas. ERROR COMÚN: levantar la cabeza y los hombros del suelo: mantén la nuca relajada.'},
+      {n:'Gemelos en pared',dur:'40 s por pierna',desc:'POSICIÓN: manos en la pared, una pierna atrás con el talón pegado al suelo. CÓMO: mantén la rodilla trasera estirada 20 s (gemelo) y luego flexiónala un poco sin levantar el talón otros 20 s (sóleo). Cambia de pierna. POR QUÉ: los gemelos absorben el impacto de cada zancada; estirarlos reduce la carga en el tendón de Aquiles. ERROR COMÚN: levantar el talón o girar el pie hacia fuera.'},
+      {n:'Flexor de cadera (psoas)',dur:'30 s por lado',desc:'POSICIÓN: una rodilla apoyada en el suelo (con toalla) y el otro pie delante, rodilla a 90°. CÓMO: mete la pelvis (glúteo apretado) y empuja la cadera hacia delante hasta notar la ingle y el frente del muslo trasero. Torso erguido. 30 s y cambia. POR QUÉ: el psoas se acorta con las horas sentado y tira de la lumbar; abrirlo da más extensión de cadera al correr. ERROR COMÚN: arquear la lumbar en vez de mover la cadera.'},
     ],
     postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Comida 16:00 con hidratos para llegar con glucógeno a la carrera. 18:30: ~200 kcal solo hidratos. Correr esta noche, 8 h después de la pierna, es mejor que correr mañana: las agujetas aparecen a partir de las 24 h.'},
 
@@ -4417,14 +4424,15 @@ var GYM_PLAN={
       {n:'Press banca agarre cerrado (Close Grip Bench)',muscle:'Tríceps · Pectoral interno',sets:'3×10-12',rir:'RIR 2',desc:'AGARRE: a la anchura de los hombros (no más estrecho — lesiona la muñeca). Los codos van pegados al torso — esto es lo que dirige el trabajo al tríceps. BAJADA: 3s, la barra toca el abdomen bajo (no el pecho). SUBIDA: explosiva. Es el ejercicio de tríceps más efectivo con barra. Si los pulgares generan tensión en la muñeca, prueba agarre falso (thumbless).'},
       {n:'Extensión de tríceps en polea alta',muscle:'Tríceps (cabeza larga)',sets:'3×12-15',rir:'RIR 2',desc:'CABLE: polea alta con cuerda o barra. Agarre neutro con la cuerda. POSICIÓN: inclinado ligeramente hacia adelante, codos fijos junto a la cabeza. MOVIMIENTO: extiende completamente abriendo los dedos de la cuerda al final para aislar la cabeza lateral. Regresa controlado. El tríceps es aproximadamente dos tercios del volumen del brazo — trabajarlo bien da más brazo visible que el bíceps. La cabeza larga solo se estira cuando el brazo está elevado, de ahí este ejercicio con los codos arriba.'},
       {n:'Face pull en polea alta (15 reps)',muscle:'Deltoides posterior · Rotadores ext.',sets:'3×15',rir:'RIR 2',desc:'Idéntico al del Pull A, pero hoy cierra la sesión de push. Compensa el volumen de empuje anterior y mantiene el balance anterior-posterior del hombro. Hacer face pull SIEMPRE en cada sesión de push es la política de hombros sanos a largo plazo.'},
-      {n:'Dead Bug',muscle:'Core profundo · Transverso · Coordinación',sets:'2×8 por lado',rir:'N/A (control)',desc:'POSICIÓN: tumbado boca arriba, brazos al techo, rodillas a 90°. MOVIMIENTO: exhala lentamente y baja el brazo derecho y la pierna izquierda simultáneamente sin que la lumbar se despegue del suelo. La presión lumbar en el suelo es constante en todo momento — si se despega, el recorrido es demasiado largo. 3s bajar, pausa, volver. 8 por lado. El dead bug trabaja el core en extensión — el mismo patrón que el running cuando el pie impacta el suelo.'},
-      {n:'Plancha lateral (Side Bridge)',muscle:'Oblicuos · Glúteo medio · Cuadrado lumbar',sets:'2×20-30s por lado',rir:'N/A (tiempo)',desc:'POSICIÓN: antebrazo en el suelo, codo bajo el hombro, pies apilados. Cadera elevada en línea recta. Aprieta el glúteo del lado de apoyo. CLAVE: si tiemblas antes de 20s, baja la rodilla (versión modificada) sin romper la línea. El oblicuo resiste la caída lateral — el mismo músculo que estabiliza el tronco en cada zancada al correr. Segundo pilar del Big 3 de McGill.'},
+      {n:'Crunch en polea de rodillas',muscle:'CORE · Recto abdominal (flexión con carga)',sets:'3×12',rir:'RIR 3-4',desc:'POSICIÓN: polea alta con cuerda. De rodillas frente a la polea, cuerda a los lados de la cabeza, caderas encima de las rodillas. MOVIMIENTO: baja el pecho hacia las rodillas enrollando la columna y acercando costillas y pelvis; las manos no tiran, solo sostienen la cuerda. Pausa 1 s abajo y vuelve en 2-3 s. PESO: moderado-ligero. POR QUÉ: es el único ejercicio con carga en flexión del plan; va solo un día por semana para no castigar la lumbar. ERROR COMÚN: tirar con los brazos o con las caderas en vez de enrollar el abdomen.'},
+      {n:'Pallof press con paso lateral',muscle:'CORE · Oblicuos · Transverso (anti-rotación)',sets:'3×10 por lado',rir:'RIR 3-4',desc:'VARIANTE CON PASO LATERAL: POLEA: a la altura del ombligo. De pie lateral a la polea, un paso lateral alejado. Agarra el cable con ambas manos frente al pecho. MOVIMIENTO: extiende los brazos completamente hacia adelante sin girar el torso. El cable tira de ti hacia la polea — tu core resiste. Aguanta 2s extendido. Vuelve a la posición inicial. El Pallof press es el ejercicio de core más específico para corredores — entrena la resistencia rotacional de cada zancada.'},
+      {n:'Plancha frontal RKC',muscle:'CORE · Core completo · Glúteo',sets:'3×20 s',rir:'RIR 3-4',desc:'POSICIÓN: antebrazos en el suelo, codos bajo los hombros, pies juntos. CLAVE: aprieta glúteos y abdomen al máximo y tira de los codos hacia los pies sin moverlos. Es una plancha corta e intensa: 20-30 s bien hechos valen más que 2 minutos con la cadera caída. Trabaja el core que evita que la lumbar se hunda al correr.'},
     ],
     postMob:[
-      {n:'Foam roller deltoides lateral',dur:'60s por lado',desc:'Tumbado de lado, rolo bajo el hombro lateral. Pequeños movimientos arriba y abajo. Después de 4 series de elevaciones laterales el deltoides medio acumula mucho fluido — el rolo lo drena y reduce el dolor del día siguiente.'},
-      {n:'Estiramiento deltoides posterior (cross-arm)',dur:'30s por lado',desc:'Brazo recto al hombro contrario. La mano libre presiona el codo hacia tu cuerpo. Sientes el deltoides posterior y la cápsula posterior del hombro. Imprescindible tras el face pull.'},
-      {n:'Estiramiento pectoral en rack (45° y 90°)',dur:'30s por lado en cada posición',desc:'Dos posiciones: antebrazo a 90° del tronco (fibras medias del pectoral) y antebrazo a 45° mirando hacia arriba (fibras superiores). Ambas posiciones en cada sesión de empuje para cubrir todas las fibras.'},
-      {n:'Thoracic extension en foam roller',dur:'60s',desc:'Rolo transversal a la espalda media. Manos detrás de la cabeza. Deja caer el pecho hacia el suelo lentamente. El press acorta los pectorales y la zona torácica — esta extensión es el antídoto.'},
+      {n:'Pecho en marco de puerta',dur:'30 s por lado',desc:'POSICIÓN: de pie en un marco de puerta o junto a un poste del rack, antebrazo apoyado con el codo a la altura del hombro. CÓMO: da un pequeño paso hacia delante y gira el cuerpo hacia el lado contrario hasta notar el estiramiento en el pecho. Respira lento 30 s y cambia. POR QUÉ: el press acorta el pectoral y cierra los hombros; este estiramiento devuelve el rango y facilita respirar profundo. ERROR COMÚN: subir el codo por encima del hombro: la tensión pasa al hombro y no al pecho.'},
+      {n:'Hombro posterior cruzado',dur:'30 s por brazo',desc:'POSICIÓN: de pie o sentado, espalda erguida. CÓMO: cruza el brazo por delante del pecho y tira de él suavemente con el otro, sin subir el hombro. 30 s y cambia. POR QUÉ: descarga el deltoides posterior y la zona del omóplato, muy usados en press, laterales y remos. ERROR COMÚN: encoger el hombro hacia la oreja o girar el tronco.'},
+      {n:'Tríceps sobre la cabeza',dur:'30 s por brazo',desc:'POSICIÓN: sentado o de pie, costillas abajo. CÓMO: lleva el codo hacia el techo con la mano detrás de la cabeza y empuja el codo suavemente con la otra mano. 30 s y cambia. POR QUÉ: el tríceps trabaja en todos los empujes y, si queda corto, limita el movimiento del hombro por encima de la cabeza. ERROR COMÚN: arquear la lumbar para llegar más: mantén el abdomen firme.'},
+      {n:'Cuello y trapecio superior',dur:'30 s por lado',desc:'POSICIÓN: sentado y erguido, hombros relajados. CÓMO: inclina la oreja hacia el hombro del mismo lado y añade un peso muy suave con la mano. El hombro contrario baja. 30 s y cambia. POR QUÉ: el trapecio acumula tensión con los tirones y con las horas de estudio; relajarlo ayuda al sueño. ERROR COMÚN: encoger el hombro del lado estirado o tirar fuerte con la mano.'},
     ],
     postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. 18:30 merienda pre-carrera (solo hidratos). Cena después de correr con proteína + hidratos. Mañana: Pull B + Core.'},
 
@@ -4443,16 +4451,15 @@ var GYM_PLAN={
       {n:'Remo con mancuerna unilateral',muscle:'Dorsal · Romboides (unilateral)',sets:'3×10-12 por lado',rir:'RIR 2',desc:'POSICIÓN: rodilla y mano del mismo lado apoyadas en el banco. La espalda completamente horizontal y recta. La mancuerna en la mano opuesta. TIRÓN: lleva la mancuerna hacia la cadera (no hacia el hombro), codo pasa rozando el costado y sigue hacia atrás hasta máxima retracción escapular. BAJADA: brazos completamente extendidos — el estiramiento del dorsal es donde ocurre la mayor parte del crecimiento. Trabaja cada lado de forma independiente para corregir desequilibrios. Empieza siempre con el lado más débil.'},
       {n:'Face pull en polea alta con cuerda',muscle:'Deltoides posterior · Romboides · Rotadores ext.',sets:'3×15',rir:'RIR 2',desc:'POLEA: alta, con cuerda. Agarre neutro (pulgares hacia ti). POSICIÓN: un paso atrás para crear ángulo de tirón. MOVIMIENTO: tira hacia la cara separando la cuerda al final (manos van a los lados de la cara), codos POR ENCIMA de los hombros al final. Los antebrazos apuntan hacia el techo en el pico. Este ejercicio reconstruye el deltoides posterior que el ordenador destruye. Fundamental para salud del hombro. Hacerlo en cada sesión de pull ayuda a mantener el hombro sano.'},
       {n:'Curl martillo con mancuernas',muscle:'Braquiorradial · Bíceps (agarre neutro)',sets:'3×10-12',rir:'RIR 2',desc:'AGARRE: neutro (como sujetar un martillo). Los pulgares apuntan hacia el techo durante todo el movimiento. POSICIÓN: igual que el curl estándar — codos fijos. Esta variante trabaja el braquiorradial (músculo del antebrazo que da grosor visual al brazo) y el bíceps en una posición de agarre más funcional. Alterna: una serie de curl bíceps, una de martillo — descansas mientras el otro trabaja.'},
-      {n:'Pallof Press en cable (anti-rotación)',muscle:'Core transverso · Oblicuos · Glúteo',sets:'3×10 por lado',rir:'N/A (control)',desc:'POLEA: a la altura del ombligo. De pie lateral a la polea, un paso lateral alejado. Agarra el cable con ambas manos frente al pecho. MOVIMIENTO: extiende los brazos completamente hacia adelante sin girar el torso. El cable tira de ti hacia la polea — tu core resiste. Aguanta 2s extendido. Vuelve a la posición inicial. El Pallof press es el ejercicio de core más específico para corredores — entrena la resistencia rotacional de cada zancada.'},
-      {n:'McGill Curl-up',muscle:'Recto abdominal · Transverso',sets:'3×10',rir:'N/A (técnica)',desc:'POSICIÓN: tumbado boca arriba. UNA pierna extendida, la OTRA con la rodilla doblada y el pie apoyado. Las manos bajo la lumbar para mantener la lordosis natural. MOVIMIENTO: levanta la cabeza y los hombros del suelo con los codos adelantando ligeramente — como si quisieras ver los pies. La lumbar NO se despega de las manos en ningún momento. Aguanta 8-10s. DIFERENCIA con el crunch: el crunch flexiona la lumbar (dañino) — el curl-up la mantiene neutral (funcional). Es parte del Big 3 de McGill para espalda sana.'},
-      {n:'Plancha lateral (Side Bridge McGill)',muscle:'Oblicuos · Glúteo medio · Cuadrado lumbar',sets:'3×20-30s por lado',rir:'N/A (tiempo)',desc:'POSICIÓN: antebrazo en el suelo, codo bajo el hombro. Pies apilados o en tijera. Cadera elevada formando una línea recta. CLAVE: aprieta el glúteo del lado de apoyo para mantener la cadera alineada. El oblicuo trabaja para no dejar caer la cadera. Si tiemblas antes de los 20s, baja la rodilla al suelo (versión modificada) sin romper la línea. La plancha lateral es el segundo pilar del Big 3 de McGill — trabaja el core lateral que protege la columna en cada zancada de running.'},
-      {n:'Bird Dog (extensión cruzada)',muscle:'Erector espinal · Glúteo · Core completo',sets:'3×8 por lado',rir:'N/A (técnica)',desc:'A cuatro patas en el suelo del gym. Rodillas bajo las caderas, manos bajo los hombros. MOVIMIENTO: extiende el brazo derecho y la pierna izquierda simultáneamente hasta que queden paralelos al suelo — la columna completamente neutral (sin rotar ni lateralizar la cadera). Aguanta 3-4s. Vuelve controlado y cambia. Si la cadera rota al subir la pierna, aprieta el glúteo de esa pierna. El Bird Dog trabaja la cadena cruzada hombro-cadera — el mismo patrón de la zancada al correr. Es el tercer pilar del Big 3 de McGill.'},
+      {n:'Elevación de rodillas colgado en barra',muscle:'CORE · Recto abdominal inferior · Flexores de cadera · Agarre',sets:'3×8-10',rir:'RIR 3-4',desc:'POSICIÓN: colgado de la barra con agarre algo más ancho que los hombros, hombros activos (sin encoger), piernas juntas. MOVIMIENTO: sube las rodillas hasta que los muslos pasen la horizontal, enrollando la pelvis al final. Pausa de 1 s arriba y baja en 3 s sin balancear. Si no aguantas el agarre o el hombro protesta, hazlo en la silla romana. POR QUÉ: trabaja abdomen y agarre a la vez, útil para dominadas y remos. ERROR COMÚN: balancearse; si empiezas a columpiarte, para y reinicia.'},
+      {n:'Woodchop en cable (de bajo a alto)',muscle:'CORE · Oblicuos · Transverso · Glúteo',sets:'3×12 por lado',rir:'RIR 3-4',desc:'POSICIÓN: polea baja con asa en D. De pie de lado a la polea, rodillas ligeramente flexionadas. Agarra el asa con las dos manos junto a la cadera más cercana. MOVIMIENTO: sube en diagonal hacia el hombro contrario, girando el tronco y las caderas y extendiendo las piernas a la vez. Mira la mano al subir. Baja en 2-3 s con control. PESO: ligero. POR QUÉ: coordina piernas, cadera y tronco en una sola cadena, igual que una zancada al correr. ERROR COMÚN: tirar con los brazos y no con el tronco.'},
+      {n:'Plancha lateral (rodilla apoyada si hace falta)',muscle:'CORE · Oblicuos · Glúteo medio · Cuadrado lumbar',sets:'2×30 s por lado',rir:'RIR 3-4',desc:'POSICIÓN: antebrazo en el suelo con el codo justo bajo el hombro y las piernas dobladas o estiradas. Si todavía no tienes la fuerza, deja la rodilla de abajo apoyada y las piernas dobladas. Cadera arriba, en línea recta de la cabeza a las rodillas (o a los pies). Aprieta el glúteo. TIEMPO: 20-30 s por lado. Cuando aguantes 30 s con la rodilla apoyada sin temblar, pasa a la versión con las piernas estiradas. POR QUÉ: refuerza el costado, que estabiliza la pelvis en cada paso al correr. ERROR COMÚN: dejar caer la cadera o girar el pecho hacia el suelo.'},
     ],
     postMob:[
-      {n:'Foam roller IT band y glúteo',dur:'90s por lado',desc:'Tumbado de lado, rolo bajo la cara lateral del muslo (IT band). Desde la cadera hasta la rodilla. Luego siéntate sobre el rolo con el glúteo en figura-4. Al final de la semana de gym la IT band y el glúteo acumulan más tensión que en cualquier otro momento — este rolo es el más importante de la semana.'},
-      {n:'Foam roller dorsal completo final',dur:'90s',desc:'Cierra la semana liberando toda la cadena posterior. Desde lumbar hasta la base del cuello. Lento, sin prisa. Respira profundo en cada punto tenso.'},
-      {n:'Pigeon Pose bilateral',dur:'75s por lado',desc:'El estiramiento de cierre de semana más completo. Glúteo, piriforme, rotadores externos. Deja que el cuerpo se rinda completamente. Mañana es sábado — puedes recuperarte.'},
-      {n:'Supine twist (torsión espinal)',dur:'40s por lado',desc:'Tumbado boca arriba. Lleva la rodilla derecha al pecho y déjala caer al lado izquierdo. Brazo derecho en cruz. Respira profundo y deja que la gravedad haga el trabajo. Restaura la movilidad rotacional de la columna que 5 días de gym reduce.'},
+      {n:'Dorsal en child’s pose lateral',dur:'40 s por lado',desc:'POSICIÓN: en child’s pose, de rodillas con la cadera hacia los talones y los brazos estirados al frente. CÓMO: camina las dos manos hacia la derecha hasta notar el costado izquierdo, desde la axila hasta la cadera. Respira hacia ese costado. 40 s y cambia. POR QUÉ: estira dorsal ancho y cuadrado lumbar, protagonistas de los días de tirón. ERROR COMÚN: levantar la cadera de los talones: mantén el peso hacia atrás.'},
+      {n:'Isquios con pierna en banco',dur:'40 s por pierna',desc:'POSICIÓN: de pie frente a un banco o escalón, una pierna estirada encima con el talón apoyado y el pie flexionado. CÓMO: inclina el torso hacia delante con la espalda recta, desde la cadera, hasta notar la parte trasera del muslo. 40 s y cambia. Si no llegas, flexiona un poco la rodilla. POR QUÉ: los isquios acortados tiran de la pelvis hacia atrás y limitan la zancada al correr; 30-60 s de mantenimiento mejoran el rango más que los estiramientos cortos. ERROR COMÚN: redondear la espalda para llegar más lejos: la tensión debe sentirse en el muslo.'},
+      {n:'Apertura torácica (open book)',dur:'8 reps por lado',desc:'POSICIÓN: tumbado de lado, rodillas dobladas a 90° y brazos juntos al frente. CÓMO: abre el brazo de arriba hacia el otro lado siguiendo la mano con la mirada, sin despegar las rodillas. Pausa 2 s y vuelve. 8 repeticiones por lado. POR QUÉ: moviliza la columna dorsal para que la lumbar no compense al remar y correr. ERROR COMÚN: separar las rodillas: deben quedar juntas.'},
+      {n:'Respiración de cierre',dur:'60 s',desc:'POSICIÓN: de pie o sentado, una mano en el vientre. CÓMO: 5 respiraciones lentas: inspira 4 s por la nariz hinchando el vientre y espira 6 s por la boca con los labios fruncidos. POR QUÉ: baja pulsaciones tras la serie final y marca el paso del modo entreno al modo recuperación. ERROR COMÚN: levantar el pecho al inspirar: el vientre es el que sube.'},
     ],
     postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Semana de gym completada. Mañana sábado: carrera a las 20:00 y cena de ~750 kcal. Duerme 7-9 h: es cuando se recupera el músculo.'},
 
@@ -4622,7 +4629,7 @@ function _gymExerHTML(items,prog,dk,readOnly){
     if(hist.length>0){
       h+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">';
       hist.slice(-4).reverse().forEach(function(e){
-        var ago=e.date===today()?'hoy':e.date.slice(5);
+        var ago=e.date===today()?'hoy':fmtDate(e.date).slice(0,5);
         h+='<span style="font-size:10px;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:2px 6px;color:var(--m)"><strong style="color:var(--t)">'+e.kg+'kg</strong>×'+e.reps+' <span style="color:var(--m)">'+ago+'</span></span>';
       });
       h+='</div>';
@@ -4716,7 +4723,7 @@ function renderGymPesos(){
       dayH+='<div style="font-size:12px;font-weight:700;color:var(--t);margin-bottom:6px">'+(i+1)+'. '+ex.n+'</div>';
       dayH+='<div style="display:flex;gap:4px;flex-wrap:wrap">';
       hist.slice(-8).forEach(function(e){
-        var ago=e.date===today()?'hoy':e.date.slice(5);
+        var ago=e.date===today()?'hoy':fmtDate(e.date).slice(0,5);
         dayH+='<div style="font-size:11px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:6px;padding:3px 8px;text-align:center">';
         dayH+='<div style="font-weight:800;color:var(--a)">'+e.kg+'<span style="font-size:9px">kg</span></div>';
         dayH+='<div style="color:var(--m)">×'+e.reps+'</div>';
@@ -4872,7 +4879,7 @@ function renderGymPage(targetId,dkOverride,readOnly){
     h+='</div></div>';
     h+='<button class="btn '+(done?'bth':'btg')+'" style="margin:10px 0" onclick="gymMarkDone()">'+(done?'↩️ Revertir sesión':'✅ Marcar sesión completada')+'</button>';
   }
-  if(readOnly&&dk===GYM_DOW[new Date().getDay()]) h+='<button class="btn bth btn-sm" style="margin:6px 0" onclick="gymTab(\'session\')">Ir a la sesión de hoy para registrar →</button>';
+  if(readOnly&&dk===_gymDkOnDate(today())) h+='<button class="btn bth btn-sm" style="margin:6px 0" onclick="gymTab(\'session\')">Ir a la sesión de hoy para registrar →</button>';
   h+='</div>';
   el.innerHTML=h;
 }
@@ -5202,11 +5209,16 @@ function renderNutriPlan(sel){
   h+='</div>';
   h+='<div style="font-size:12px;font-weight:700;color:var(--t);margin:12px 0 6px">📌 Reglas</div>';
   h+='<div style="font-size:11px;color:var(--m);line-height:1.7;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:9px 12px">'+
-    '• <strong style="color:var(--t)">El aceite de cocinar cuenta.</strong> Mídelo con cuchara: es la caloría que más se escapa.<br>'+
-    '• <strong style="color:var(--t)">Antes de correr, solo hidratos rápidos.</strong> Grasa o fibra a 90 min de correr dan problemas de estómago.<br>'+
-    '• <strong style="color:var(--t)">No hace falta clavar cada comida.</strong> Si te pasas de proteína en una y te quedas corto en otra, cuenta el total del día.<br>'+
+    '• <strong style="color:var(--t)">Objetivo:</strong> bajar grasa sin perder músculo. ≈2.100-2.200 kcal y ≈155-160 g de proteína al día.<br>'+
+    '• <strong style="color:var(--t)">Cocinas solo la comida y la cena, el mismo día.</strong> Pre-gym, post-gym y merienda son sin cocinar.<br>'+
+    '• <strong style="color:var(--t)">Sin leche, sin embutidos</strong> (pavo/jamón en lonchas). Proteína de pollo, ternera o cerdo magro, pescado, huevos (8 a la semana), conservas, skyr natural y whey con agua.<br>'+
+    '• <strong style="color:var(--t)">Azúcar refinado al mínimo a diario</strong> (miel, mermelada, galletas, bollería, sabores). Ketchup, gochujang o brioche, solo de vez en cuando y poco. Fruta entera, sí.<br>'+
+    '• <strong style="color:var(--t)">Menos gluten:</strong> arroz, patata, tortitas de arroz o maíz antes que pan y pasta.<br>'+
+    '• <strong style="color:var(--t)">El aceite cuenta (~20 g al día):</strong> 0 en tostadas, ~10-12 g en la comida, ~8-10 g en la cena. Pésalo.<br>'+
+    '• <strong style="color:var(--t)">Pesa en crudo</strong> y registra en Yazio (carne, arroz, patata, pan, aceite).<br>'+
     '• <strong style="color:var(--t)">Pasos:</strong> 7.000-8.000 al día los días sin carrera (lo ves en la pulsera).<br>'+
-    '• <strong style="color:var(--t)">Ajuste:</strong> si en 2-3 semanas tu peso medio no baja, recorta 150 kcal en hidratos. Si bajas más de 1 kg/semana, súmalas.'+
+    '• <strong style="color:var(--t)">Agua:</strong> ~3 L al día (+0,5 L si corres o hace calor).<br>'+
+    '• <strong style="color:var(--t)">Ajuste:</strong> si en 2-3 semanas tu peso medio no baja, recorta ~150 kcal de hidratos. Si bajas más de 1 kg/semana, súmalas.'+
     '</div>';
   h+='<div style="font-size:11px;color:var(--m);margin-top:10px">📱 Registra lo que comes en Yazio: aquí solo tienes el objetivo de cada momento.</div>';
   el.innerHTML=h;
@@ -5353,8 +5365,16 @@ var MOB_BY_DAY={
   sabado:{foco:'Running: piernas largas, cadera, tobillo y pie',min:15,ex:['resp','knees','figura4','psoas','cuadriceps','isquios','gemelos','tobillo','child']},
   domingo:{foco:'Descarga: la sesión larga de movilidad ya está hecha, aquí solo lumbar y relajación',min:9,ex:['resp','knees','twist','psoas','isquios','child']}
 };
-function _mobDayKey(){return GYM_DOW[new Date(today()+'T12:00:00').getDay()];}
-function getMobList(){var d=MOB_BY_DAY[_mobDayKey()]||MOB_BY_DAY.domingo;return d.ex.map(_mobItem);}
+function _mobDayKey(){return _gymDkOnDate(today());}
+var MOB_MIN_KEYS=['resp','knees','child'];
+function getMobList(){
+  var d=MOB_BY_DAY[_mobDayKey()]||MOB_BY_DAY.domingo;
+  var mins=MOB_MIN_KEYS.filter(function(k){return d.ex.indexOf(k)>=0;});
+  var opts=d.ex.filter(function(k){return mins.indexOf(k)<0;});
+  var list=mins.concat(opts).map(_mobItem);
+  list.forEach(function(it,i){it._min=(i<mins.length);});
+  return list;
+}
 
 var MOB_STATE={running:false,stopped:true,exIdx:0,timeLeft:0,interval:null};
 
@@ -5378,7 +5398,7 @@ function renderMobilityPage(){
   var h='<div style="background:linear-gradient(135deg,rgba(167,139,250,0.1),rgba(99,102,241,0.05));border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
   h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
   h+='<div><div style="font-size:12px;font-weight:700;color:var(--p)">🧘 MOVILIDAD · Antes de dormir</div>';
-  var _md=MOB_BY_DAY[_mobDayKey()]||MOB_BY_DAY.domingo;h+='<div style="font-size:11px;color:var(--m)">Hoy: '+_md.foco+' · ≈'+_md.min+' min</div><div style="font-size:10px;color:var(--m);margin-top:2px">Siempre: lumbar · psoas · isquios · respiración</div></div>';
+  var _md=MOB_BY_DAY[_mobDayKey()]||MOB_BY_DAY.domingo;h+='<div style="font-size:11px;color:var(--m)">Hoy: '+_md.foco+' · ≈'+_md.min+' min</div><div style="font-size:10px;color:var(--m);margin-top:2px">Con la versión mínima ya cuenta para la racha</div></div>';
   h+='<div style="text-align:right"><div style="font-size:28px;font-weight:800;color:var(--p)">'+streak+'</div><div style="font-size:10px;color:var(--m)">días racha</div></div></div>';
   if(done){
     h+='<div style="background:rgba(61,214,140,0.1);border-radius:8px;padding:8px;display:flex;align-items:center;gap:8px">';
@@ -5390,7 +5410,11 @@ function renderMobilityPage(){
   }
   h+='</div>';
   // Static exercise list with full descriptions
-  getMobList().forEach(function(ex,i){
+  var _mlist=getMobList();
+  var _nmin=_mlist.filter(function(x){return x._min;}).length;
+  h+='<div style="font-size:11px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin:2px 0 6px">Mínimo (≈5 min) · lo que siempre cuenta</div>';
+  _mlist.forEach(function(ex,i){
+    if(i===_nmin) h+='<div style="font-size:11px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px">Completa (opcional) · los días que tengas ganas</div>';
     h+='<div style="border:1px solid var(--b);border-radius:10px;margin-bottom:8px;overflow:hidden">';
     h+='<div style="padding:10px 12px;background:var(--s2);cursor:pointer" onclick="mobToggle('+i+')">';
     h+='<div style="display:flex;justify-content:space-between;align-items:center">';
@@ -6015,7 +6039,7 @@ if(document.readyState==='loading'){
 
 
 function addPostGym(){
-  var entry={id:Date.now().toString(),name:"Post-gym",g:0,meal:"desayuno",k:570,p:38,c:62,f:18,impact:"good",impactMsg:"Desayuno fijo post-gym. Proteína + hidratos para la recuperación."};
+  var entry={id:Date.now().toString(),name:"Post-gym",g:0,meal:"desayuno",k:470,p:50,c:58,f:4,impact:"good",impactMsg:"Post-gym fijo: whey con agua, skyr natural, plátano y tortitas de arroz."};
   var log=getFoodLog();log.push(entry);saveFoodLog(log);
   closeFood();renderFoodToday();
 }
@@ -6587,6 +6611,84 @@ function generateShopListFromPlan(){
       if(!hist.some(function(h){return h.date===D&&h.day==='miercoles';})){hist.unshift(ses);sd('gym_hist',hist.slice(0,60));}
     }
     localStorage.setItem('seed_w1_oct7_v1','1');
+  }catch(e){}
+})();
+
+// Carga única: carrera del jueves 08/10/2026 (semana 1, sesión 2).
+(function(){
+  try{
+    if(localStorage.getItem('seed_run_oct8_v1')) return;
+    var D='2026-10-08';
+    var rh=ld('run_hist',[]);
+    if(!rh.some(function(h){return h.date===D;})){
+      var rw=RUN_WEEKS[0];
+      var checks={warmup:true,work:true,cooldown:true};
+      sd('run_checks_'+D,checks);
+      rh.unshift({date:D,week:1,duration:rw.totalMin||20,feeling:'bien',notes:'',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:checks});
+      rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('run_hist',rh.slice(0,50));
+    }
+    localStorage.setItem('seed_run_oct8_v1','1');
+  }catch(e){}
+})();
+
+// Carga única: viernes 09/10/2026 y jueves 08/10/2026 (gym) y martes 13/10/2026 (Push A, semana 2).
+(function(){
+  try{
+    if(localStorage.getItem('seed_w1w2_gym_v1')) return;
+    var W1='2026-10-05', W2='2026-10-12';
+    function addHist(date,day,notes,exs){
+      var plan=getGymDayData(day); if(!plan) return;
+      var hist=ld('gym_hist',[]);
+      if(hist.some(function(h){return h.date===date&&h.day===day;})) return;
+      hist.unshift({date:date,day:day,name:plan.name,notes:notes,exercises:exs});
+      hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('gym_hist',hist.slice(0,60));
+    }
+    function addPw(name,kg,reps,date){
+      var k='gym_pw_n_'+_gymSlug(name); var h=ld(k,[]);
+      if(!h.some(function(e){return e.date===date;})){
+        h.push({date:date,kg:kg,reps:reps});
+        h.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+        sd(k,h.slice(-12));
+      }
+    }
+    // Semana 1: 5 días de gym (05, 06, 07, 08 y 09/10/2026)
+    ['2026-10-08','2026-10-09'].forEach(function(d){ if(!ld('gym_done_'+d,false)) sd('gym_done_'+d,true); });
+    if(parseInt(ld('gym_week_'+W1,0))<5) sd('gym_week_'+W1,5);
+    addHist('2026-10-08','jueves','Push B. Press militar 3 series y el resto 2 series; pesos sin registrar.',[
+      {name:'Press militar con mancuernas de pie',blocks:[{s:3,r:'12',w:null}]},
+      {name:'Elevaciones laterales',blocks:[{s:2,r:'15',w:null}]},
+      {name:'Aperturas con mancuernas',blocks:[{s:2,r:'12',w:null}]},
+      {name:'Press banca agarre cerrado',blocks:[{s:2,r:'10',w:null}]},
+      {name:'Face pull',blocks:[{s:2,r:'15',w:null}]}
+    ]);
+    addHist('2026-10-05','lunes','Push A. Sesión hecha, sin detalle de ejercicios ni pesos.',[]);
+    if(!ld('gym_done_2026-10-05',false)) sd('gym_done_2026-10-05',true);
+    addHist('2026-10-09','viernes','Pull B según el plan, con los pesos usados otros días. Pull over, remo con mancuerna y curl martillo sin peso registrado; core sin detalle.',[
+      {name:'Dominadas o jalón al pecho',blocks:[{s:4,r:'6-10',w:30}]},
+      {name:'Remo en máquina con agarre neutro',blocks:[{s:3,r:'12',w:40}]},
+      {name:'Pull over con cable o mancuerna',blocks:[{s:3,r:'12',w:null}]},
+      {name:'Remo con mancuerna unilateral',blocks:[{s:3,r:'10-12',w:null}]},
+      {name:'Face pull en polea alta',blocks:[{s:3,r:'15',w:30}]},
+      {name:'Curl martillo con mancuernas',blocks:[{s:3,r:'10-12',w:null}]}
+    ]);
+    // Semana 2: martes 13/10/2026 como día 1 (Push A)
+    var D='2026-10-13';
+    if(!ld('gym_done_'+D,false)) sd('gym_done_'+D,true);
+    if(parseInt(ld('gym_week_'+W2,0))<1) sd('gym_week_'+W2,1);
+    addHist(D,'lunes','Push A (semana desplazada por el festivo del 12/10). Press de banca con 10 kg por lado (barra olímpica 20 kg = 40 kg en total). Más dos ejercicios de core sin detalle.',[
+      {name:'Press banca plano con barra (10 kg por lado)',blocks:[{s:4,r:'8',w:40}]},
+      {name:'Press inclinado con mancuernas a 30°',blocks:[{s:3,r:'12',w:10}]},
+      {name:'Cierres en máquina de pecho',blocks:[{s:3,r:'12',w:35}]},
+      {name:'Máquina de pecho-hombro',blocks:[{s:3,r:'12',w:30}]},
+      {name:'Cierres en polea',blocks:[{s:3,r:'12',w:10}]},
+      {name:'Tríceps en polea, bajar con cuerda',blocks:[{s:3,r:'12',w:10}]},
+      {name:'Tríceps con cuerda por encima de la cabeza',blocks:[{s:3,r:'12',w:10}]}
+    ]);
+    addPw('Press banca plano con barra',40,8,D);
+    addPw('Press inclinado con mancuernas (30°)',10,12,D);
+    localStorage.setItem('seed_w1w2_gym_v1','1');
   }catch(e){}
 })();
 </script>
