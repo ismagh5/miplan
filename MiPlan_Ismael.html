@@ -4848,11 +4848,12 @@ function renderGymPage(targetId,dkOverride,readOnly){
   }
   var mobTitle=dk==='sabado'?'🧘 MOVILIDAD POST-CARRERA (~20 min) · En casa con foam roller y banda':dk==='domingo'?'🧘 MOVILIDAD COMPLETA (~40 min)':'🧘 POST-GYM — Movilidad con foam roller (~10 min) · Específica del día';
   h+=_gymSection(mobTitle,'var(--g)',_gymMobHTML(plan.postMob));
-  if(dk==='martes'||dk==='jueves'||dk==='sabado'){
+  var _dwRun=new Date(logDate+'T12:00:00').getDay();
+  if(_dwRun===2||_dwRun===4||_dwRun===6){
     var rwk=_runWeekForDate(logDate);
     var rwd=(typeof RUN_WEEKS!=='undefined'&&rwk>0)?RUN_WEEKS[Math.min(rwk,RUN_WEEKS.length)-1]:null;
     var rtxt=rwd?('<strong>Semana '+rwk+' de running:</strong> '+rwd.work):'El plan de running empieza el '+_fmtLongDate(getRunStartDate())+'.';
-    h+=_gymSection('🏃 CARRERA 20:00-21:30','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0 0 8px">'+rtxt+'<br>'+RUN_DAY_NOTE[dk]+'</p><button class="btn bth btn-sm" onclick="nav(\'run\')">Abrir sesión de running →</button>');
+    h+=_gymSection('🏃 CARRERA 20:00-21:30','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0 0 8px">'+rtxt+'<br>'+(RUN_DAY_NOTE[dk]||'')+'</p><button class="btn bth btn-sm" onclick="nav(\'run\')">Abrir sesión de running →</button>');
   }
   if(!readOnly&&!isMob){
     var extraKey='gym_extra_'+dk+'_'+logDate;
@@ -4887,7 +4888,9 @@ function renderGymPage(targetId,dkOverride,readOnly){
 var RUN_DAY_NOTE={
   martes:'Corres 8 h después de la pierna: las agujetas todavía no han llegado (aparecen a partir de las 24 h), por eso es el mejor momento. Zona 2 estricta: si las piernas pesan, alarga las caminatas.',
   jueves:'Hoy solo has hecho hombros y han pasado 55 h desde la pierna: piernas descansadas.',
-  sabado:'Sin gym en todo el día: es la sesión en la que llegas más fresco. Respeta la zona marcada.'
+  sabado:'Sin gym en todo el día: es la sesión en la que llegas más fresco. Respeta la zona marcada.',
+  miercoles:'Hoy has hecho espalda y bíceps: las piernas están frescas esta semana. Zona 2 estricta; si pesan, alarga las caminatas.',
+  viernes:'Has entrenado espalda y bíceps por la mañana y las piernas están frescas. Respeta la zona marcada.'
 };
 function _runWeekForDate(ds){
   var start=getRunStartDate();
