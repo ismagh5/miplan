@@ -273,7 +273,7 @@ select.if{cursor:pointer;}
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div>
           <div style="font-size:13px;font-weight:700;color:var(--o)">🔥 Racha de consistencia</div>
-          <div style="font-size:11px;color:var(--m);margin-top:2px">Entreno · Running · Movilidad</div>
+          <div style="font-size:11px;color:var(--m);margin-top:2px">Cumples los mínimos de la semana (gym ≥ 4 y running ≥ 2) y todos sus días cuentan</div>
         </div>
         <div style="text-align:right">
           <div style="font-size:46px;font-weight:800;color:var(--o);line-height:1" id="h-streak">0</div>
@@ -281,6 +281,7 @@ select.if{cursor:pointer;}
         </div>
       </div>
       <canvas id="h-streak-chart" height="40" style="width:100%;display:block;margin-bottom:10px"></canvas>
+      <div id="h-streak-week" style="font-size:11px;color:var(--m);margin-bottom:10px"></div>
       <div id="h-run-progress"></div>
     </div>
   </div>
@@ -2004,37 +2005,53 @@ function drawHomeChart(ws){
 
 
 
-function getConsistencyStreak(){
-  var streak=0;
-  var d=new Date();
-  d.setDate(d.getDate()-1); // start from yesterday (today might not be done yet)
-  for(var i=0;i<365;i++){
-    var dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    var dow=d.getDay();
-    // Check if something was done this day
-    var casaDone=ld('casa_done_'+dateStr,false);
-    var mobDone=ld('mob_done_'+dateStr,false);
-    // Check run sessions for this date
-    var runHist=ld('run_hist',[]);
-    var ranToday=runHist.some(function(s){return s.date===dateStr;});
-    // Weekend: only movilidad required
-    var isWeekend=(dow===0||dow===6);
-    var done=mobDone||(isWeekend?ranToday:(casaDone||ranToday));
-    if(!done) break;
-    streak++;
-    d.setDate(d.getDate()-1);
+// Racha por mínimos semanales: una semana (lunes-domingo) cumple si tiene >=4 días de gym y >=2 sesiones de running.
+// Todos los días de una semana cumplida cuentan para la racha; la semana en curso cuenta mientras siga siendo alcanzable.
+var STREAK_MIN_GYM=4, STREAK_MIN_RUN=2;
+function _dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function _weekStats(monday){
+  var runDates={};
+  ld('run_hist',[]).forEach(function(s){if(s&&s.date) runDates[s.date]=true;});
+  var gym=0,run=0;
+  for(var i=0;i<7;i++){
+    var d=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()+i);
+    var k=_dk(d);
+    if(ld('gym_done_'+k,false)) gym++;
+    if(runDates[k]) run++;
   }
-  // Also check today
-  var todayStr=today();
-  var todayDow=new Date().getDay();
-  var todayCasa=ld('casa_done_'+todayStr,false);
-  var todayMob=ld('mob_done_'+todayStr,false);
-  var runHist2=ld('run_hist',[]);
-  var todayRan=runHist2.some(function(s){return s.date===todayStr;});
-  var todayIsWeekend=(todayDow===0||todayDow===6);
-  var todayDone=todayMob||(todayIsWeekend?todayRan:(todayCasa||todayRan));
-  if(todayDone) streak++;
-  return streak;
+  return {gym:gym,run:run};
+}
+function getStreakInfo(){
+  var now=new Date();
+  var today0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var dm=(today0.getDay()+6)%7;
+  var curMon=new Date(today0.getFullYear(),today0.getMonth(),today0.getDate()-dm);
+  var start=new Date(2026,9,5);
+  var cs=_weekStats(curMon);
+  var info={days:0,gym:cs.gym,run:cs.run,met:false,ok:true};
+  info.met=cs.gym>=STREAK_MIN_GYM&&cs.run>=STREAK_MIN_RUN;
+  var elapsed=dm+1;                 // lunes..hoy
+  var avail=7-dm;                   // hoy y los días que quedan
+  var needG=Math.max(0,STREAK_MIN_GYM-cs.gym), needR=Math.max(0,STREAK_MIN_RUN-cs.run);
+  info.ok=info.met||(needG<=avail&&needR<=avail);
+  if(!info.ok) return info;
+  info.days=elapsed;
+  for(var w=1;w<60;w++){
+    var mon=new Date(curMon.getFullYear(),curMon.getMonth(),curMon.getDate()-7*w);
+    if(mon<start) break;
+    var st=_weekStats(mon);
+    if(st.gym>=STREAK_MIN_GYM&&st.run>=STREAK_MIN_RUN) info.days+=7; else break;
+  }
+  return info;
+}
+function getConsistencyStreak(){return getStreakInfo().days;}
+function _refreshStreakBtns(){
+  var st=document.getElementById('h-streak'); if(st) st.textContent=getConsistencyStreak();
+  var wk=document.getElementById('h-streak-week');
+  if(wk){
+    var i=getStreakInfo();
+    wk.textContent='Esta semana: gym '+i.gym+'/'+STREAK_MIN_GYM+' · running '+i.run+'/'+STREAK_MIN_RUN+(i.met?' · ✅ mínimos cumplidos':(i.ok?'':' · ⚠️ ya no llegas a los mínimos'));
+  }
 }
 
 function renderRunProgress(){
@@ -2086,7 +2103,7 @@ function drawStreakChart(){
   ctx.clearRect(0,0,W,H);
 
   // Build last 12 weeks of activity data
-  var weeks=[]; var startDate=new Date(2026,9,1);
+  var weeks=[]; var startDate=new Date(2026,9,5);
   var now=new Date();
   var totalWeeks=Math.max(1,Math.ceil((now-startDate)/(7*86400000))+1);
   totalWeeks=Math.min(totalWeeks,12);
@@ -2094,7 +2111,7 @@ function drawStreakChart(){
   for(var w=0;w<totalWeeks;w++){
     var wStart=new Date(startDate.getTime()+w*7*86400000);
     var wKey=wStart.getFullYear()+'-'+String(wStart.getMonth()+1).padStart(2,'0')+'-'+String(wStart.getDate()).padStart(2,'0');
-    var entreno=parseInt(ld('casa_week_'+wKey,0));
+    var entreno=parseInt(ld('gym_week_'+wKey,0))||parseInt(ld('casa_week_'+wKey,0))||0;
     var run=ld('run_hist',[]).filter(function(s){
       if(!s.date) return false;
       var d=new Date(s.date+'T12:00:00');
@@ -2289,6 +2306,7 @@ function renderHome(){
   // Racha + running progress
   var streakEl=document.getElementById('h-streak');
   if(streakEl) streakEl.textContent=getConsistencyStreak();
+  _refreshStreakBtns();
   renderRunProgress();
   renderRetoCountdown();
 }
@@ -3136,7 +3154,41 @@ function applyRunForceDay(){
   renderRunToday();
 }
 
+function _runWeekCardHTML(refDs){
+  var wn=getCurrentRunWeek();
+  if(!wn||wn<1) return '';
+  var rw=RUN_WEEKS[Math.min(wn,RUN_WEEKS.length)-1]||{};
+  var ref=new Date((refDs||today())+'T12:00:00');
+  var dm=(ref.getDay()+6)%7;
+  var mon=new Date(ref.getFullYear(),ref.getMonth(),ref.getDate()-dm);
+  var sun=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+6);
+  function k(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  var a=k(mon),b=k(sun);
+  var sess=ld('run_hist',[]).filter(function(x){return x.date&&x.date>=a&&x.date<=b;}).map(function(x){return x.date;}).sort();
+  var n=sess.length, MIN=2, TOT=3;
+  var h='<div style="padding:12px 16px 0"><div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 12px">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+  h+='<div><div style="font-size:12px;font-weight:600;color:var(--a)">🏃 Semana '+wn+' de running'+(rw.title?' · '+rw.title:'')+'</div>';
+  h+='<div style="font-size:10px;color:var(--m);margin-top:2px">Esta semana ('+a.slice(8,10)+'/'+a.slice(5,7)+' - '+b.slice(8,10)+'/'+b.slice(5,7)+'): objetivo '+TOT+' sesiones, mínimo '+MIN+' para pasar de semana.</div></div>';
+  h+='<div style="font-size:11px;color:var(--m);white-space:nowrap">'+(n>=MIN?'✅ Semana OK':n+'/'+MIN+' mínimo')+'</div></div>';
+  h+='<div style="display:flex;gap:6px">';
+  for(var i=0;i<TOT;i++){
+    var on=i<n;
+    h+='<div style="min-width:44px;height:32px;padding:0 6px;border-radius:8px;background:'+(on?'var(--g)':'var(--b)')+';display:flex;align-items:center;justify-content:center;font-size:'+(on?'11':'12')+'px;font-weight:700;color:'+(on?'#0a1a0f':'var(--m)')+'">'+(on?sess[i].slice(8,10)+'/'+sess[i].slice(5,7):(i+1))+'</div>';
+  }
+  h+='<div style="flex:1;display:flex;align-items:center;justify-content:flex-end;font-size:11px;color:var(--m)">'+n+'/'+TOT+' sesiones</div>';
+  h+='</div></div></div>';
+  return h;
+}
 function renderRunToday(){
+  _renderRunTodayBase();
+  var el=document.getElementById('run-today-content');
+  if(el){
+    var rds=getLogDate();
+    el.innerHTML=_runWeekCardHTML(rds)+el.innerHTML;
+  }
+}
+function _renderRunTodayBase(){
   var el=document.getElementById('run-today-content');
   var logDateStr=getLogDate();
   var isYesterday=logDateStr!==today();
@@ -3191,7 +3243,7 @@ function renderRunToday(){
   var html=toggleHtml+'<div style="padding:12px 16px">';
   html+='<div class="al alg"><span class="ali">🏃</span><span><strong>Semana '+wn+' · '+rw.title+'</strong></span></div>';
   var _rdn=RUN_DAY_NOTE[_gymDkOnDate(logDateStr)];
-  if(_rdn) html+='<div class="al alb" style="margin:8px 0"><span class="ali">📅</span><span><strong>'+['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][dow]+' · 20:00.</strong> '+_rdn+'</span></div>';
+  if(_rdn) html+='<div class="al alb" style="margin:8px 0"><span class="ali">📅</span><span><strong>'+['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][dow]+' · 20:45.</strong> '+_rdn+'</span></div>';
 
   if(rw.warmup&&rw.warmup.length){
     html+='<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:12px;margin:10px 0">';
@@ -4828,7 +4880,7 @@ function renderGymPage(targetId,dkOverride,readOnly){
   h+='<div style="background:var(--s2);border-radius:12px;padding:12px 14px;margin-bottom:10px">';
   h+='<div style="font-size:20px;margin-bottom:4px">'+plan.emoji+' <strong style="font-size:15px;color:var(--t)">'+plan.n+'</strong></div>';
   h+='<div style="font-size:11px;color:var(--o)">🎯 '+plan.obj+'</div>';
-  var timing={lunes:'🕦 Gym 11:30-13:00',martes:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:00',miercoles:'🕦 Gym 11:30-13:00',jueves:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:00',viernes:'🕦 Gym 11:30-13:00',sabado:'🏃 Carrera 20:00 · movilidad al volver',domingo:'🧘 Movilidad 40 min (cuando quieras, mejor por la mañana)'}[dk];
+  var timing={lunes:'🕦 Gym 11:30-13:00',martes:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:45',miercoles:'🕦 Gym 11:30-13:00',jueves:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:45',viernes:'🕦 Gym 11:30-13:00',sabado:'🏃 Carrera 20:45 · movilidad al volver',domingo:'🧘 Movilidad 40 min (cuando quieras, mejor por la mañana)'}[dk];
   if(logDate==='2026-10-17') timing='🕘 Gym 09:30-10:30 · 🏃 Carrera 20:45';
   if(timing) h+='<div style="font-size:11px;color:var(--m);margin-top:4px">'+timing+' · 🌙 Movilidad antes de dormir</div>';
   h+='</div>';
@@ -4861,7 +4913,7 @@ function renderGymPage(targetId,dkOverride,readOnly){
     var rwk=_runWeekForDate(logDate);
     var rwd=(typeof RUN_WEEKS!=='undefined'&&rwk>0)?RUN_WEEKS[Math.min(rwk,RUN_WEEKS.length)-1]:null;
     var rtxt=rwd?('<strong>Semana '+rwk+' de running:</strong> '+rwd.work):'El plan de running empieza el '+_fmtLongDate(getRunStartDate())+'.';
-    h+=_gymSection('🏃 CARRERA 20:00-21:30','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0 0 8px">'+rtxt+'<br>'+(RUN_DAY_NOTE[dk]||'')+'</p><button class="btn bth btn-sm" onclick="nav(\'run\')">Abrir sesión de running →</button>');
+    h+=_gymSection('🏃 CARRERA 20:45-21:30','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0 0 8px">'+rtxt+'<br>'+(RUN_DAY_NOTE[dk]||'')+'</p><button class="btn bth btn-sm" onclick="nav(\'run\')">Abrir sesión de running →</button>');
   }
   if(!readOnly&&!isMob){
     var extraKey='gym_extra_'+dk+'_'+logDate;
@@ -6803,6 +6855,15 @@ function generateShopListFromPlan(){
     hist.sort(function(a,b){return b.date.localeCompare(a.date);});
     sd('gym_hist',hist.slice(0,60));
     localStorage.setItem('seed_w2_oct15_pesos_v1','1');
+  }catch(e){}
+})();
+
+// Carga única: días activos sin registro (fin de semana 11/10 y festivo 12/10/2026) para la racha.
+(function(){
+  try{
+    if(localStorage.getItem('seed_streak_v1')) return;
+    ['2026-10-11','2026-10-12'].forEach(function(d){ if(!ld('active_manual_'+d,false)) sd('active_manual_'+d,true); });
+    localStorage.setItem('seed_streak_v1','1');
   }catch(e){}
 })();
 </script>
