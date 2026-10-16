@@ -1933,6 +1933,7 @@ var NUTRI_DAYS={
 };
 var NUTRI_EQUIV=[];
 function getNutriType(ds){
+  if(ds==='2026-10-17') return 'gymrun';
   var d=ds?new Date(ds+'T12:00:00').getDay():todayDow();
   if(d===0) return 'rest';
   if(d===6) return 'longrun';
@@ -1949,6 +1950,11 @@ function getNutriDay(ds,typeOverride){
       day.bonus=true;
       day.meals.forEach(function(m){if(m.id==='merienda'){m.kcal+=150;m.c+=38;m.tip+=' Desde la semana 6 de running: +150 kcal aquí (ya corres 20-40 min seguidos).';}});
     }
+  }
+  if(ds==='2026-10-17'&&!typeOverride){
+    var _t17={'pre-gym':'09:15','desayuno':'10:45','comida':'14:30','merienda':'19:00','cena':'21:30'};
+    day.meals.forEach(function(m){if(_t17[m.id]) m.time=_t17[m.id];});
+    day.label='Gym 1 h + carrera';day.days='Sábado 17/10/2026 (excepción: gym 09:30-10:30)';
   }
   day.kcal=0;day.p=0;day.c=0;day.f=0;
   day.meals.forEach(function(m){day.kcal+=m.kcal;day.p+=m.p;day.c+=m.c;day.f+=m.f;});
@@ -4823,8 +4829,10 @@ function renderGymPage(targetId,dkOverride,readOnly){
   h+='<div style="font-size:20px;margin-bottom:4px">'+plan.emoji+' <strong style="font-size:15px;color:var(--t)">'+plan.n+'</strong></div>';
   h+='<div style="font-size:11px;color:var(--o)">🎯 '+plan.obj+'</div>';
   var timing={lunes:'🕦 Gym 11:30-13:00',martes:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:00',miercoles:'🕦 Gym 11:30-13:00',jueves:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:00',viernes:'🕦 Gym 11:30-13:00',sabado:'🏃 Carrera 20:00 · movilidad al volver',domingo:'🧘 Movilidad 40 min (cuando quieras, mejor por la mañana)'}[dk];
+  if(logDate==='2026-10-17') timing='🕘 Gym 09:30-10:30 · 🏃 Carrera 20:45';
   if(timing) h+='<div style="font-size:11px;color:var(--m);margin-top:4px">'+timing+' · 🌙 Movilidad antes de dormir</div>';
   h+='</div>';
+  if(logDate==='2026-10-17'&&!isMob) h+='<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--t);line-height:1.5">⏱️ <strong>Sábado 17/10 · gym de 1 h en total (09:30-10:30):</strong> calentamiento 5 min, 5 ejercicios en ~40 min (salta el pull over), descansa 60-75 s entre series, core ~10 min y estiramientos ~5 min. Por la noche, running a las 20:45.</div>';
   if(!isMob&&gymWeekNum<=2){
     h+='<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--t);line-height:1.5">🐣 <strong>Semanas 1-2 · arranque suave:</strong> 2 series por ejercicio (ya está ajustado abajo), RIR 3-4 y sin Nordic curl. Vienes de estar sedentario: el objetivo es aprender la técnica sin agujetas que te arruinen las carreras.</div>';
   }
@@ -6692,6 +6700,42 @@ function generateShopListFromPlan(){
     addPw('Press banca plano con barra',40,8,D);
     addPw('Press inclinado con mancuernas (30°)',10,12,D);
     localStorage.setItem('seed_w1w2_gym_v1','1');
+  }catch(e){}
+})();
+(function(){
+  try{
+    if(localStorage.getItem('seed_w2_oct16_v1')) return;
+    var W2='2026-10-12', D='2026-10-16';
+    function addHist(date,day,notes,exs){
+      var plan=getGymDayData(day); if(!plan) return;
+      var hist=ld('gym_hist',[]);
+      if(hist.some(function(h){return h.date===date&&h.day===day;})) return;
+      hist.unshift({date:date,day:day,name:plan.name,notes:notes,exercises:exs});
+      hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('gym_hist',hist.slice(0,60));
+    }
+    function addPw(name,kg,reps,date){
+      var k='gym_pw_n_'+_gymSlug(name); var h=ld(k,[]);
+      if(!h.some(function(e){return e.date===date;})){
+        h.push({date:date,kg:kg,reps:reps});
+        h.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+        sd(k,h.slice(-12));
+      }
+    }
+    if(!ld('gym_done_'+D,false)) sd('gym_done_'+D,true);
+    if(parseInt(ld('gym_week_'+W2,0))<2) sd('gym_week_'+W2,2);
+    addHist(D,'jueves','Push B (viernes 16/10). Press de banca con 10 kg por lado (≈40 kg en total con la barra de 20 kg). Press inclinado con 10 kg por mancuerna. Laterales, face pull y core sin registrar.',[
+      {name:'Press inclinado con mancuernas a 30°',blocks:[{s:3,r:'12',w:10}]},
+      {name:'Cierres en polea',blocks:[{s:3,r:'12',w:12.5}]},
+      {name:'Cierres en máquina de pecho',blocks:[{s:3,r:'12',w:40}]},
+      {name:'Press de banca (10 kg por lado)',blocks:[{s:3,r:'8',w:40}]},
+      {name:'Tríceps en polea, bajar',blocks:[{s:3,r:'12',w:15}]},
+      {name:'Tríceps por detrás de la cabeza',blocks:[{s:3,r:'12',w:10}]},
+      {name:'Tríceps con cuerda a un brazo',blocks:[{s:3,r:'12',w:7.5}]}
+    ]);
+    addPw('Press inclinado con mancuernas (30°)',10,12,D);
+    addPw('Press banca plano con barra',40,8,D);
+    localStorage.setItem('seed_w2_oct16_v1','1');
   }catch(e){}
 })();
 </script>
