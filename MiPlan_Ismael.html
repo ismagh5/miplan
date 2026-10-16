@@ -2313,7 +2313,7 @@ function getCompensationMessage(dow){
 }
 
 function getYesterday(){
-  var d=new Date();d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];
+  var d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 
 function getNextRunDay(now){
@@ -3071,7 +3071,7 @@ function renderRunHistory(){
       '<div class="cb">'+
       '<div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px">'+(s.work||'Sesión completada')+'</div>'+
       '<div style="display:flex;align-items:center;justify-content:space-between">'+
-      '<div style="font-size:12px;color:var(--m)">'+s.duration+' min · '+feelEmoji+' '+s.feeling+' · ✅ '+doneCount+'/3 fases</div>'+
+      '<div style="font-size:12px;color:var(--m)">'+(s.duration?s.duration+' min · ':'')+(s.feeling?feelEmoji+' '+s.feeling:'sin sensaciones')+(s.extra?'':' · ✅ '+doneCount+'/3 fases')+'</div>'+
       '<button class="btn bth btn-sm" onclick="openRunDetail('+idx+')">Ver detalle</button>'+
       '</div></div></div>';
   }).join('');
@@ -4323,8 +4323,8 @@ function _weekStart(){
   var d=new Date();
   var day=d.getDay();
   var diff=d.getDate()-(day===0?6:day-1);
-  var mon=new Date(d.setDate(diff));
-  return mon.toISOString().split('T')[0];
+  var mon=new Date(d.getFullYear(),d.getMonth(),diff);
+  return mon.getFullYear()+'-'+String(mon.getMonth()+1).padStart(2,'0')+'-'+String(mon.getDate()).padStart(2,'0');
 }
 
 
@@ -6736,6 +6736,73 @@ function generateShopListFromPlan(){
     addPw('Press inclinado con mancuernas (30°)',10,12,D);
     addPw('Press banca plano con barra',40,8,D);
     localStorage.setItem('seed_w2_oct16_v1','1');
+  }catch(e){}
+})();
+
+// Carga única: jueves 15/10/2026 (Pull A + running) y recuento de la semana 2 (martes, jueves y viernes).
+(function(){
+  try{
+    if(localStorage.getItem('seed_w2_oct15_v1')) return;
+    var W2='2026-10-12', D='2026-10-15';
+    if(!ld('gym_done_'+D,false)) sd('gym_done_'+D,true);
+    if(parseInt(ld('gym_week_'+W2,0))<3) sd('gym_week_'+W2,3);
+    var plan=getGymDayData('miercoles');
+    var hist=ld('gym_hist',[]);
+    if(plan&&!hist.some(function(h){return h.date===D;})){
+      hist.unshift({date:D,day:'miercoles',name:plan.name,notes:'Pull A (jueves 15/10, semana desplazada). Sesión hecha; pesos y detalle sin registrar.',exercises:[]});
+      hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('gym_hist',hist.slice(0,60));
+    }
+    var rh=ld('run_hist',[]);
+    if(!rh.some(function(h){return h.date===D;})){
+      var wk=Math.max(1,Math.min(_runWeekForDate(D)||2,RUN_WEEKS.length));
+      var rw=RUN_WEEKS[wk-1];
+      var checks={warmup:true,work:true,cooldown:true};
+      sd('run_checks_'+D,checks);
+      rh.unshift({date:D,week:wk,duration:rw.totalMin||(wk===2?24:20),feeling:'',notes:'Sesión hecha (jueves 15/10); sensaciones sin registrar.',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:checks});
+      rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('run_hist',rh.slice(0,50));
+    }
+    localStorage.setItem('seed_w2_oct15_v1','1');
+  }catch(e){}
+})();
+
+// Carga única: sábado 10/10/2026, pachanga con amigos (cuenta como 3.ª sesión de la semana 1 de running).
+(function(){
+  try{
+    if(localStorage.getItem('seed_run_oct10_v1')) return;
+    var D='2026-10-10';
+    var rh=ld('run_hist',[]);
+    if(!rh.some(function(h){return h.date===D;})){
+      rh.unshift({date:D,week:1,duration:0,feeling:'',notes:'Pachanga con amigos: sustituye la carrera del sábado y cuenta como 3.ª sesión de la semana 1.',work:'Pachanga de fútbol con amigos (cuenta como 3.ª sesión)',workDetail:'',title:'Pachanga',tip:'',warmup:[],cooldown:[],checks:{},extra:true});
+      rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('run_hist',rh.slice(0,50));
+    }
+    localStorage.setItem('seed_run_oct10_v1','1');
+  }catch(e){}
+})();
+
+// Carga única: pesos del Pull A del jueves 15/10/2026 (los mismos que el 07/10, según indicó).
+(function(){
+  try{
+    if(localStorage.getItem('seed_w2_oct15_pesos_v1')) return;
+    var D='2026-10-15';
+    var hist=ld('gym_hist',[]);
+    var plan=getGymDayData('miercoles');
+    var exs=[
+      {name:'Remo sentado en máquina',blocks:[{s:3,r:'12',w:40}]},
+      {name:'Jalón en polea',blocks:[{s:3,r:'12',w:30}]},
+      {name:'Deltoides posterior',blocks:[{s:3,r:'12',w:30}]},
+      {name:'Curl bíceps con barra Z (barra + 5 kg por lado)',blocks:[{s:3,r:'12',w:18}]},
+      {name:'Curl concentrado sentado',blocks:[{s:3,r:'12',w:5}]}
+    ];
+    var note='Pull A (jueves 15/10, semana desplazada). Pesos y series iguales a los del 07/10 (no recordaba los exactos); core sin detalle.';
+    var e=hist.filter(function(h){return h.date===D;})[0];
+    if(e){ if(!e.exercises||!e.exercises.length){ e.exercises=exs; e.notes=note; } }
+    else if(plan){ hist.unshift({date:D,day:'miercoles',name:plan.name,notes:note,exercises:exs}); }
+    hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+    sd('gym_hist',hist.slice(0,60));
+    localStorage.setItem('seed_w2_oct15_pesos_v1','1');
   }catch(e){}
 })();
 </script>
