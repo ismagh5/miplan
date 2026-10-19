@@ -2461,8 +2461,9 @@ function getGymDayData(dk){
 }
 var GYM_DOW=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
 // Semana 2 desplazada un día: el lunes 12/10/2026 fue festivo (gym cerrado), la rutina empieza el martes 13/10/2026.
+// Semana 3: sin gym el lunes 19/10; martes Push A, miércoles Pull A, jueves Piernas, viernes Push B; sábado 24/10 solo running.
 function _gymDkOnDate(ds){
-  var SHIFT={'2026-10-13':'lunes','2026-10-14':'martes','2026-10-15':'miercoles','2026-10-16':'jueves','2026-10-17':'viernes'};
+  var SHIFT={'2026-10-13':'lunes','2026-10-14':'martes','2026-10-15':'miercoles','2026-10-16':'jueves','2026-10-17':'viernes','2026-10-20':'lunes','2026-10-21':'miercoles','2026-10-22':'martes','2026-10-23':'jueves'};
   if(SHIFT[ds]) return SHIFT[ds];
   return ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date(ds+'T12:00:00').getDay()];
 }
@@ -6864,6 +6865,40 @@ function generateShopListFromPlan(){
     if(localStorage.getItem('seed_streak_v1')) return;
     ['2026-10-11','2026-10-12'].forEach(function(d){ if(!ld('active_manual_'+d,false)) sd('active_manual_'+d,true); });
     localStorage.setItem('seed_streak_v1','1');
+  }catch(e){}
+})();
+
+// Carga única: sábado 17/10/2026 (Pull B de 1 h + running de la noche) y cierre de la semana 2.
+(function(){
+  try{
+    if(localStorage.getItem('seed_w2_oct17_v1')) return;
+    var W2='2026-10-12', D='2026-10-17';
+    if(!ld('gym_done_'+D,false)) sd('gym_done_'+D,true);
+    if(parseInt(ld('gym_week_'+W2,0))<4) sd('gym_week_'+W2,4);
+    var plan=getGymDayData('viernes');
+    var hist=ld('gym_hist',[]);
+    if(plan&&!hist.some(function(h){return h.date===D;})){
+      hist.unshift({date:D,day:'viernes',name:plan.name,notes:'Pull B de 1 h (sábado 17/10, 09:30-10:30). Pesos iguales a los del 09/10 (no recordaba los exactos); pull over saltado por tiempo; core sin detalle.',exercises:[
+        {name:'Dominadas o jalón al pecho',blocks:[{s:4,r:'6-10',w:30}]},
+        {name:'Remo en máquina con agarre neutro',blocks:[{s:3,r:'12',w:40}]},
+        {name:'Remo con mancuerna unilateral',blocks:[{s:3,r:'10-12',w:null}]},
+        {name:'Face pull en polea alta',blocks:[{s:3,r:'15',w:30}]},
+        {name:'Curl martillo con mancuernas',blocks:[{s:3,r:'10-12',w:null}]}
+      ]});
+      hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('gym_hist',hist.slice(0,60));
+    }
+    var rh=ld('run_hist',[]);
+    if(!rh.some(function(h){return h.date===D;})){
+      var wk=Math.max(1,Math.min(_runWeekForDate(D)||2,RUN_WEEKS.length));
+      var rw=RUN_WEEKS[wk-1];
+      var checks={warmup:true,work:true,cooldown:true};
+      sd('run_checks_'+D,checks);
+      rh.unshift({date:D,week:wk,duration:rw.totalMin||(wk===2?24:20),feeling:'',notes:'Sesión hecha (sábado 17/10, 20:45); sensaciones sin registrar.',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:checks});
+      rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('run_hist',rh.slice(0,50));
+    }
+    localStorage.setItem('seed_w2_oct17_v1','1');
   }catch(e){}
 })();
 </script>
