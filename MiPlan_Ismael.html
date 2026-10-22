@@ -346,13 +346,17 @@ select.if{cursor:pointer;}
       <div style="flex:1;min-width:100px"><label class="il">Rutina</label>
         <select class="if" id="gym-routine-override" style="font-size:13px" onchange="applyRoutineOverride()">
           <option value="">📅 Del día</option>
-          <option value="lunes">💪 Lunes — Push A · Pecho + Tríceps + Core</option>
-          <option value="martes">🦵 Martes — Legs</option>
-          <option value="miercoles">🏋️ Miércoles — Pull A · Espalda + Bíceps + Core</option>
-          <option value="jueves">🔥 Jueves — Push B · Hombros</option>
-          <option value="viernes">⚡ Viernes — Pull B + Core</option>
-          <option value="sabado">🏃 Sábado — Movilidad post-carrera</option>
-          <option value="domingo">🧘 Domingo — Movilidad 40 min</option>
+          <option value="lunes">💪 Push A · Pecho + Tríceps + Core</option>
+          <option value="martes">🦵 Legs</option>
+          <option value="miercoles">🏋️ Pull A · Espalda + Bíceps + Core</option>
+          <option value="jueves">🔥 Push B · Hombros</option>
+          <option value="viernes">⚡ Pull B + Core</option>
+          <option value="tinfA">🦵 Legs A · Tren inferior (máquinas)</option>
+          <option value="tinfB">🍑 Legs B · Glúteo + isquios (máquinas)</option>
+          <option value="cardioA">🚴 Cardio suave + glúteo + core</option>
+          <option value="cardioB">🧘 Cardio suave + movilidad</option>
+          <option value="sabado">🏃 Movilidad post-carrera</option>
+          <option value="domingo">🧘 Movilidad 40 min</option>
         </select>
       </div>
       <button class="btn bth btn-sm" id="gym-date-today-btn" onclick="resetGymDate()" style="display:none;margin-top:18px">Hoy</button>
@@ -360,15 +364,7 @@ select.if{cursor:pointer;}
     <div id="gym-session-content"></div>
   </div>
   <div id="gt-plan" style="display:none" style="display:none">
-    <div class="tr" style="padding-top:10px">
-      <button class="tb active" onclick="planDay('lunes')">Lun</button>
-      <button class="tb" onclick="planDay('martes')">Mar</button>
-      <button class="tb" onclick="planDay('miercoles')">Mié</button>
-      <button class="tb" onclick="planDay('jueves')">Jue</button>
-      <button class="tb" onclick="planDay('viernes')">Vie</button>
-      <button class="tb" onclick="planDay('sabado')">Sáb</button>
-      <button class="tb" onclick="planDay('domingo')">Dom</button>
-    </div>
+    <div class="tr" id="plan-day-tabs" style="padding-top:10px"></div>
     <div style="padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--p)">📈 Progresión 12 semanas</div>
     <div id="gym-progression-content" style="padding:0 16px 8px"></div>
     <div style="border-top:1px solid var(--b);padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--t)">📋 Sesión del día</div>
@@ -623,8 +619,8 @@ var RECIPES={
     {n:'Filete de ternera plancha',cat:'carnes',r:'moderate',e:'⚠️',why:'Sin gluten pero grasa saturada moderada. Máx 2x/semana.'},
     {n:'Hamburguesa casera de ternera',cat:'carnes',r:'moderate',e:'⚠️',why:'Sin gluten (sin pan). Proteína alta. Máx 1x/semana por la grasa saturada.'},
     {n:'Albóndigas de ternera',cat:'carnes',r:'moderate',e:'⚠️',why:'Grasa saturada moderada. Pan rallado = algo de gluten. Máx 1x/semana.'},
-    {n:'Secreto ibérico',cat:'carnes',r:'bad',e:'❌',why:'Muy alta grasa saturada. Proinflamatorio. Cheat meal.'},
-    {n:'Costillas de cerdo',cat:'carnes',r:'bad',e:'❌',why:'Alta grasa saturada. Proinflamatorio. Cheat meal.'},
+    {n:'Secreto ibérico',cat:'carnes',r:'bad',e:'❌',why:'Muy alta grasa saturada. Proinflamatorio.'},
+    {n:'Costillas de cerdo',cat:'carnes',r:'bad',e:'❌',why:'Alta grasa saturada. Proinflamatorio.'},
   ],
   pescados:[
     {n:'Salmón al horno',cat:'pescados',r:'good',e:'✅',why:'Omega-3 top. Baja triglicéridos activamente. Sin gluten.'},
@@ -656,8 +652,8 @@ var RECIPES={
     {n:'Pasta con gambas al ajillo',cat:'pastas',r:'moderate',e:'⚠️',why:'Gluten. AOVE es antiinflamatorio. Máx 1x/semana.'},
     {n:'Pasta aglio e olio',cat:'pastas',r:'moderate',e:'⚠️',why:'Gluten. Cuida la frecuencia semanal.'},
     {n:'Pasta con atún y tomate',cat:'pastas',r:'moderate',e:'⚠️',why:'Gluten. Proteína OK. Máx 1x/semana.'},
-    {n:'Carbonara casera',cat:'pastas',r:'bad',e:'❌',why:'Gluten + grasa saturada alta. Cheat meal.'},
-    {n:'Lasaña de carne',cat:'pastas',r:'bad',e:'❌',why:'Gluten alto + grasa saturada. Cheat meal.'},
+    {n:'Carbonara casera',cat:'pastas',r:'bad',e:'❌',why:'Gluten + grasa saturada alta.'},
+    {n:'Lasaña de carne',cat:'pastas',r:'bad',e:'❌',why:'Gluten alto + grasa saturada.'},
   ],
   legumbres:[
     {n:'Alubias blancas',cat:'legumbres',r:'good',e:'✅',why:'Sin gluten. Fibra que baja LDL y triglicéridos. Antiinflamatorio.'},
@@ -1459,12 +1455,13 @@ var DAILY_SCHEDULE={
 function getDaySchedule(){
   var dow=new Date().getDay();
   var list;
+  var _isr=_isRunDate(today());
   if(dow===0) list=DAILY_SCHEDULE.domingo;
-  else if(dow===6) list=DAILY_SCHEDULE.sabado;
-  else if(dow===2||dow===4) list=DAILY_SCHEDULE.running;
+  else if(dow===6) list=_isr?DAILY_SCHEDULE.sabado:DAILY_SCHEDULE.base;
+  else if(_isr) list=DAILY_SCHEDULE.running;
   else list=DAILY_SCHEDULE.base;
   var dk=_gymDkOnDate(today());
-  if(dow===6&&dk!=='sabado') list=DAILY_SCHEDULE.base;
+  if(dow===6&&dk!=='sabado'&&!_isr) list=DAILY_SCHEDULE.base;
   return list.map(function(it){
     var o={id:it.id,time:it.time,emoji:it.emoji,label:it.label};
     if(o.id==='entreno'&&typeof GYM_PLAN!=='undefined'&&GYM_PLAN[dk]) o.label='Gym 11:30 · '+GYM_PLAN[dk].n+' + movilidad';
@@ -1608,7 +1605,7 @@ function renderShopMenu(){
   var start=new Date(2026,9,1);
   var now=new Date();
   var daysDone=Math.max(0,Math.floor((now-start)/86400000));
-  var d15Idx=daysDone%15;
+  var d15Idx=daysDone%DIETA15.length;
   var days=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
   var dayNames={lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',
                 viernes:'Viernes',sabado:'Sábado',domingo:'Domingo'};
@@ -1616,7 +1613,7 @@ function renderShopMenu(){
   h+='<div style="font-size:11px;color:var(--m)">Pulsa A o B para elegir cada día.</div>';
   h+='<button class="btn bth btn-sm" style="font-size:12px" onclick="randomizeMenu()">🎲 Aleatorio</button></div>';
   days.forEach(function(day,di){
-    var dietaDay=DIETA15[(d15Idx+di)%15];
+    var dietaDay=DIETA15[(d15Idx+di)%DIETA15.length];
     var saved=ld('shop_day_'+day,{com:'',cen:''});
     h+='<div style="border:1px solid var(--b);border-radius:12px;margin-bottom:8px;overflow:hidden">';
     h+='<div style="padding:9px 14px;background:var(--s2);display:flex;justify-content:space-between;align-items:center">';
@@ -1711,10 +1708,10 @@ function randomizeMenu(){
   var start=new Date(2026,9,1);
   var now=new Date();
   var daysDone=Math.max(0,Math.floor((now-start)/86400000));
-  var d15Idx=daysDone%15;
+  var d15Idx=daysDone%DIETA15.length;
   var days=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
   days.forEach(function(day,di){
-    var dietaDay=DIETA15[(d15Idx+di)%15];
+    var dietaDay=DIETA15[(d15Idx+di)%DIETA15.length];
     var comOpts=dietaDay.com.opts.filter(function(o){return o.t&&o.t.kcal;});
     var cenOpts=dietaDay.cen.opts.filter(function(o){return o.t&&o.t.kcal;});
     var saved={
@@ -1730,7 +1727,7 @@ function generateShoppingList(){
   var start=new Date(2026,9,1);
   var now=new Date();
   var daysDone=Math.max(0,Math.floor((now-start)/86400000));
-  var d15Idx=daysDone%15;
+  var d15Idx=daysDone%DIETA15.length;
   var days=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
   var catMap={
     '🥩 Carnes':['pollo','pechuga','ternera','cerdo','pavo','cordero','carne','lomo','filete','solomillo','muslo','alita','costilla','hamburguesa','magro'],
@@ -1749,7 +1746,7 @@ function generateShoppingList(){
   }
   // Ingredients from daily A/B choices
   days.forEach(function(day,di){
-    var dietaDay=DIETA15[(d15Idx+di)%15];
+    var dietaDay=DIETA15[(d15Idx+di)%DIETA15.length];
     var saved=ld('shop_day_'+day,{com:'',cen:''});
     ['com','cen'].forEach(function(meal){
       var mealData=meal==='com'?dietaDay.com:dietaDay.cen;
@@ -1761,7 +1758,7 @@ function generateShoppingList(){
     });
   });
   // Staple base items
-  ['Plátanos','Yogur griego natural','Nueces','Crema de cacahuete','Tortitas de arroz','Pavo en lonchas','Aceite de oliva virgen extra'].forEach(function(n){addItem(n,0,'Base semanal');});
+  ['Plátanos','Yogur griego natural','Nueces','Crema de cacahuete','Tortitas de arroz','Aceite de oliva virgen extra'].forEach(function(n){addItem(n,0,'Base semanal');});
   // Selected caseras recipes
   var selRecs=ld('shop_recipes',[]);
   if(typeof RECETAS_CASERAS!=='undefined'){
@@ -1908,24 +1905,24 @@ function getCurrentWeight(){
 var _M_PRE={id:'pre-gym',time:'11:00',icon:'💪',name:'Pre-gym (5 min)',kcal:100,p:1,c:23,f:0,tip:'Una cosa de nada: 1 plátano o 2-3 tortitas de arroz. Sin leche ni cocinar.'};
 var _M_POST={id:'desayuno',time:'13:15',icon:'🌅',name:'Post-gym',kcal:470,p:50,c:58,f:4,tip:'Sin cocinar: 1 scoop de whey con agua + 250 g de skyr natural + 1 plátano + 4 tortitas de arroz solas. Creatina 5g + D3.'};
 var NUTRI_DAYS={
-  gym:{label:'Solo gym',days:'Lunes · Miércoles · Viernes',icon:'🏋️',meals:[
+  gym:{label:'Solo gym',days:'Días de gym sin running',icon:'🏋️',meals:[
     _M_PRE,_M_POST,
     {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:800,p:55,c:64,f:36,tip:'Cocinas tú (1 h). Proteína grande (pollo, pescado, ternera o cerdo magro) + patata o arroz + verdura. Aceite: 10-12 g, pesado.'},
     {id:'cena',time:'21:30',icon:'🌙',name:'Cena',kcal:750,p:52,c:55,f:36,tip:'Cocinas el mismo día, ≤15 min: salmón, caballa o pescado blanco, tortilla… + verdura. Aceite: 8-10 g como máximo.'}
   ]},
-  gymrun:{label:'Gym + carrera',days:'Martes · Jueves',icon:'🏃',meals:[
+  gymrun:{label:'Gym + carrera',days:'Días de gym con running',icon:'🏃',meals:[
     _M_PRE,_M_POST,
     {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:700,p:45,c:60,f:32,tip:'Cocinas tú (1 h). Proteína + buenos hidratos: son el combustible de la carrera. Aceite: 10-12 g.'},
     {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'1 lata de atún al natural o sardinas con 3 tortitas de arroz, o 200 g de skyr natural con fruta. Ligero antes de correr.'},
     {id:'cena',time:'21:30',icon:'🌙',name:'Cena post-carrera',kcal:650,p:42,c:50,f:30,tip:'Cocinas el mismo día, ≤15 min. Ejemplo: 150-180 g de salmón + aguacate + espárragos. Agua al volver de correr.'}
   ]},
-  longrun:{label:'Sábado · carrera',days:'Sábado',icon:'🏃',meals:[
+  longrun:{label:'Fin de semana · carrera',days:'Sábado o domingo con running',icon:'🏃',meals:[
     {id:'desayuno',time:'11:30',icon:'🌅',name:'Desayuno (sin cocinar)',kcal:450,p:45,c:50,f:8,tip:'Como el post-gym: whey con agua + skyr natural + fruta + tortitas de arroz.'},
     {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:750,p:45,c:70,f:30,tip:'Cocinas tú. Comida completa con hidratos. Aceite: 10-12 g.'},
     {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'Atún o sardinas con tortitas, o skyr con fruta. Ligero antes de correr.'},
     {id:'cena',time:'22:00',icon:'🌙',name:'Cena',kcal:700,p:50,c:55,f:32,tip:'Cocinas el mismo día, ≤15 min. Proteína grande + verdura.'}
   ]},
-  rest:{label:'Domingo · movilidad',days:'Domingo',icon:'🧘',meals:[
+  rest:{label:'Domingo · movilidad',days:'Domingo sin running',icon:'🧘',meals:[
     {id:'desayuno',time:'11:30',icon:'🌅',name:'Desayuno (sin cocinar)',kcal:450,p:45,c:50,f:8,tip:'Whey con agua + skyr natural + fruta + tortitas de arroz.'},
     {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:800,p:50,c:70,f:36,tip:'La comida fuerte del domingo. Mide el aceite (10-12 g).'},
     {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'Atún o sardinas con tortitas, o skyr con fruta.'},
@@ -1935,11 +1932,12 @@ var NUTRI_DAYS={
 var NUTRI_EQUIV=[];
 function getNutriType(ds){
   if(ds==='2026-10-17') return 'gymrun';
-  var d=ds?new Date(ds+'T12:00:00').getDay():todayDow();
-  if(d===0) return 'rest';
-  if(d===6) return 'longrun';
-  if(d===2||d===4) return 'gymrun';
-  return 'gym';
+  var dsx=ds||today();
+  var d=new Date(dsx+'T12:00:00').getDay();
+  var rd=_isRunDate(dsx);
+  if(d===0) return rd?'longrun':'rest';
+  if(d===6) return rd?'longrun':'gym';
+  return rd?'gymrun':'gym';
 }
 function getNutriDay(ds,typeOverride){
   var t=typeOverride||getNutriType(ds);
@@ -2265,7 +2263,7 @@ function renderHome(){
 
   // Run card
   var runForced=ld('run_force_day','')==='force';
-  var isRunDay=(dow===2||dow===4||dow===6)||runForced;
+  var isRunDay=_isRunDate(today())||runForced;
   var nowDate2=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   var startRunDate=getRunStartDate();
   var runStarted=(nowDate2>=startRunDate);
@@ -2339,7 +2337,8 @@ function getNextRunDay(now){
   for(var i=1;i<=7;i++){
     d.setDate(d.getDate()+1);
     var dow=d.getDay();
-    if(dow===2||dow===4||dow===6){
+    var _dsn=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(_isRunDate(_dsn)){
       var start=getRunStartDate();
       if(d>=start){
         var days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
@@ -2451,7 +2450,7 @@ function gymTab(t){
   document.querySelectorAll('#gym-tabs-row .tb').forEach(function(b,i){
     b.classList.toggle('active',['session','plan','pesos','history'][i]===t);
   });
-  if(t==='plan'){planDay(_gymDkOnDate(today()));renderGymProgression();}
+  if(t==='plan'){renderPlanTabs();planDay(_gymDkOnDate(today()),today());renderGymProgression();}
   if(t==='history') renderGymHistory();
   if(t==='pesos') renderGymPesos();
 }
@@ -2459,13 +2458,18 @@ function gymTab(t){
 function getGymDayData(dk){
   return _baseFromPlan(dk);
 }
+var RUN_OVERRIDE={'2026-10-22':false,'2026-10-23':true,'2026-10-24':false,'2026-10-25':true,'2026-10-27':true,'2026-10-29':true,'2026-10-30':false,'2026-10-31':true};
+function _isRunDate(ds){if(RUN_OVERRIDE.hasOwnProperty(ds)) return RUN_OVERRIDE[ds];var d=new Date(ds+'T12:00:00').getDay();return d===2||d===4||d===6;}
 var GYM_DOW=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
 // Semana 2 desplazada un día: el lunes 12/10/2026 fue festivo (gym cerrado), la rutina empieza el martes 13/10/2026.
 // Semana 3: sin gym el lunes 19/10; martes Push A, miércoles Pull A, jueves Piernas, viernes Push B; sábado 24/10 solo running.
 function _gymDkOnDate(ds){
-  var SHIFT={'2026-10-13':'lunes','2026-10-14':'martes','2026-10-15':'miercoles','2026-10-16':'jueves','2026-10-17':'viernes','2026-10-20':'lunes','2026-10-21':'miercoles','2026-10-22':'martes','2026-10-23':'jueves'};
+  var SHIFT={'2026-10-13':'lunes','2026-10-14':'martes','2026-10-15':'miercoles','2026-10-16':'jueves','2026-10-17':'viernes','2026-10-20':'lunes','2026-10-21':'miercoles','2026-10-22':'martes','2026-10-23':'cardioA','2026-10-24':'tinfA','2026-10-26':'tinfA','2026-10-27':'cardioA','2026-10-28':'cardioA','2026-10-29':'tinfB','2026-10-30':'cardioA','2026-10-31':'cardioB'};
   if(SHIFT[ds]) return SHIFT[ds];
-  return ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date(ds+'T12:00:00').getDay()];
+  var _dw=new Date(ds+'T12:00:00').getDay();
+  // Desde la semana 4 (26/10/2026): lun Piernas, mar Pull A (+running), mié Push A (+cardio), jue Pull B (+running), vie Push B (+cardio), sáb running, dom movilidad.
+  if(ds>='2026-10-26') return {0:'domingo',1:'martes',2:'miercoles',3:'lunes',4:'viernes',5:'jueves',6:'sabado'}[_dw];
+  return ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][_dw];
 }
 var GYM_DAY_ORDER=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
 // Antes del 1-oct la semana era: martes=Pull A, miércoles=Legs. Sirve para migrar el historial de pesos.
@@ -2905,9 +2909,32 @@ function saveFullSession(dk){
   setTimeout(function(){btn.textContent='💾 Guardar sesión completa';btn.disabled=false;},2000);
 }
 
-function planDay(dk){
-  document.querySelectorAll('#gt-plan .tr .tb').forEach(function(b,i){
-    b.classList.toggle('active',GYM_DAY_ORDER[i]===dk);
+var PLAN_BLOCK_START='2026-10-23', PLAN_BLOCK_END='2026-11-01';
+function renderPlanTabs(){
+  var el=document.getElementById('plan-day-tabs'); if(!el) return;
+  var tdy=today(), h='';
+  if(tdy<=PLAN_BLOCK_END){
+    var names=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    var d=new Date(PLAN_BLOCK_START+'T12:00:00'), end=new Date(PLAN_BLOCK_END+'T12:00:00');
+    while(d<=end){
+      var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      var dk=_gymDkOnDate(ds);
+      h+='<button class="tb" data-ds="'+ds+'" onclick="planDay(\''+dk+'\',\''+ds+'\')">'+names[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+'</button>';
+      d.setDate(d.getDate()+1);
+    }
+  } else {
+    [['lunes','Lun'],['martes','Mar'],['miercoles','Mié'],['jueves','Jue'],['viernes','Vie'],['sabado','Sáb'],['domingo','Dom']].forEach(function(x){
+      h+='<button class="tb" data-dk="'+x[0]+'" onclick="planDay(\''+x[0]+'\')">'+x[1]+'</button>';
+    });
+  }
+  el.innerHTML=h;
+}
+function planDay(dk,ds){
+  if(ds) window._planDs=ds;
+  if(!document.querySelector('#plan-day-tabs .tb')) renderPlanTabs();
+  document.querySelectorAll('#plan-day-tabs .tb').forEach(function(b){
+    var on=b.getAttribute('data-ds')?(b.getAttribute('data-ds')===(window._planDs||'')):(b.getAttribute('data-dk')===dk);
+    b.classList.toggle('active',on);
   });
   renderGymPage('gym-plan-content',dk,true);
 }
@@ -3211,7 +3238,7 @@ function _renderRunTodayBase(){
   var toggleHtml=isYesterday?'<div style="background:rgba(245,158,11,0.08);padding:4px 16px 0"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDateStr)+'</span></div>':'';
   var now=new Date(logDateStr+'T12:00:00');
   var dow=now.getDay();
-  var isRunDay=(dow===2||dow===4||dow===6);
+  var isRunDay=_isRunDate(logDateStr);
   var nowDate2=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   var startRunDate=getRunStartDate();
   var runStarted=(nowDate2>=startRunDate);
@@ -4259,7 +4286,7 @@ function generateShopList(){
   var items={};
 
   // Base items always needed
-  var base={'Plátanos (6-8 unidades)':'Meriendas y pre/post gym','Yogur griego natural (4 unidades)':'Post-gym','Nueces (200g)':'Post-gym y snacks','Crema de cacahuete 100% (1 bote)':'Post-gym','Tortitas de arroz (2 paquetes)':'Meriendas','Pavo en lonchas (2 paquetes)':'Meriendas','Avena en copos (500g)':'Desayunos finde','Aceite de oliva virgen extra':'Base de cocina'};
+  var base={'Plátanos (6-8 unidades)':'Meriendas y pre/post gym','Yogur griego natural (4 unidades)':'Post-gym','Nueces (200g)':'Post-gym y snacks','Crema de cacahuete 100% (1 bote)':'Post-gym','Tortitas de arroz (2 paquetes)':'Meriendas','Avena en copos (500g)':'Desayunos finde','Aceite de oliva virgen extra':'Base de cocina'};
   Object.keys(base).forEach(function(k){items[k]=base[k];});
 
   // Add from menu selections
@@ -4381,9 +4408,10 @@ function _weekStart(){
 }
 
 
+var CARDIO_TXT='Después de las pesas y antes de los estiramientos: 20 min de bici, remo o escaleras en máquina (la cinta solo andando; correr se queda para los días de running). Zona 2 = 116-138 ppm o test del habla: tienes que poder decir una frase corta entera. Si dudas entre dos ritmos, el más lento. No es una compensación por comer de más y no se come de más por hacerlo.';
 var GYM_PLAN={
-  lunes:{n:'Push A · Pecho + Tríceps + Core',emoji:'💪',obj:'Pectoral · Tríceps · Deltoides ant. · Core',
-    preNut:'Pre-gym 10:00: ~300 kcal · P30 H40 G3. Cafeína opcional 30-40 min antes. Lo que construye músculo es el total de proteína del día (1,6-2,2 g/kg, ~156g para ti) repartido en 4-5 tomas, no la hora exacta. Agua 500ml durante la sesión.',
+  lunes:{n:'Push A · Pecho + Tríceps + Core',emoji:'💪',cardio:CARDIO_TXT,obj:'Pectoral · Tríceps · Deltoides ant. · Core',
+    preNut:'Pre-gym 11:00 (5 min): 1 plátano o 2-3 tortitas de arroz (~100 kcal), sin cocinar. Agua 500 ml durante la sesión. El plan del día completo está en la pestaña Nutrición.',
     cal:[
       {n:'Foam roller pecho y zona torácica',dur:'2 min',desc:'Tumbado con el rolo transversal a la espalda media (omóplatos). Apoya la cabeza con las manos. Deja caer el pecho hacia el suelo y respira profundo. Mueve 2-3cm arriba y abajo. Los pectorales tensos por el ordenador robarán rango al press — el rolo los libera antes de empezar.'},
       {n:'Rotaciones de hombro con banda',dur:'30s cada dirección',desc:'Banda con agarre amplio. Brazos estirados, lleva la banda de delante hacia atrás por encima de la cabeza sin doblar los codos. Activa el manguito rotador antes de cargar el press. Imprescindible para proteger el hombro.'},
@@ -4408,10 +4436,10 @@ var GYM_PLAN={
       {n:'Tríceps sobre la cabeza',dur:'30 s por brazo',desc:'POSICIÓN: sentado o de pie, costillas abajo. CÓMO: lleva el codo hacia el techo con la mano detrás de la cabeza y empuja el codo suavemente con la otra mano. 30 s y cambia. POR QUÉ: el tríceps trabaja en todos los empujes y, si queda corto, limita el movimiento del hombro por encima de la cabeza. ERROR COMÚN: arquear la lumbar para llegar más: mantén el abdomen firme.'},
       {n:'Respiración de cierre',dur:'60 s',desc:'POSICIÓN: de pie o sentado, una mano en el vientre. CÓMO: 5 respiraciones lentas: inspira 4 s por la nariz hinchando el vientre y espira 6 s por la boca con los labios fruncidos. POR QUÉ: baja pulsaciones tras la serie final y marca el paso del modo entreno al modo recuperación. ERROR COMÚN: levantar el pecho al inspirar: el vientre es el que sube.'},
     ],
-    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Tienes 1-2 h de margen: la "ventana de 30 min" está sobrevalorada (Aragon & Schoenfeld 2013). Lo que cuenta es llegar al total de proteína del día.'},
+    postNut:'Post-gym 13:15 (sin cocinar): 1 scoop de whey con agua + 250 g de skyr natural + 1 plátano + 4 tortitas de arroz solas (~470 kcal, ~50 g de proteína). Creatina 5 g + D3. Lo que cuenta es llegar a ~158 g de proteína al día.'},
 
   miercoles:{n:'Pull A · Espalda + Bíceps + Core',emoji:'🏋️',obj:'Dorsal · Romboides · Bíceps · Core',
-    preNut:'Pre-gym 10:00: ~300 kcal · P30 H40 G3. Ayer fue pierna + carrera: si notas agujetas en las piernas es normal, hoy no se usan.',
+    preNut:'Pre-gym 11:00 (5 min): 1 plátano o 2-3 tortitas de arroz (~100 kcal), sin cocinar. Agua 500 ml durante la sesión. El plan del día completo está en la pestaña Nutrición.',
     cal:[
       {n:'Foam roller dorsales',dur:'2 min',desc:'Rolo transversal a la espalda media, a la altura de los omóplatos. Apoya la cabeza con las manos. Deja caer el pecho hacia el suelo con cada exhalación. 3-4 puntos desde la zona media hasta las escápulas. Los dorsales tensos por el ordenador roban rango al jalón y al remo — el rolo los libera.'},
       {n:'Band pull-apart (20 reps)',dur:'20 reps',desc:'Sostén la banda a la altura del pecho con ambas manos, agarre pronado. Tira de los extremos separando los brazos hasta que la banda toque el pecho. Las manos van hacia atrás y hacia afuera — los codos NO se doblan. Activa romboides y deltoides posterior antes de la sesión. Buen preventivo para el hombro.'},
@@ -4435,10 +4463,10 @@ var GYM_PLAN={
       {n:'Cuello y trapecio superior',dur:'30 s por lado',desc:'POSICIÓN: sentado y erguido, hombros relajados. CÓMO: inclina la oreja hacia el hombro del mismo lado y añade un peso muy suave con la mano. El hombro contrario baja. 30 s y cambia. POR QUÉ: el trapecio acumula tensión con los tirones y con las horas de estudio; relajarlo ayuda al sueño. ERROR COMÚN: encoger el hombro del lado estirado o tirar fuerte con la mano.'},
       {n:'Respiración de cierre',dur:'60 s',desc:'POSICIÓN: de pie o sentado, una mano en el vientre. CÓMO: 5 respiraciones lentas: inspira 4 s por la nariz hinchando el vientre y espira 6 s por la boca con los labios fruncidos. POR QUÉ: baja pulsaciones tras la serie final y marca el paso del modo entreno al modo recuperación. ERROR COMÚN: levantar el pecho al inspirar: el vientre es el que sube.'},
     ],
-    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Mañana: Push B (hombros) por la mañana y carrera a las 20:00.'},
+    postNut:'Post-gym 13:15 (sin cocinar): 1 scoop de whey con agua + 250 g de skyr natural + 1 plátano + 4 tortitas de arroz solas (~470 kcal, ~50 g de proteína). Creatina 5 g + D3. Lo que cuenta es llegar a ~158 g de proteína al día.'},
 
   martes:{n:'Legs · Cuádriceps + Isquios + Glúteo',emoji:'🦵',obj:'Cuádriceps · Isquios · Glúteo · Gemelos',
-    preNut:'Día doble: pierna 11:30 y carrera 20:00. Pre-gym 10:00: ~300 kcal · P30 H40 G3. Hoy tocan 2.200 kcal: los 200 extra van en hidratos (merienda pre-carrera de las 18:30 y cena).',
+    preNut:'Pre-gym 11:00 (5 min): 1 plátano o 2-3 tortitas de arroz (~100 kcal), sin cocinar. Agua 500 ml durante la sesión. El plan del día completo está en la pestaña Nutrición.',
     cal:[
       {n:'Foam roller cuádriceps e isquios',dur:'2 min',desc:'Rolo bajo el muslo delantero (cuádriceps). Rueda desde la cadera hasta encima de la rodilla. Para 20-30s en cada punto de tensión y respira. Luego rola la parte trasera del muslo (isquios). El tejido frío tiene más riesgo de rotura — el rolo reduce ese riesgo y aumenta el rango de la sentadilla.'},
       {n:'Foam roller glúteos',dur:'90s por lado',desc:'Sentado en el rolo con un glúteo. Cruza el tobillo sobre la rodilla contraria (posición de figura-4). Rueda buscando el punto más tenso y para 20-30s. El glúteo tenso limita la profundidad de la sentadilla y el hip thrust — liberarlo antes multiplica el trabajo muscular.'},
@@ -4466,10 +4494,10 @@ var GYM_PLAN={
       {n:'Gemelos en pared',dur:'40 s por pierna',desc:'POSICIÓN: manos en la pared, una pierna atrás con el talón pegado al suelo. CÓMO: mantén la rodilla trasera estirada 20 s (gemelo) y luego flexiónala un poco sin levantar el talón otros 20 s (sóleo). Cambia de pierna. POR QUÉ: los gemelos absorben el impacto de cada zancada; estirarlos reduce la carga en el tendón de Aquiles. ERROR COMÚN: levantar el talón o girar el pie hacia fuera.'},
       {n:'Flexor de cadera (psoas)',dur:'30 s por lado',desc:'POSICIÓN: una rodilla apoyada en el suelo (con toalla) y el otro pie delante, rodilla a 90°. CÓMO: mete la pelvis (glúteo apretado) y empuja la cadera hacia delante hasta notar la ingle y el frente del muslo trasero. Torso erguido. 30 s y cambia. POR QUÉ: el psoas se acorta con las horas sentado y tira de la lumbar; abrirlo da más extensión de cadera al correr. ERROR COMÚN: arquear la lumbar en vez de mover la cadera.'},
     ],
-    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Comida 16:00 con hidratos para llegar con glucógeno a la carrera. 18:30: ~200 kcal solo hidratos. Correr esta noche, 8 h después de la pierna, es mejor que correr mañana: las agujetas aparecen a partir de las 24 h.'},
+    postNut:'Post-gym 13:15 (sin cocinar): 1 scoop de whey con agua + 250 g de skyr natural + 1 plátano + 4 tortitas de arroz solas (~470 kcal, ~50 g de proteína). Creatina 5 g + D3. Lo que cuenta es llegar a ~158 g de proteína al día.'},
 
-  jueves:{n:'Push B · Hombros + Pecho (variantes)',emoji:'🔥',obj:'Deltoides · Pectoral · Tríceps',
-    preNut:'Día doble: hombros 11:30 y carrera 20:00. Pre-gym 10:00: ~300 kcal · P30 H40 G3. Hoy tocan 2.200 kcal: hidratos extra en la merienda pre-carrera y en la cena.',
+  jueves:{n:'Push B · Hombros + Pecho (variantes)',emoji:'🔥',cardio:CARDIO_TXT,obj:'Deltoides · Pectoral · Tríceps',
+    preNut:'Pre-gym 11:00 (5 min): 1 plátano o 2-3 tortitas de arroz (~100 kcal), sin cocinar. Agua 500 ml durante la sesión. El plan del día completo está en la pestaña Nutrición.',
     cal:[
       {n:'Rotadores del manguito con banda (15 reps/lado)',dur:'15 reps por lado',desc:'Banda anclada al rack a la altura del codo. Codo a 90°. Rotación externa sin mover el codo del costado. Luego rotación interna. El manguito rotador es el primero en lesionarse si se sobrecarga sin calentar — hoy es Push B, el segundo día de empuje.'},
       {n:'Rotaciones de hombro con barra ligera (10 reps)',dur:'10 reps',desc:'Barra vacía o con 5kg. Movimiento de remo alto lento — codos suben hasta la barbilla, luego presionas hacia arriba. Activa el trapecio y los deltoides antes del press militar.'},
@@ -4494,10 +4522,10 @@ var GYM_PLAN={
       {n:'Tríceps sobre la cabeza',dur:'30 s por brazo',desc:'POSICIÓN: sentado o de pie, costillas abajo. CÓMO: lleva el codo hacia el techo con la mano detrás de la cabeza y empuja el codo suavemente con la otra mano. 30 s y cambia. POR QUÉ: el tríceps trabaja en todos los empujes y, si queda corto, limita el movimiento del hombro por encima de la cabeza. ERROR COMÚN: arquear la lumbar para llegar más: mantén el abdomen firme.'},
       {n:'Cuello y trapecio superior',dur:'30 s por lado',desc:'POSICIÓN: sentado y erguido, hombros relajados. CÓMO: inclina la oreja hacia el hombro del mismo lado y añade un peso muy suave con la mano. El hombro contrario baja. 30 s y cambia. POR QUÉ: el trapecio acumula tensión con los tirones y con las horas de estudio; relajarlo ayuda al sueño. ERROR COMÚN: encoger el hombro del lado estirado o tirar fuerte con la mano.'},
     ],
-    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. 18:30 merienda pre-carrera (solo hidratos). Cena después de correr con proteína + hidratos. Mañana: Pull B + Core.'},
+    postNut:'Post-gym 13:15 (sin cocinar): 1 scoop de whey con agua + 250 g de skyr natural + 1 plátano + 4 tortitas de arroz solas (~470 kcal, ~50 g de proteína). Creatina 5 g + D3. Lo que cuenta es llegar a ~158 g de proteína al día.'},
 
   viernes:{n:'Pull B + Core · Espalda ancha + Core runner',emoji:'⚡',obj:'Dorsal ancho · Core anti-rotación · Funcional',
-    preNut:'Pre-gym 10:00: ~300 kcal · P30 H40 G3. El core va al final de la sesión: los estabilizadores tienen que estar frescos para el jalón y el remo.',
+    preNut:'Pre-gym 11:00 (5 min): 1 plátano o 2-3 tortitas de arroz (~100 kcal), sin cocinar. Agua 500 ml durante la sesión. El plan del día completo está en la pestaña Nutrición.',
     cal:[
       {n:'Foam roller dorsal completo',dur:'2 min',desc:'Toda la espalda desde lumbar hasta la base del cuello. Especialmente la zona entre los omóplatos. Después de 4 días de gym la espalda acumula tensión bilateral — el rolo la libera antes del jalón y las dominadas.'},
       {n:'Cat-Cow (10 reps lentas)',dur:'60s',desc:'A cuatro patas, 10 repeticiones lentas. Arqueado máximo (cat) 2s, extensión máxima (cow) 2s. Restaura la movilidad espinal y activa el transverso abdominal antes del trabajo de core.'},
@@ -4521,10 +4549,10 @@ var GYM_PLAN={
       {n:'Apertura torácica (open book)',dur:'8 reps por lado',desc:'POSICIÓN: tumbado de lado, rodillas dobladas a 90° y brazos juntos al frente. CÓMO: abre el brazo de arriba hacia el otro lado siguiendo la mano con la mirada, sin despegar las rodillas. Pausa 2 s y vuelve. 8 repeticiones por lado. POR QUÉ: moviliza la columna dorsal para que la lumbar no compense al remar y correr. ERROR COMÚN: separar las rodillas: deben quedar juntas.'},
       {n:'Respiración de cierre',dur:'60 s',desc:'POSICIÓN: de pie o sentado, una mano en el vientre. CÓMO: 5 respiraciones lentas: inspira 4 s por la nariz hinchando el vientre y espira 6 s por la boca con los labios fruncidos. POR QUÉ: baja pulsaciones tras la serie final y marca el paso del modo entreno al modo recuperación. ERROR COMÚN: levantar el pecho al inspirar: el vientre es el que sube.'},
     ],
-    postNut:'Post-gym 13:15: ~550 kcal · P40 H60 G18 + creatina 5g + D3. Semana de gym completada. Mañana sábado: carrera a las 20:00 y cena de ~750 kcal. Duerme 7-9 h: es cuando se recupera el músculo.'},
+    postNut:'Post-gym 13:15 (sin cocinar): 1 scoop de whey con agua + 250 g de skyr natural + 1 plátano + 4 tortitas de arroz solas (~470 kcal, ~50 g de proteína). Creatina 5 g + D3. Lo que cuenta es llegar a ~158 g de proteína al día.'},
 
   sabado:{n:'Movilidad Post-Running · Recuperación activa',emoji:'🏃',obj:'Flexibilidad · Fascia · Prevención lesiones running',
-    preNut:'Sin gym. Carrera a las 20:00 (sesión de la semana en la pestaña Running). Hoy 2.100 kcal: desayuno 10:00, comida 14:30, pre-carrera 18:30 (solo hidratos) y cena libre controlada después de correr.',
+    preNut:'Sin gym. Carrera por la noche (sesión de la semana en la pestaña Running). Desayuno 11:30 sin cocinar, comida 15:00, merienda ligera 19:00 y cena después de correr. El plan del día está en la pestaña Nutrición.',
     cal:[],
     exer:[],
     postMob:[
@@ -4537,10 +4565,10 @@ var GYM_PLAN={
       {n:'Supine twist profundo',dur:'60s por lado',desc:'Tumbado boca arriba. Lleva la rodilla al pecho con la mano contraria. Déjala caer hacia el lado. Brazo contrario en cruz. Respira profundo y deja que la gravedad haga el trabajo en cada exhalación. El running genera una compresión rotacional en la columna lumbar que solo la torsión pasiva restaura.'},
       {n:'Respiración 4-2-6 de cierre',dur:'3 minutos',desc:'Tumbado boca arriba. Inhala 4s, aguanta 2s, exhala 6s. 15 ciclos. Ayuda a bajar pulsaciones y a pasar al modo descanso después de correr.'},
     ],
-    postNut:'Cena después de correr (~750 kcal, 60g+ de proteína): la más grande de la semana. 600ml de agua al volver. Creatina 5g también hoy.'},
+    postNut:'Cena después de correr según el plan, con proteína. 600 ml de agua al volver. Creatina 5 g también hoy.'},
 
   domingo:{n:'Descanso activo · Movilidad completa 40min',emoji:'🧘',obj:'Movilidad articular · Fascia · Sistema nervioso parasimpático',
-    preNut:'Sin gym ni carrera. 2.000 kcal: comida fuerte de ~750 kcal, mide el aceite. Proteína ~156g repartida en 4 tomas. Creatina 5g también hoy.',
+    preNut:'Sin gym ni carrera: movilidad completa de 40 min. Comida fuerte, mide el aceite y proteína ~158 g repartida en el día. Creatina 5 g también hoy.',
     cal:[],
     exer:[],
     postMob:[
@@ -4554,8 +4582,48 @@ var GYM_PLAN={
       {n:'Cat-Cow con respiración segmentaria',dur:'2 minutos — 12 ciclos lentos',desc:'A cuatro patas. Pero esta versión es segmentaria: empieza arqueando SOLO la zona lumbar, luego añade la dorsal, luego la cervical (cat). En la vuelta (cow): primero la cervical, luego la dorsal, luego la lumbar. 2s por segmento. 12 ciclos completos. Esta versión trabaja la movilidad articular segmento a segmento — mucho más efectiva que el cat-cow estándar para restaurar la función.'},
       {n:'Respiración diafragmática de cierre',dur:'3 minutos — 15 ciclos',desc:'Tumbado boca arriba. 4s inhala, 2s aguanta, 6s exhala. Este protocolo al final de la sesión de domingo ayuda a bajar pulsaciones y a cerrar la semana relajado antes de los 5 días de entreno que empiezan mañana. Es el reset semanal del sistema.'},
     ],
-    postNut:'Cena con mucha proteína para cerrar el día en ~156g. Mañana empieza la semana con Push A.'},
+    postNut:'Cena con proteína para cerrar el día en ~158 g. Mañana empieza la semana.'},
 };
+
+// ═══ Bloque temporal 23/10-1/11/2026: tren inferior + cardio (herida en el antebrazo izquierdo, puntos hasta ~1/11) ═══
+var _ARM_NOTE='MANO IZQUIERDA: no agarres ni apoyes nada con la mano izquierda (herida con puntos hasta ~1/11). Sujétate solo con la derecha o deja la izquierda relajada sobre el muslo. Máximo 1-2 kg con ese brazo.';
+function _tx(n,muscle,sets,rir,desc){return {n:n,muscle:muscle,sets:sets,rir:rir,desc:desc+' '+_ARM_NOTE};}
+GYM_PLAN.tinfA={n:'Legs A · Tren inferior en máquinas',emoji:'🦵',obj:'Cuádriceps · Glúteo · Gemelos · Core (sin brazo izquierdo)',
+  preNut:GYM_PLAN.lunes.preNut,postNut:GYM_PLAN.lunes.postNut,cal:GYM_PLAN.martes.cal,postMob:GYM_PLAN.martes.postMob,
+  exer:[
+    _tx('Prensa de piernas (Leg Press)','Cuádriceps · Glúteo','4×10-12','RIR 3','Pies a la anchura de hombros y centrados en la plataforma. Baja controlado hasta unos 90° de rodilla y empuja sin bloquear las rodillas.'),
+    _tx('Extensión de cuádriceps en máquina','Cuádriceps (aislamiento)','3×12-15','RIR 2','Extiende completo, aprieta 1 s arriba y baja en 3 s.'),
+    _tx('Hip thrust en máquina','Glúteo mayor · Isquios','3×10-12','RIR 2','Sin barra libre: usa la máquina. Aprieta el glúteo arriba 1 s sin arquear la lumbar.'),
+    _tx('Abductores en máquina','Glúteo medio','3×15','RIR 2','Movimiento lento y sin balanceo.'),
+    _tx('Aductores en máquina','Aductores','2×15','RIR 2','Rango cómodo y controlado.'),
+    _tx('Gemelos en la prensa','Gastrocnemio · Sóleo','4×15-20','RIR 2','Puntillas en el borde de la plataforma, baja el talón al máximo y pausa 1 s arriba.'),
+    _tx('Reverse crunch tumbado','CORE · Recto abdominal inferior','3×12','RIR 3-4','Tumbado, sube la pelvis hacia el pecho con rodillas dobladas y baja lento.'),
+    _tx('Hollow hold con brazos pegados al cuerpo','CORE · Transverso','3×20 s','RIR 3-4','Lumbar pegada al suelo, piernas y hombros ligeramente elevados, brazos junto al cuerpo.')
+  ]};
+GYM_PLAN.tinfB={n:'Legs B · Glúteo + Isquios (ligero, corres por la noche)',emoji:'🍑',obj:'Glúteo · Isquios · Gemelos · Core (sin brazo izquierdo). Sesión ligera: hoy corres por la noche.',
+  preNut:GYM_PLAN.lunes.preNut,postNut:GYM_PLAN.lunes.postNut,cal:GYM_PLAN.martes.cal,postMob:GYM_PLAN.martes.postMob,
+  exer:[
+    _tx('Hip thrust en máquina','Glúteo mayor · Isquios','3×10-12','RIR 3','Pies algo adelantados para más isquios. Pausa de 1 s arriba.'),
+    _tx('Prensa de piernas con pies altos y anchos','Glúteo · Isquios','3×10-12','RIR 3-4','Pies altos en la plataforma para cargar glúteo e isquios. Baja controlado.'),
+    _tx('Puente de glúteo a una pierna en suelo','Glúteo · Isquios','2×10 por lado','RIR 3-4','Peso corporal. Brazos cruzados sobre el pecho, sin apoyar la izquierda.'),
+    _tx('Aductores en máquina','Aductores','2×15','RIR 3','Rango cómodo y controlado.'),
+    _tx('Abductores en máquina','Glúteo medio','2×15','RIR 3','Sin balanceo.'),
+    _tx('Gemelos en la prensa','Gastrocnemio · Sóleo','3×15-20','RIR 3','Rango completo con pausa arriba.'),
+    _tx('Elevación de piernas tumbado','CORE · Flexores de cadera · Recto abdominal','3×10','RIR 3-4','Rodillas dobladas si te cuesta; baja sin despegar la lumbar.'),
+    _tx('Hollow hold con brazos pegados al cuerpo','CORE · Transverso','3×20 s','RIR 3-4','Lumbar pegada al suelo, brazos junto al cuerpo.')
+  ]};
+GYM_PLAN.cardioA={n:'Cardio suave + Glúteo ligero + Core',emoji:'🚴',obj:'Cardio Zona 2 · Glúteo medio · Core (sin brazo izquierdo)',cardio:'20-30 min de bici sentado o cinta ANDANDO rápido con 6-10 % de inclinación, sin agarrarte con la izquierda (ni a las barras de la cinta). Zona 2 = 116-138 ppm o test del habla. Hazlo ANTES del glúteo y el core.',
+  preNut:GYM_PLAN.lunes.preNut,postNut:GYM_PLAN.lunes.postNut,cal:[{n:'Movilidad de cadera y tobillo',dur:'3 min',desc:'Círculos suaves de cadera y tobillo, sin apoyar la mano izquierda.'}],postMob:GYM_PLAN.martes.postMob,
+  exer:[
+    _tx('Abducciones en máquina','Glúteo medio','3×15','RIR 3','Lento y controlado.'),
+    _tx('Puente de glúteo en suelo con peso corporal','Glúteo · Isquios','3×15','RIR 3','Pausa de 1 s arriba, brazos cruzados sobre el pecho.'),
+    _tx('Aductores en máquina','Aductores','2×15','RIR 3','Rango cómodo.'),
+    _tx('Reverse crunch tumbado','CORE · Recto abdominal inferior','3×12','RIR 3-4','Sin impulso.'),
+    _tx('Hollow hold con brazos pegados al cuerpo','CORE · Transverso','3×20 s','RIR 3-4','Lumbar pegada al suelo.'),
+    _tx('Elevación de piernas tumbado','CORE · Flexores de cadera','3×10','RIR 3-4','Rodillas dobladas si hace falta.')
+  ]};
+GYM_PLAN.cardioB={n:'Cardio suave + Movilidad',emoji:'🧘',obj:'Cardio Zona 2 · Movilidad (sin brazo izquierdo)',cardio:'20 min de cinta ANDANDO rápido o bici suave, sin agarrarte con la izquierda. Zona 2 = 116-138 ppm o test del habla. Después, movilidad de cadera, isquios y gemelos.',
+  preNut:GYM_PLAN.lunes.preNut,postNut:GYM_PLAN.lunes.postNut,cal:[{n:'Movilidad de cadera y tobillo',dur:'3 min',desc:'Círculos suaves de cadera y tobillo, sin apoyar la mano izquierda.'}],postMob:GYM_PLAN.martes.postMob,exer:[]};
 
 
 function getCurrentGymWeek(){
@@ -4908,10 +4976,12 @@ function renderGymPage(targetId,dkOverride,readOnly){
       '</div></div>'+
       _gymExerHTML(plan.exer,prog,dk,readOnly));
   }
+  var _cardioTxt=plan.cardio||(logDate==='2026-10-21'?CARDIO_TXT+' (Prueba de esta semana: pruébalo hoy y anota cómo te sientes.)':'');
+  if(_cardioTxt&&(!isMob||plan.cardio)) h+=_gymSection('🚴 CARDIO SUAVE · 20 min · Zona 2','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+_cardioTxt+'</p>');
   var mobTitle=dk==='sabado'?'🧘 MOVILIDAD POST-CARRERA (~20 min) · En casa con foam roller y banda':dk==='domingo'?'🧘 MOVILIDAD COMPLETA (~40 min)':'🧘 POST-GYM — Movilidad con foam roller (~10 min) · Específica del día';
   h+=_gymSection(mobTitle,'var(--g)',_gymMobHTML(plan.postMob));
   var _dwRun=new Date(logDate+'T12:00:00').getDay();
-  if(_dwRun===2||_dwRun===4||_dwRun===6){
+  if(_isRunDate(logDate)){
     var rwk=_runWeekForDate(logDate);
     var rwd=(typeof RUN_WEEKS!=='undefined'&&rwk>0)?RUN_WEEKS[Math.min(rwk,RUN_WEEKS.length)-1]:null;
     var rtxt=rwd?('<strong>Semana '+rwk+' de running:</strong> '+rwd.work):'El plan de running empieza el '+_fmtLongDate(getRunStartDate())+'.';
@@ -4952,7 +5022,11 @@ var RUN_DAY_NOTE={
   jueves:'Hoy solo has hecho hombros y han pasado 55 h desde la pierna: piernas descansadas.',
   sabado:'Sin gym en todo el día: es la sesión en la que llegas más fresco. Respeta la zona marcada.',
   miercoles:'Hoy has hecho espalda y bíceps: las piernas están frescas esta semana. Zona 2 estricta; si pesan, alarga las caminatas.',
-  viernes:'Has entrenado espalda y bíceps por la mañana y las piernas están frescas. Respeta la zona marcada.'
+  viernes:'Has entrenado espalda y bíceps por la mañana y las piernas están frescas. Respeta la zona marcada.',
+  tinfB:'Corres unas 8 h después de piernas ligeras: las agujetas aún no han llegado (aparecen a partir de las 24 h). Comida de las 15:00 con hidratos, merienda ligera a las 19:00. Zona 2 estricta; si las piernas pesan, alarga las caminatas y no acortes la sesión. Corre con la mano izquierda suelta y la herida cubierta y seca.',
+  cardioA:'Hoy el gym es suave (cardio, glúteo ligero y core): llegas con las piernas frescas. Zona 2 estricta y sin agarrar nada con la mano izquierda. Herida cubierta y seca.',
+  cardioB:'Hoy solo cardio suave y movilidad por la mañana: llegas fresco. Zona 2 estricta; corre con la mano izquierda suelta y la herida cubierta y seca.',
+  domingo:'Hoy es día de movilidad y sin gym: llegas fresco. Zona 2 estricta; corre con la mano izquierda suelta y la herida cubierta y seca.'
 };
 function _runWeekForDate(ds){
   var start=getRunStartDate();
@@ -5220,19 +5294,6 @@ var DIETA15=[
       i:[{n:'Pechuga pollo',g:180},{n:'Lechuga',g:100},{n:'Tomate',g:100},{n:'Pepino',g:80},{n:'Aguacate',g:60},{n:'AOVE',g:8}],
       t:{kcal:440,p:46,c:10,f:22}}]}},
 
-  {dia:'Día 15 🎉',
-   des:{desc:'Desayuno libre — mereces un break',kcal:0,p:0,c:0,f:0},
-   com:{kobj:0,opts:[
-     {id:'A',n:'🍕 CHEAT MEAL — Lo que apetezca',
-      i:[],t:{kcal:0,p:0,c:0,f:0}},
-     {id:'B',n:'🍔 Hamburguesa / Pizza / Pasta — Sin restricciones',
-      i:[],t:{kcal:0,p:0,c:0,f:0}}]},
-   mer:{desc:'Lo que quieras',kcal:0,p:0,c:0,f:0},
-   cen:{kobj:0,opts:[
-     {id:'A',n:'Cena libre — sin restricciones',
-      i:[],t:{kcal:0,p:0,c:0,f:0}},
-     {id:'B',n:'Repite lo que más te gustó hoy',
-      i:[],t:{kcal:0,p:0,c:0,f:0}}]}},
 ];
 
 function _dietDate(idx){
@@ -5276,7 +5337,7 @@ function renderNutriPlan(sel){
   h+='<div style="font-size:11px;color:var(--m);line-height:1.7;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:9px 12px">'+
     '• <strong style="color:var(--t)">Objetivo:</strong> bajar grasa sin perder músculo. ≈2.100-2.200 kcal y ≈155-160 g de proteína al día.<br>'+
     '• <strong style="color:var(--t)">Cocinas solo la comida y la cena, el mismo día.</strong> Pre-gym, post-gym y merienda son sin cocinar.<br>'+
-    '• <strong style="color:var(--t)">Sin leche, sin embutidos</strong> (pavo/jamón en lonchas). Proteína de pollo, ternera o cerdo magro, pescado, huevos (8 a la semana), conservas, skyr natural y whey con agua.<br>'+
+    '• <strong style="color:var(--t)">Sin leche y sin embutidos</strong> (nada de pavo, jamón, lomo ni fiambre en lonchas). Proteína de pollo, ternera o cerdo magro, pescado, huevos (8 a la semana), conservas, skyr natural y whey con agua.<br>'+
     '• <strong style="color:var(--t)">Azúcar refinado al mínimo a diario</strong> (miel, mermelada, galletas, bollería, sabores). Ketchup, gochujang o brioche, solo de vez en cuando y poco. Fruta entera, sí.<br>'+
     '• <strong style="color:var(--t)">Menos gluten:</strong> arroz, patata, tortitas de arroz o maíz antes que pan y pasta.<br>'+
     '• <strong style="color:var(--t)">El aceite cuenta (~20 g al día):</strong> 0 en tostadas, ~10-12 g en la comida, ~8-10 g en la cena. Pésalo.<br>'+
@@ -5296,11 +5357,11 @@ function renderDietPlan(){
   el.innerHTML='';return;
   var start=new Date(2026,9,1);
   var now=new Date();
-  var todayIdx=Math.max(0,Math.floor((now-start)/86400000)%15);
+  var todayIdx=Math.max(0,Math.floor((now-start)/86400000)%DIETA15.length);
   var h='';
   DIETA15.forEach(function(day,i){
     var isT=i===todayIdx;
-    var isCheat=i===14;
+    var isCheat=false;
     var dateKey=_dietDate(i);
     var comChoice=ld('dc_com_'+dateKey,'');
     var cenChoice=ld('dc_cen_'+dateKey,'');
@@ -5423,13 +5484,14 @@ var MOB_KEY={resp:0,knees:1,twist:2,psoas:3,isquios:4,pectoral:5,child:6};
 function _mobItem(k){return MOB_KEY.hasOwnProperty(k)?MOBILITY_PLAN[MOB_KEY[k]]:MOB_X[k];}
 var MOB_BY_DAY={
   lunes:{foco:'Push A + Core: pecho, hombro y tríceps',min:14,ex:['resp','knees','twist','pectoral','hombro','triceps','psoas','isquios','child']},
-  martes:{foco:'Piernas + running: cadera, cuádriceps, isquios y gemelos',min:15,ex:['resp','knees','figura4','psoas','cuadriceps','isquios','gemelos','child']},
+  martes:{foco:'Piernas: cadera, cuádriceps, isquios y gemelos',min:15,ex:['resp','knees','figura4','psoas','cuadriceps','isquios','gemelos','child']},
   miercoles:{foco:'Pull A + Core: dorsal, antebrazo, cuello y cadera',min:14,ex:['resp','knees','twist','dorsal','biceps','cuello','psoas','isquios','child']},
-  jueves:{foco:'Push B (hombros) + running: hombro, tríceps y piernas',min:14,ex:['resp','knees','pectoral','hombro','triceps','psoas','cuadriceps','gemelos','child']},
+  jueves:{foco:'Push B (hombros): hombro, tríceps y piernas',min:14,ex:['resp','knees','pectoral','hombro','triceps','psoas','cuadriceps','gemelos','child']},
   viernes:{foco:'Pull B + Core: dorsal, torácica y cadera',min:14,ex:['resp','knees','twist','toracica','dorsal','biceps','psoas','isquios','child']},
   sabado:{foco:'Running: piernas largas, cadera, tobillo y pie',min:15,ex:['resp','knees','figura4','psoas','cuadriceps','isquios','gemelos','tobillo','child']},
   domingo:{foco:'Descarga: la sesión larga de movilidad ya está hecha, aquí solo lumbar y relajación',min:9,ex:['resp','knees','twist','psoas','isquios','child']}
 };
+MOB_BY_DAY.tinfA=MOB_BY_DAY.martes; MOB_BY_DAY.tinfB=MOB_BY_DAY.martes; MOB_BY_DAY.cardioA=MOB_BY_DAY.martes; MOB_BY_DAY.cardioB=MOB_BY_DAY.martes;
 function _mobDayKey(){return _gymDkOnDate(today());}
 var MOB_MIN_KEYS=['resp','knees','child'];
 function getMobList(){
@@ -5729,7 +5791,7 @@ function renderMealOfMoment(){
   if(emojiEl) emojiEl.textContent=meal.emoji;
   if(titleEl) titleEl.textContent=meal.title+' · '+meal.timeLabel;
   var planStart=new Date(2026,9,1);
-  var dayIdx=Math.max(0,Math.floor((new Date()-planStart)/86400000)%15);
+  var dayIdx=Math.max(0,Math.floor((new Date()-planStart)/86400000)%DIETA15.length);
   var day=typeof DIETA15!=='undefined'?DIETA15[dayIdx]:null;
   var mm=meal.meal;
   var h='<div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;align-items:center">'+
@@ -6546,7 +6608,7 @@ function generateShopListFromPlan(){
   var aggregated={};
   var dishUsage={};
 
-  var base={'Plátanos (6-8 unidades)':'Meriendas y desayuno','Yogur griego natural (4 uds)':'Desayuno','Nueces (200g)':'Desayuno y snacks','Crema de cacahuete 100% (1 bote)':'Desayuno','Tortitas de arroz (2 paquetes)':'Meriendas','Pavo en lonchas (2 paquetes)':'Meriendas','Avena en copos (500g)':'Desayunos finde','Aceite de oliva virgen extra':'Base de cocina'};
+  var base={'Plátanos (6-8 unidades)':'Meriendas y desayuno','Yogur griego natural (4 uds)':'Desayuno','Nueces (200g)':'Desayuno y snacks','Crema de cacahuete 100% (1 bote)':'Desayuno','Tortitas de arroz (2 paquetes)':'Meriendas','Avena en copos (500g)':'Desayunos finde','Aceite de oliva virgen extra':'Base de cocina'};
   Object.keys(base).forEach(function(k){aggregated[k]=base[k];});
 
   for(var i=0;i<7;i++){
@@ -6942,11 +7004,14 @@ function generateShopListFromPlan(){
     <div class="ig"><label class="il">Fecha</label><input type="date" class="if" id="hist-date" onchange="renderHistExercises()"></div>
     <div class="ig"><label class="il">Día de entrenamiento</label>
       <select class="if" id="hist-day" onchange="renderHistExercises()">
-        <option value="lunes">Lunes — Push A · Pecho + Tríceps + Core</option>
-        <option value="martes">Martes — Legs</option>
-        <option value="miercoles">Miércoles — Pull A · Espalda + Bíceps + Core</option>
-        <option value="jueves">Jueves — Push B · Hombros</option>
-        <option value="viernes">Viernes — Pull B + Core</option>
+        <option value="lunes">Push A · Pecho + Tríceps + Core</option>
+        <option value="martes">Legs</option>
+        <option value="miercoles">Pull A · Espalda + Bíceps + Core</option>
+        <option value="jueves">Push B · Hombros</option>
+        <option value="viernes">Pull B + Core</option>
+        <option value="tinfA">Legs A · Tren inferior (máquinas)</option>
+        <option value="tinfB">Legs B · Glúteo + isquios (máquinas)</option>
+        <option value="cardioA">Cardio suave + glúteo + core</option>
       </select>
     </div>
     <div id="hist-exercises" style="margin:8px 0;max-height:280px;overflow-y:auto"></div>
