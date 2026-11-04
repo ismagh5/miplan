@@ -298,7 +298,7 @@ select.if{cursor:pointer;}
 
   
   <!-- HABITS -->
-  <div class="card" id="day-schedule-card" style="margin:8px 16px">
+  <div class="card" id="day-schedule-card" style="margin:8px 16px;display:none">
     <div class="ch"><span class="ci">📋</span><span class="ct">Plan del día</span><span id="schedule-badge" class="cbadge bb">0/0</span></div>
     <div class="cb" id="day-schedule-checks"></div>
   </div>
@@ -928,11 +928,11 @@ const RUN_WEEKS=[
     ],
    startDate:"2026-10-12"},
 
-  {num:6,title:"20 min continuo",sub:"Semana 6 · Primera carrera continua",
-   work:"20 min corriendo sin parar · ~3.2-3.5 km",
-   zone:"Zona 2-3",bpmLo:120,bpmHi:148,pace:"5:30-6:00 min/km",
-   workDetail:"EL MOMENTO: primera vez que corres 20 minutos sin parar. Psicológicamente es el mayor salto del plan.\n\n🏃 LOS 20 MINUTOS:\nMin 1-5: ridículamente lento. Más lento de lo que crees necesario. Patrón de respiración de la tarjeta, sin cambiarlo.\nMin 6-12: el ritmo empieza a sentirse. Resiste la tentación de acelerar. Mantén el patrón de respiración hasta el final; si te falta aire, baja el ritmo.\nMin 13-17: el punto más difícil. Los estudios llaman a esto 'el muro de los 15 minutos'. Es real. Solo son 3-4 minutos más.\nMin 18-20: lo peor ya pasó. Los últimos 2 minutos son de mentalidad.\n\n⚠️ Si en el minuto 10 ya estás en 155+ bpm (Zona 4), baja el ritmo inmediatamente o camina 2 min y retoma.\n\nNo importa el tiempo, no importa el ritmo. 20 minutos de pie corriendo es el objetivo.",
-   tip:"Este día es el más importante del plan. Completarlo cambia la forma en que te ves a ti mismo como corredor.",
+    {num:6,title:"5-10 min trote / 1 min caminata",sub:"Semana 6 · Fase Series largas",
+   work:"Martes: 4 × [ 5 min trote + 1 min caminata ] (~24 min) · Jueves: 3 × [ 7 min trote + 1 min caminata ] (~24 min) · Sábado: 2 × [ 10 min trote + 1 min caminata ] (~22 min)",
+   zone:"Zona 2",bpmLo:120,bpmHi:145,pace:"6:00-6:30 min/km",
+   workDetail:"SERIES LARGAS EN ZONA 2. Sigues corriendo en series, pero cada trote dura más y la caminata es de solo 1 minuto.\n\n🏃 TROTE: ritmo cómodo, test del habla (una frase corta entera). Si el pulso pasa de 145, baja el ritmo.\n🚶 CAMINATA (1 min): activa, baja el pulso a <130 antes del siguiente bloque.\n\nSi una sesión no sale bien, repites la semana. No avanzas por calendario.",
+   tip:"Los 10 minutos del sábado son el hito de la semana: es casi un 5K en dos bloques.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -955,13 +955,13 @@ const RUN_WEEKS=[
       pos:"Rodilla trasera en el suelo.",
       exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
     ],
-   startDate:"2026-10-19"},
+      startDate:"2026-11-23"},
 
-  {num:7,title:"30-40 min continuo + fartlek",sub:"Semana 7 · Fase Volumen",
-   work:"Martes: 30 min continuo · Jueves: fartlek 8×(2 min Z4 / 2 min Z2) · Sábado: 40 min continuo",
-   zone:"Zona 2-4",bpmLo:120,bpmHi:170,pace:"5:00-6:00 min/km",
-   workDetail:"MARTES — 30 min continuo (Zona 2):\nMismo enfoque que semana 6 pero 10 min más. Los primeros 20 ya los conoces. Los últimos 10 son terreno nuevo.\n\nJUEVES — FARTLEK (primera vez):\nFartlek = 'juego de velocidad' en sueco. Calentar 5 min Zona 1. Luego 8 bloques de: 2 min fuerte (Zona 4, 155-170 bpm, respiración por la boca (1-2 entra, 3 sale), incómodo pero sostenible) + 2 min suave (Zona 2, patrón de nariz/boca de la tarjeta, recuperación). Enfriar 5 min.\n\nEn el Zona 4 (2 min): la nariz ya no basta. Respira por la boca. El ritmo es ~4:45-5:00 min/km. Debe ser incómodo pero poder aguantar 2 min completos.\nEn el Zona 2 (2 min): vuelve al patrón de nariz/boca. Si en 2 min no bajas de 140 bpm, alarga la recuperación.\n\nSÁBADO — 40 min continuo (Zona 2-3):\nPrimeros 25 min: nariz. Últimos 15 min: puedes ir a Zona 3 si el cuerpo te lo pide.",
-   tip:"El fartlek del jueves construye la velocidad para el sub-50'. Sin él llegas a los 10km pero no en menos de 50 minutos.",
+  {num:7,title:"8-10 min trote / 1 min caminata",sub:"Semana 7 · Fase Series largas",
+   work:"Martes: 3 × [ 8 min trote + 1 min caminata ] (~27 min) · Jueves: 3 × [ 10 min trote + 1 min caminata ] (~33 min) · Sábado: ~3 km en series de 10 min + 1 min de caminata (6:45-7:00 min/km)",
+   zone:"Zona 2",bpmLo:120,bpmHi:145,pace:"6:30-7:00 min/km",
+   workDetail:"OBJETIVO: 3 km en series largas. Todo suave. La prueba de ritmo llega la semana siguiente.\n\n🏃 TROTE (8-10 min): mismo ritmo que la semana 6. Respira con el patrón de la tarjeta.\n🚶 CAMINATA (1 min): activa.\n\nSábado: cuenta los km con el reloj. Si llegas a 3 km, es el hito de la semana.",
+   tip:"No aceleres para acabar antes: ritmo de Zona 2 hasta el final.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -984,7 +984,124 @@ const RUN_WEEKS=[
       pos:"Rodilla trasera en el suelo.",
       exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
     ],
-   startDate:"2026-10-26"},
+      startDate:"2026-11-30"},
+
+  {num:8,title:"Series de ritmo + prueba de 3 km",sub:"Semana 8 · Fase Ritmo",
+   work:"Martes: 3 km suaves en series de 10 min + 30 s de caminata · Jueves: 4 × [ 3 min a 6:15 min/km + 2 min suaves ] · Sábado 12/12: PRUEBA de 3 km a tope (objetivo por debajo de 17:30, es decir 5:50/km)",
+   zone:"Zona 2-3",bpmLo:120,bpmHi:160,pace:"6:15-6:45 min/km (prueba: ~5:50)",
+   workDetail:"Primera semana con ritmo. El martes, suave. El jueves, 4 series de 3 min a 6:15/km con 2 min suaves entre medias (calentamiento de 8-10 min antes). El sábado 12/12, prueba de 3 km a tope: si sale por debajo de 17:30, vas bien para correr a 6:00/km el 27/12.",
+   tip:"La prueba se hace descansado: el viernes, nada de esfuerzo.",
+   warmup:[
+     {name:"Foam roller gemelos e isquios",dur:"3 minutos",
+      pos:"Sentado en el suelo.",
+      exec:"🟤 Rolo bajo el gemelo derecho. Cruza el pie izquierdo encima para más presión. Rueda de tobillo a detrás de rodilla MUY LENTO. Para 15-20s donde notes tensión. Respira. Repite con la izquierda.\n\n🟤 Luego bajo los isquios: rolo bajo el muslo trasero. 45s por pierna. El tejido frío se lesiona — esto lo previene."},
+     {name:"Caminata de activación",dur:"3 minutos",
+      pos:"De pie, postura natural.",
+      exec:"🚶 Paso normal tirando a lento. Mueve los brazos. El objetivo es que cuando empieces a trotar el cuerpo ya esté tibio. En los últimos 30s puedes acelerar ligeramente el paso."}
+    ],
+   cooldown:[
+     {name:"Caminata de vuelta a la calma",dur:"3 minutos",
+      pos:"Caminando.",
+      exec:"🚶 Paso MUY LENTO. Más lento de lo que normalmente caminarías. Deja que la frecuencia cardíaca baje por sí sola. No pares de golpe — el corazón necesita esta transición para no retener sangre en las piernas."},
+     {name:"Estiramiento gemelos y sóleo",dur:"45s/pierna",
+      pos:"De pie frente a una pared.",
+      exec:"🦵 Mano en la pared. Pierna trasera estirada, talón pegado al suelo. Inclínate hasta sentir el gemelo. 30s. Luego dobla ligeramente la rodilla trasera para llegar al sóleo. 15s más. Los gemelos absorben impacto en cada zancada — estirarlos previene contracturas."},
+     {name:"Estiramiento isquios en suelo",dur:"45s/pierna",
+      pos:"Tumbado boca arriba.",
+      exec:"🦵 Lleva una pierna hacia arriba con las manos o una toalla en el pie. Rodilla ligeramente doblada. Mantén 45s sin rebotes. El running acorta los isquios — si no los estiras, acaban generando dolor lumbar."},
+     {name:"Psoas en zancada",dur:"30s/lado",
+      pos:"Rodilla trasera en el suelo.",
+      exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
+    ],
+      startDate:"2026-12-07"},
+
+  {num:9,title:"Series a 6:00/km",sub:"Semana 9 · Fase Ritmo",
+   work:"Martes: 4 km suaves en series de 10 min + 30 s de caminata · Jueves: 5 × [ 3 min a 6:00 min/km + 2 min suaves ] · Sábado: 5 km suaves (~34 min) en series de 10-12 min + 30 s de caminata",
+   zone:"Zona 2-3",bpmLo:120,bpmHi:160,pace:"6:00-6:40 min/km",
+   workDetail:"Semana clave: te acostumbras al ritmo de 6:00/km. El jueves cuesta, pero tiene que poder terminarse con el mismo ritmo en la última serie. El sábado, los 5 km suaves: es tu primera vez en esa distancia.",
+   tip:"Si el jueves en la última serie vas muy por detrás de 6:00/km, el ritmo era demasiado fuerte: baja un poco.",
+   warmup:[
+     {name:"Foam roller gemelos e isquios",dur:"3 minutos",
+      pos:"Sentado en el suelo.",
+      exec:"🟤 Rolo bajo el gemelo derecho. Cruza el pie izquierdo encima para más presión. Rueda de tobillo a detrás de rodilla MUY LENTO. Para 15-20s donde notes tensión. Respira. Repite con la izquierda.\n\n🟤 Luego bajo los isquios: rolo bajo el muslo trasero. 45s por pierna. El tejido frío se lesiona — esto lo previene."},
+     {name:"Caminata de activación",dur:"3 minutos",
+      pos:"De pie, postura natural.",
+      exec:"🚶 Paso normal tirando a lento. Mueve los brazos. El objetivo es que cuando empieces a trotar el cuerpo ya esté tibio. En los últimos 30s puedes acelerar ligeramente el paso."}
+    ],
+   cooldown:[
+     {name:"Caminata de vuelta a la calma",dur:"3 minutos",
+      pos:"Caminando.",
+      exec:"🚶 Paso MUY LENTO. Más lento de lo que normalmente caminarías. Deja que la frecuencia cardíaca baje por sí sola. No pares de golpe — el corazón necesita esta transición para no retener sangre en las piernas."},
+     {name:"Estiramiento gemelos y sóleo",dur:"45s/pierna",
+      pos:"De pie frente a una pared.",
+      exec:"🦵 Mano en la pared. Pierna trasera estirada, talón pegado al suelo. Inclínate hasta sentir el gemelo. 30s. Luego dobla ligeramente la rodilla trasera para llegar al sóleo. 15s más. Los gemelos absorben impacto en cada zancada — estirarlos previene contracturas."},
+     {name:"Estiramiento isquios en suelo",dur:"45s/pierna",
+      pos:"Tumbado boca arriba.",
+      exec:"🦵 Lleva una pierna hacia arriba con las manos o una toalla en el pie. Rodilla ligeramente doblada. Mantén 45s sin rebotes. El running acorta los isquios — si no los estiras, acaban generando dolor lumbar."},
+     {name:"Psoas en zancada",dur:"30s/lado",
+      pos:"Rodilla trasera en el suelo.",
+      exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
+    ],
+      startDate:"2026-12-14"},
+
+  {num:10,title:"Semana de carrera 1",sub:"Semana 10 · Carrera del 27/12",
+   work:"Martes 22: 3 km suaves + 4 rectas de 20 s · Jueves 24: 20 min muy suaves · Viernes y sábado: descanso · DOMINGO 27: CARRERA 1 (6 km), objetivo 6:00 min/km. Si pasas el km 5 en menos de 30 min, tienes tu objetivo de 5 km",
+   zone:"Zona 2-4",bpmLo:120,bpmHi:170,pace:"6:00 min/km (carrera)",
+   workDetail:"Semana de afinar. Poco volumen y mucho descanso. En carrera: sal a 6:15/km los primeros 2 km, 6:00/km del 3 al 5 y lo que tengas en el último. Puedes hacer pausas cortas de caminata si lo necesitas, sin ir a morir.",
+   tip:"Nada nuevo en la semana de carrera: ni calzado, ni comida, ni entrenos.",
+   warmup:[
+     {name:"Foam roller gemelos e isquios",dur:"3 minutos",
+      pos:"Sentado en el suelo.",
+      exec:"🟤 Rolo bajo el gemelo derecho. Cruza el pie izquierdo encima para más presión. Rueda de tobillo a detrás de rodilla MUY LENTO. Para 15-20s donde notes tensión. Respira. Repite con la izquierda.\n\n🟤 Luego bajo los isquios: rolo bajo el muslo trasero. 45s por pierna. El tejido frío se lesiona — esto lo previene."},
+     {name:"Caminata de activación",dur:"3 minutos",
+      pos:"De pie, postura natural.",
+      exec:"🚶 Paso normal tirando a lento. Mueve los brazos. El objetivo es que cuando empieces a trotar el cuerpo ya esté tibio. En los últimos 30s puedes acelerar ligeramente el paso."}
+    ],
+   cooldown:[
+     {name:"Caminata de vuelta a la calma",dur:"3 minutos",
+      pos:"Caminando.",
+      exec:"🚶 Paso MUY LENTO. Más lento de lo que normalmente caminarías. Deja que la frecuencia cardíaca baje por sí sola. No pares de golpe — el corazón necesita esta transición para no retener sangre en las piernas."},
+     {name:"Estiramiento gemelos y sóleo",dur:"45s/pierna",
+      pos:"De pie frente a una pared.",
+      exec:"🦵 Mano en la pared. Pierna trasera estirada, talón pegado al suelo. Inclínate hasta sentir el gemelo. 30s. Luego dobla ligeramente la rodilla trasera para llegar al sóleo. 15s más. Los gemelos absorben impacto en cada zancada — estirarlos previene contracturas."},
+     {name:"Estiramiento isquios en suelo",dur:"45s/pierna",
+      pos:"Tumbado boca arriba.",
+      exec:"🦵 Lleva una pierna hacia arriba con las manos o una toalla en el pie. Rodilla ligeramente doblada. Mantén 45s sin rebotes. El running acorta los isquios — si no los estiras, acaban generando dolor lumbar."},
+     {name:"Psoas en zancada",dur:"30s/lado",
+      pos:"Rodilla trasera en el suelo.",
+      exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
+    ],
+      startDate:"2026-12-21"},
+
+  {num:11,title:"Semana de carrera 2",sub:"Semana 11 · San Silvestre 31/12",
+   work:"Martes 29: 3 km muy suaves (20-22 min) · Miércoles: descanso · JUEVES 31: SAN SILVESTRE (6 km), ritmo 6:00-6:20 min/km · Sábado 2/1: 20-30 min suaves",
+   zone:"Zona 2-3",bpmLo:120,bpmHi:165,pace:"6:00-6:20 min/km (carrera)",
+   workDetail:"Cuatro días después de la primera carrera. Corre con la cabeza: sin pelear el tiempo. Si las piernas no están, 6:15-6:30/km y a disfrutar.",
+   tip:"Disfruta de la carrera.",
+   warmup:[
+     {name:"Foam roller gemelos e isquios",dur:"3 minutos",
+      pos:"Sentado en el suelo.",
+      exec:"🟤 Rolo bajo el gemelo derecho. Cruza el pie izquierdo encima para más presión. Rueda de tobillo a detrás de rodilla MUY LENTO. Para 15-20s donde notes tensión. Respira. Repite con la izquierda.\n\n🟤 Luego bajo los isquios: rolo bajo el muslo trasero. 45s por pierna. El tejido frío se lesiona — esto lo previene."},
+     {name:"Caminata de activación",dur:"3 minutos",
+      pos:"De pie, postura natural.",
+      exec:"🚶 Paso normal tirando a lento. Mueve los brazos. El objetivo es que cuando empieces a trotar el cuerpo ya esté tibio. En los últimos 30s puedes acelerar ligeramente el paso."}
+    ],
+   cooldown:[
+     {name:"Caminata de vuelta a la calma",dur:"3 minutos",
+      pos:"Caminando.",
+      exec:"🚶 Paso MUY LENTO. Más lento de lo que normalmente caminarías. Deja que la frecuencia cardíaca baje por sí sola. No pares de golpe — el corazón necesita esta transición para no retener sangre en las piernas."},
+     {name:"Estiramiento gemelos y sóleo",dur:"45s/pierna",
+      pos:"De pie frente a una pared.",
+      exec:"🦵 Mano en la pared. Pierna trasera estirada, talón pegado al suelo. Inclínate hasta sentir el gemelo. 30s. Luego dobla ligeramente la rodilla trasera para llegar al sóleo. 15s más. Los gemelos absorben impacto en cada zancada — estirarlos previene contracturas."},
+     {name:"Estiramiento isquios en suelo",dur:"45s/pierna",
+      pos:"Tumbado boca arriba.",
+      exec:"🦵 Lleva una pierna hacia arriba con las manos o una toalla en el pie. Rodilla ligeramente doblada. Mantén 45s sin rebotes. El running acorta los isquios — si no los estiras, acaban generando dolor lumbar."},
+     {name:"Psoas en zancada",dur:"30s/lado",
+      pos:"Rodilla trasera en el suelo.",
+      exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
+    ],
+      startDate:"2026-12-28"},
+
 ];
 
 ;(function _seedData(){
@@ -2006,6 +2123,16 @@ function drawHomeChart(ws){
 // Racha por mínimos semanales: una semana (lunes-domingo) cumple si tiene >=4 días de gym y >=2 sesiones de running.
 // Todos los días de una semana cumplida cuentan para la racha; la semana en curso cuenta mientras siga siendo alcanzable.
 var STREAK_MIN_GYM=4, STREAK_MIN_RUN=2;
+// Pausa médica (cirugía del 22/10): esas semanas cuentan como cumplidas y la racha se mantiene.
+// Semanas de vuelta (9/11 y 16/11): mínimos reducidos a 3 de gym y 2 de running.
+var STREAK_PAUSE_WEEKS=['2026-10-19','2026-10-26','2026-11-02'];
+var STREAK_REDUCED_WEEKS=['2026-11-09','2026-11-16'];
+function _weekMins(monday){
+  var k=monday.getFullYear()+'-'+String(monday.getMonth()+1).padStart(2,'0')+'-'+String(monday.getDate()).padStart(2,'0');
+  if(STREAK_PAUSE_WEEKS.indexOf(k)>=0) return {g:0,r:0,pause:true};
+  if(STREAK_REDUCED_WEEKS.indexOf(k)>=0) return {g:3,r:STREAK_MIN_RUN,pause:false};
+  return {g:STREAK_MIN_GYM,r:STREAK_MIN_RUN,pause:false};
+}
 function _dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function _weekStats(monday){
   var runDates={};
@@ -2026,11 +2153,12 @@ function getStreakInfo(){
   var curMon=new Date(today0.getFullYear(),today0.getMonth(),today0.getDate()-dm);
   var start=new Date(2026,9,5);
   var cs=_weekStats(curMon);
-  var info={days:0,gym:cs.gym,run:cs.run,met:false,ok:true};
-  info.met=cs.gym>=STREAK_MIN_GYM&&cs.run>=STREAK_MIN_RUN;
+  var cm=_weekMins(curMon);
+  var info={days:0,gym:cs.gym,run:cs.run,met:false,ok:true,mg:cm.g,mr:cm.r,pause:cm.pause};
+  info.met=cm.pause||(cs.gym>=cm.g&&cs.run>=cm.r);
   var elapsed=dm+1;                 // lunes..hoy
   var avail=7-dm;                   // hoy y los días que quedan
-  var needG=Math.max(0,STREAK_MIN_GYM-cs.gym), needR=Math.max(0,STREAK_MIN_RUN-cs.run);
+  var needG=Math.max(0,cm.g-cs.gym), needR=Math.max(0,cm.r-cs.run);
   info.ok=info.met||(needG<=avail&&needR<=avail);
   if(!info.ok) return info;
   info.days=elapsed;
@@ -2038,7 +2166,8 @@ function getStreakInfo(){
     var mon=new Date(curMon.getFullYear(),curMon.getMonth(),curMon.getDate()-7*w);
     if(mon<start) break;
     var st=_weekStats(mon);
-    if(st.gym>=STREAK_MIN_GYM&&st.run>=STREAK_MIN_RUN) info.days+=7; else break;
+    var wm=_weekMins(mon);
+    if(wm.pause||(st.gym>=wm.g&&st.run>=wm.r)) info.days+=7; else break;
   }
   return info;
 }
@@ -2048,7 +2177,7 @@ function _refreshStreakBtns(){
   var wk=document.getElementById('h-streak-week');
   if(wk){
     var i=getStreakInfo();
-    wk.textContent='Esta semana: gym '+i.gym+'/'+STREAK_MIN_GYM+' · running '+i.run+'/'+STREAK_MIN_RUN+(i.met?' · ✅ mínimos cumplidos':(i.ok?'':' · ⚠️ ya no llegas a los mínimos'));
+    wk.textContent=i.pause?'Esta semana: 🩹 pausa médica · la racha se mantiene':'Esta semana: gym '+i.gym+'/'+i.mg+' · running '+i.run+'/'+i.mr+(i.met?' · ✅ mínimos cumplidos':(i.ok?'':' · ⚠️ ya no llegas a los mínimos'));
   }
 }
 
@@ -2194,7 +2323,7 @@ function renderHome(){
   }
   // Habits (plan del día): show Mon-Fri only
   var habitsCard=document.getElementById('day-schedule-card');
-  if(habitsCard) habitsCard.style.display=isWeekend?'none':'block';
+  if(habitsCard) habitsCard.style.display='none'; // tarjeta "Plan del día" eliminada de la pantalla principal
   var days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   var months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   document.getElementById('h-date').textContent=days[dow]+', '+now.getDate()+' de '+months[now.getMonth()];
@@ -2373,23 +2502,25 @@ function getCurrentRunWeek(){
   var startDate=getRunStartDate();
   if(nowDate<startDate) return 0;
 
+  var _restart=nowDate>=new Date(2026,10,2);
+  if(_restart) startDate=new Date(2026,9,19); // tras la pausa por la operación: el 2/11 se retoma la semana 3 del plan
   var diff=Math.floor((nowDate-startDate)/86400000);
-  var calWeek=Math.min(Math.floor(diff/7)+1,7);
+  var calWeek=Math.min(Math.floor(diff/7)+1,RUN_WEEKS.length);
   var runHist=ld('run_hist',[]);
 
   // Find highest week with >=MIN_RUN sessions
-  for(var w=calWeek;w>=1;w--){
+  for(var w=calWeek;w>=(_restart?3:1);w--){
     var count=runHist.filter(function(s){
       if(!s.date) return false;
       var sd=new Date(s.date+'T12:00:00');
       var d=Math.floor((sd-startDate)/86400000);
       return d>=0&&Math.floor(d/7)+1===w;
     }).length;
-    if(count>=MIN_RUN) return Math.min(w+1,7);
+    if(count>=MIN_RUN) return Math.min(w+1,RUN_WEEKS.length);
     // Current calendar week with at least 1 session but not yet MIN - stay here
     if(w===calWeek&&count>0) return w;
   }
-  return 1;
+  return _restart?3:1;
 }
 
 function toggleHabit(h){
@@ -2458,13 +2589,13 @@ function gymTab(t){
 function getGymDayData(dk){
   return _baseFromPlan(dk);
 }
-var RUN_OVERRIDE={'2026-10-22':false,'2026-10-23':true,'2026-10-24':false,'2026-10-25':true,'2026-10-27':true,'2026-10-29':true,'2026-10-30':false,'2026-10-31':true};
+var RUN_OVERRIDE={'2026-10-22':false,'2026-10-23':true,'2026-10-24':false,'2026-10-25':true,'2026-10-27':true,'2026-10-29':true,'2026-10-30':false,'2026-10-31':true,'2026-11-06':false,'2026-12-26':false,'2026-12-27':true};
 function _isRunDate(ds){if(RUN_OVERRIDE.hasOwnProperty(ds)) return RUN_OVERRIDE[ds];var d=new Date(ds+'T12:00:00').getDay();return d===2||d===4||d===6;}
 var GYM_DOW=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
 // Semana 2 desplazada un día: el lunes 12/10/2026 fue festivo (gym cerrado), la rutina empieza el martes 13/10/2026.
 // Semana 3: sin gym el lunes 19/10; martes Push A, miércoles Pull A, jueves Piernas, viernes Push B; sábado 24/10 solo running.
 function _gymDkOnDate(ds){
-  var SHIFT={'2026-10-13':'lunes','2026-10-14':'martes','2026-10-15':'miercoles','2026-10-16':'jueves','2026-10-17':'viernes','2026-10-20':'lunes','2026-10-21':'miercoles','2026-10-22':'martes','2026-10-23':'cardioA','2026-10-24':'tinfA','2026-10-26':'tinfA','2026-10-27':'cardioA','2026-10-28':'cardioA','2026-10-29':'tinfB','2026-10-30':'cardioA','2026-10-31':'cardioB'};
+  var SHIFT={'2026-10-13':'lunes','2026-10-14':'martes','2026-10-15':'miercoles','2026-10-16':'jueves','2026-10-17':'viernes','2026-10-20':'lunes','2026-10-21':'miercoles','2026-10-22':'martes','2026-10-23':'cardioA','2026-10-24':'tinfA','2026-10-26':'tinfA','2026-10-27':'cardioA','2026-10-28':'cardioA','2026-10-29':'tinfB','2026-10-30':'cardioA','2026-10-31':'cardioB','2026-11-05':'lunes','2026-11-06':'cardioA','2026-11-07':'cardioB'};
   if(SHIFT[ds]) return SHIFT[ds];
   var _dw=new Date(ds+'T12:00:00').getDay();
   // Desde la semana 4 (26/10/2026): lun Piernas, mar Pull A (+running), mié Push A (+cardio), jue Pull B (+running), vie Push B (+cardio), sáb running, dom movilidad.
@@ -2909,6 +3040,10 @@ function saveFullSession(dk){
   setTimeout(function(){btn.textContent='💾 Guardar sesión completa';btn.disabled=false;},2000);
 }
 
+function _returnBanner(ds){
+  if(ds>'2026-11-21') return '';
+  return '<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:9px 12px;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--o)">🩹 Fase de vuelta · hasta el 21/11</div><div style="font-size:11px;color:var(--m);line-height:1.5;margin-top:3px">Pesos al 40-50 % de los habituales, RIR 4-5 y máquinas o poleas. Sin curl, remo pesado, dominadas ni flexiones, y sin agarres pesados con la mano izquierda. Empieza con una serie muy ligera y sigue solo si la zona responde. Para si hay dolor, tirón, enrojecimiento, calor o sangrado.</div></div>';
+}
 var PLAN_BLOCK_START='2026-10-23', PLAN_BLOCK_END='2026-11-01';
 function renderPlanTabs(){
   var el=document.getElementById('plan-day-tabs'); if(!el) return;
@@ -3082,7 +3217,7 @@ function autoSaveRun(){
   var nowD=new Date(logDs+'T12:00:00');
   var ld3=new Date(nowD.getFullYear(),nowD.getMonth(),nowD.getDate());
   var diff3=Math.floor((ld3-startR)/86400000);
-  var wn=diff3<0?0:Math.min(Math.floor(diff3/7)+1,7);
+  var wn=diff3<0?0:Math.min(Math.floor(diff3/7)+1,RUN_WEEKS.length);
   var rw=RUN_WEEKS[wn-1];
   var checks=ld('run_checks_'+logDs,{warmup:false,work:false,cooldown:false});
   var session={
@@ -3247,7 +3382,7 @@ function _renderRunTodayBase(){
   var nowDate3=new Date(logDateStr+'T12:00:00');
   var logDate3=new Date(nowDate3.getFullYear(),nowDate3.getMonth(),nowDate3.getDate());
   var diffDays=Math.floor((logDate3-startRunDate2)/86400000);
-  var wn=diffDays<0?0:Math.min(Math.floor(diffDays/7)+1,7);
+  var wn=(logDateStr>='2026-11-02')?_runWeekForDate(logDateStr):(diffDays<0?0:Math.min(Math.floor(diffDays/7)+1,RUN_WEEKS.length));
   var start=startRunDate2;
   var pfActive=ld('pf_'+getYesterday(),null);
 
@@ -4928,6 +5063,7 @@ function renderGymPage(targetId,dkOverride,readOnly){
   var prog=getGymProgression();
   _gymSec=0;
   var h='<div style="padding:10px 16px">';
+  h+=_returnBanner(logDate);
   if(!readOnly&&logDate!==todayKey) h+='<div style="background:rgba(245,158,11,0.08);border-radius:8px;padding:6px 10px;margin-bottom:8px"><span style="font-size:11px;color:var(--o)">⚠️ Registrando: '+fmtDate(logDate)+'</span></div>';
   if(!readOnly){
     h+='<div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">';
@@ -5031,9 +5167,10 @@ var RUN_DAY_NOTE={
 function _runWeekForDate(ds){
   var start=getRunStartDate();
   var d=new Date((ds||today())+'T12:00:00');
+  if((ds||today())>='2026-11-02') start=new Date(2026,9,19); // pausa por la operación: el 2/11 se retoma la semana 3
   var diff=Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-start)/86400000);
   if(diff<-7) return 0;
-  return Math.max(1,Math.min(Math.floor(diff/7)+1,7));
+  return Math.max(1,Math.min(Math.floor(diff/7)+1,RUN_WEEKS.length));
 }
 
 // ════════════════════════════
