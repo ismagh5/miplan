@@ -2847,7 +2847,8 @@ function _gymDkOnDate(ds){
   if(SHIFT[ds]) return SHIFT[ds];
   var _dw=new Date(ds+'T12:00:00').getDay();
   // Desde la semana 4 (26/10/2026): lun Piernas, mar Pull A (+running), mié Push A (+cardio), jue Pull B (+running), vie Push B (+cardio), sáb running, dom movilidad.
-  if(ds>='2026-10-26') return {0:'domingo',1:'martes',2:'miercoles',3:'lunes',4:'viernes',5:'jueves',6:'sabado'}[_dw];
+  if(ds>='2026-10-26'&&ds<'2026-11-09') return {0:'domingo',1:'martes',2:'miercoles',3:'lunes',4:'viernes',5:'jueves',6:'sabado'}[_dw];
+  // Desde el 09/11/2026 (vuelta tras la operación): lun Push A, mar Piernas (+running), mié Pull A, jue Push B (+running), vie Pull B, sáb running, dom movilidad.
   return ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][_dw];
 }
 var GYM_DAY_ORDER=['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
