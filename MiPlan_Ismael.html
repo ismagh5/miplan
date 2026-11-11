@@ -3290,6 +3290,7 @@ function saveFullSession(dk){
 }
 
 function _returnBanner(ds){
+  return ''; // 11/11/2026: Ismael pide quitar la fase de vuelta (entrena por sensaciones)
   if(ds>'2026-11-21') return '';
   return '<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:9px 12px;margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--o)">🩹 Fase de vuelta · hasta el 21/11</div><div style="font-size:11px;color:var(--m);line-height:1.5;margin-top:3px">Pesos al 40-50 % de los habituales, RIR 4-5 y máquinas o poleas. Sin curl, remo pesado, dominadas ni flexiones, y sin agarres pesados con la mano izquierda. Empieza con una serie muy ligera y sigue solo si la zona responde. Para si hay dolor, tirón, enrojecimiento, calor o sangrado.</div></div>';
 }
@@ -7428,6 +7429,120 @@ function generateShopListFromPlan(){
     localStorage.setItem('seed_w3_nov9_v1','1');
   }catch(e){}
 })();
+// Carga única: peso en ayunas del martes 10/11/2026 (88 kg), base de la gráfica hacia los 82 kg.
+(function(){
+  try{
+    if(localStorage.getItem('seed_w10_nov10_v1')) return;
+    var ws=ld('weights',_wDef());
+    if(!ws.some(function(w){return w.date==='2026-11-10';})){
+      ws.push({date:'2026-11-10',val:88});
+      ws.sort(function(a,b){return a.date.localeCompare(b.date);});
+      sd('weights',ws);
+    }
+    localStorage.setItem('seed_w10_nov10_v1','1');
+  }catch(e){}
+})();
+// Carga única: martes 10/11/2026 (piernas ligeras de vuelta + core en esterilla + running semana 3).
+(function(){
+  try{
+    if(localStorage.getItem('seed_w3_nov10_v2')) return;
+    var D='2026-11-10', WK='2026-11-09';
+    if(!ld('gym_done_'+D,false)) sd('gym_done_'+D,true);
+    if(parseInt(ld('gym_week_'+WK,0))<2) sd('gym_week_'+WK,2);
+    var plan=getGymDayData('martes');
+    var hist=ld('gym_hist',[]);
+    if(plan&&!hist.some(function(h){return h.date===D;})){
+      hist.unshift({date:D,day:'martes',name:plan.name,notes:'Piernas ligeras de vuelta (gym 19:00-20:15, llovió y no pudo ir por la mañana), sin cardio porque corrió después. Series y repeticiones de prensa, gemelos y core según lo acordado, no confirmadas. Prensa: dos discos de 15 kg (gemelos igual).',exercises:[
+        {name:'Abductor en máquina (abrir)',blocks:[{s:4,r:'12',w:45}]},
+        {name:'Aductor en máquina (cerrar)',blocks:[{s:3,r:'12',w:65}]},
+        {name:'Sentadilla con barra (Back Squat)',blocks:[{s:3,r:'14',w:20}]},
+        {name:'Extensión de cuádriceps en máquina',blocks:[{s:3,r:'12',w:35}]},
+        {name:'Prensa de piernas (Leg Press), dos discos de 15 kg',blocks:[{s:2,r:'12',w:30}]},
+        {name:'Gemelos de pie en máquina (o con barra), igual que la prensa',blocks:[{s:3,r:'15',w:30}]},
+        {name:'Core en esterilla (hecho, sin detalle)',blocks:[{s:1,r:'5 min',w:null}]}
+      ]});
+      hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('gym_hist',hist.slice(0,500));
+    }
+    function addPw(name,kg,reps){
+      var k='gym_pw_n_'+_gymSlug(name); var h=ld(k,[]);
+      if(!h.some(function(e){return e.date===D;})){
+        h.push({date:D,kg:kg,reps:reps});
+        h.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+        sd(k,h.slice(-12));
+      }
+    }
+    addPw('Sentadilla con barra (Back Squat)',20,14);
+    addPw('Extensión de cuádriceps en máquina',35,12);
+    var rh=ld('run_hist',[]);
+    if(!rh.some(function(h){return h.date===D;})){
+      var wk=Math.max(1,Math.min(_runWeekForDate(D)||3,RUN_WEEKS.length));
+      var rw=RUN_WEEKS[wk-1];
+      var checks={warmup:true,work:true,cooldown:true};
+      sd('run_checks_'+D,checks);
+      rh.unshift({date:D,week:wk,duration:rw.totalMin||25,feeling:'',notes:'Sesión hecha (martes 10/11, 21:00, tras piernas ligeras); sensaciones sin registrar.',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:checks});
+      rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('run_hist',rh.slice(0,400));
+    }
+    localStorage.setItem('seed_w3_nov10_v2','1');
+  }catch(e){}
+})();
+// Carga única: datos reales del running del 10/11/2026 (reloj): 2,65 km en 23:01, FC media 143, máx. 165, empezó a las 20:22.
+(function(){
+  try{
+    if(localStorage.getItem('seed_run_nov10_data_v1')) return;
+    var D='2026-11-10';
+    var rh=ld('run_hist',[]);
+    var e=rh.filter(function(h){return h.date===D;})[0];
+    if(!e){
+      var wk=Math.max(1,Math.min(_runWeekForDate(D)||3,RUN_WEEKS.length)), rw=RUN_WEEKS[wk-1];
+      e={date:D,week:wk,feeling:'',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:{warmup:true,work:true,cooldown:true}};
+      rh.unshift(e);
+      sd('run_checks_'+D,e.checks);
+    }
+    e.dist=2.65;e.timeSec=1381;e.duration=23;e.hr=143;
+    e.notes='Martes 10/11, salida 20:22 tras piernas ligeras. Reloj: 2,65 km en 23:01, ritmo medio 8\'41"/km (incluye los tramos andando), FC media 143 y máx. 165, 2.934 pasos. Los primeros ~6-7 min fueron caminando (calentamiento, zona verde del pulso); el ritmo medio incluye ese tramo.';
+    rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+    sd('run_hist',rh.slice(0,400));
+    localStorage.setItem('seed_run_nov10_data_v1','1');
+  }catch(err){}
+})();
+// Carga única: miércoles 11/11/2026 (Pull A en máquinas/poleas, 20:00 aprox.; bíceps incluido por decisión suya, sin molestias).
+(function(){
+  try{
+    if(localStorage.getItem('seed_w3_nov11_v1')) return;
+    var D='2026-11-11', WK='2026-11-09';
+    if(!ld('gym_done_'+D,false)) sd('gym_done_'+D,true);
+    if(parseInt(ld('gym_week_'+WK,0))<3) sd('gym_week_'+WK,3);
+    var plan=getGymDayData('miercoles');
+    var hist=ld('gym_hist',[]);
+    if(plan&&!hist.some(function(h){return h.date===D;})){
+      hist.unshift({date:D,day:'miercoles',name:plan.name,notes:'Pull A por la tarde-noche. Sin molestias en la cicatriz. Curl con barra Z: 7,5 kg por lado (sin contar la barra); series/reps del curl con barra Z y del concentrado no confirmadas (3×10 y 3×12). Sin cardio, sin core confirmado.',exercises:[
+        {name:'Reverse fly en máquina (espalda hacia atrás)',blocks:[{s:4,r:'12',w:35}]},
+        {name:'Remo sentado en máquina',blocks:[{s:3,r:'12',w:40}]},
+        {name:'Jalón en polea (Lat Pulldown)',blocks:[{s:3,r:'12',w:35}]},
+        {name:'Tracción en polea con barra hacia el cuerpo (sustituye al face pull)',blocks:[{s:3,r:'12',w:10}]},
+        {name:'Curl bíceps con barra Z (7,5 kg por lado)',blocks:[{s:3,r:'10',w:15}]},
+        {name:'Curl concentrado sentado',blocks:[{s:3,r:'12',w:7.5}]}
+      ]});
+      hist.sort(function(a,b){return b.date.localeCompare(a.date);});
+      sd('gym_hist',hist.slice(0,500));
+    }
+    function addPw(name,kg,reps){
+      var k='gym_pw_n_'+_gymSlug(name); var h=ld(k,[]);
+      if(!h.some(function(e){return e.date===D;})){
+        h.push({date:D,kg:kg,reps:reps});
+        h.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+        sd(k,h.slice(-12));
+      }
+    }
+    addPw('Jalón en polea (Lat Pulldown)',35,12);
+    addPw('Remo sentado en máquina',40,12);
+    addPw('Deltoides posterior (face pull / pájaros)',35,12);
+    addPw('Curl concentrado sentado',7.5,12);
+    localStorage.setItem('seed_w3_nov11_v1','1');
+  }catch(e){}
+})();
 </script>
 
 <!-- HISTORICAL ENTRY MODAL -->
@@ -7584,7 +7699,7 @@ function increment(item){
   if(isLower(item)) return 5;
   return 2.5;
 }
-function inReturn(){return getLogDate()<='2026-11-21';}
+function inReturn(){return false;} // 11/11/2026: fase de vuelta quitada; las sugerencias se basan solo en lo registrado
 function suggestion(item){
   var date=getLogDate();
   var prior=getHist(item.n).filter(function(e){return e.date<date;});
