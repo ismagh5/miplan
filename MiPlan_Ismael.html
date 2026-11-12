@@ -7500,8 +7500,8 @@ function generateShopListFromPlan(){
       rh.unshift(e);
       sd('run_checks_'+D,e.checks);
     }
-    e.dist=2.65;e.timeSec=1381;e.duration=23;e.hr=143;
-    e.notes='Martes 10/11, salida 20:22 tras piernas ligeras. Reloj: 2,65 km en 23:01, ritmo medio 8\'41"/km (incluye los tramos andando), FC media 143 y máx. 165, 2.934 pasos. Los primeros ~6-7 min fueron caminando (calentamiento, zona verde del pulso); el ritmo medio incluye ese tramo.';
+    if(!e.dist)e.dist=2.65; if(!e.timeSec)e.timeSec=1381; if(!e.duration)e.duration=23; if(!e.hr)e.hr=143;
+    if(!e.notes) e.notes='Martes 10/11, salida 20:22 tras piernas ligeras. Reloj: 2,65 km en 23:01, ritmo medio 8\'41"/km (incluye los tramos andando), FC media 143 y máx. 165, 2.934 pasos. Los primeros ~6-7 min fueron caminando (calentamiento, zona verde del pulso); el ritmo medio incluye ese tramo.';
     rh.sort(function(a,b){return b.date.localeCompare(a.date);});
     sd('run_hist',rh.slice(0,400));
     localStorage.setItem('seed_run_nov10_data_v1','1');
@@ -7542,6 +7542,26 @@ function generateShopListFromPlan(){
     addPw('Curl concentrado sentado',7.5,12);
     localStorage.setItem('seed_w3_nov11_v1','1');
   }catch(e){}
+})();
+// Carga única: running del jueves 12/11/2026 (reloj): 2,81 km en 25:35, FC media 132, máx. 156, salida 20:36.
+(function(){
+  try{
+    if(localStorage.getItem('seed_run_nov12_v1')) return;
+    var D='2026-11-12';
+    var rh=ld('run_hist',[]);
+    var e=rh.filter(function(h){return h.date===D;})[0];
+    if(!e){
+      var wk=Math.max(1,Math.min(_runWeekForDate(D)||3,RUN_WEEKS.length)), rw=RUN_WEEKS[wk-1];
+      e={date:D,week:wk,feeling:'',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:{warmup:true,work:true,cooldown:true}};
+      rh.unshift(e);
+      sd('run_checks_'+D,e.checks);
+    }
+    if(!e.dist)e.dist=2.81; if(!e.timeSec)e.timeSec=1535; if(!e.duration)e.duration=26; if(!e.hr)e.hr=132;
+    if(!e.notes) e.notes='Jueves 12/11, salida 20:36 (semana 3, 2ª sesión). Reloj: 2,81 km en 25:35, ritmo medio 9\'06"/km (incluye ~4,5 min de calentamiento andando, ~2 min de vuelta a la calma y los tramos andando), FC media 132 y máx. 156, 3.151 pasos. Trote más suave que el martes: picos de ~150 y recuperación a ~125.';
+    rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+    sd('run_hist',rh.slice(0,400));
+    localStorage.setItem('seed_run_nov12_v1','1');
+  }catch(err){}
 })();
 </script>
 
