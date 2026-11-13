@@ -341,7 +341,7 @@ body{
 .np-disc::after{content:"";width:8px;height:8px;border-radius:50%;background:#0b0f1a;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .np-t{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:1;}
-.np-s{font-size:13px;font-weight:700;color:#fff;line-height:1.25;white-space:normal;overflow-wrap:anywhere;}
+.np-s{font-size:13px;font-weight:700;color:#fff;line-height:1.25;white-space:normal;overflow-wrap:break-word;}
 .np-a{font-size:11px;color:var(--m);margin-top:2px;white-space:normal;}
 .np-p{margin:0;font-size:10px;font-weight:800;color:#0b0f1a;background:#fff;border-radius:999px;padding:4px 9px;letter-spacing:0.3px;flex-shrink:0;}
 @media(prefers-reduced-motion:reduce){.np-disc{animation:none}}
@@ -533,14 +533,14 @@ textarea.if{resize:none;line-height:1.5;}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
       <div style="flex:1">
         <div class="pt" id="h-date">Cargando...</div>
-        <div id="h-quote" style="font-size:12px;color:var(--m);font-style:italic;margin-top:4px;line-height:1.4"></div>
-        <div id="h-quote-author" style="font-size:11px;color:var(--a);margin-top:2px;font-weight:600"></div>
       </div>
       <div style="text-align:right;margin-top:2px">
         <div id="h-temp" style="color:var(--y);font-size:13px;font-weight:600;white-space:nowrap">...</div>
         <div id="h-temp-sub" style="font-size:10px;color:var(--m);margin-top:3px"></div>
       </div>
     </div>
+    <div id="h-quote" style="font-size:12px;color:var(--m);font-style:italic;margin-top:8px;line-height:1.4"></div>
+    <div id="h-quote-author" style="font-size:11px;color:var(--a);margin-top:2px;font-weight:600"></div>
   </div>
 
   <div id="h-alert-yesterday" style="display:none;margin:8px 16px 0"></div>
