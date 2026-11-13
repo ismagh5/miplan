@@ -336,14 +336,14 @@ body{
 #h-date{font-size:26px;font-weight:800;letter-spacing:-0.8px;line-height:1.1;}
 #h-quote{font-size:13px !important;line-height:1.45 !important;color:#c9cfe6 !important;margin-top:8px !important;padding-left:12px;border-left:2px solid rgba(109,141,255,0.6);}
 #h-quote-author{margin-top:8px !important;}
-.np{display:inline-flex;align-items:center;gap:9px;padding:5px 6px 5px 6px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);text-decoration:none;max-width:100%;}
-.np-disc{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:conic-gradient(from 0deg,#6d8dff,#b69cff,#25d0e6,#6d8dff);display:grid;place-items:center;animation:spin 6s linear infinite;box-shadow:0 0 14px -2px rgba(109,141,255,0.8);}
+.np{display:flex;width:100%;box-sizing:border-box;align-items:center;gap:11px;padding:8px 8px 8px 10px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);text-decoration:none;max-width:100%;}
+.np-disc{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:conic-gradient(from 0deg,#6d8dff,#b69cff,#25d0e6,#6d8dff);display:grid;place-items:center;animation:spin 6s linear infinite;box-shadow:0 0 14px -2px rgba(109,141,255,0.8);}
 .np-disc::after{content:"";width:8px;height:8px;border-radius:50%;background:#0b0f1a;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.np-t{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
-.np-s{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.np-a{font-size:10px;color:var(--m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.np-p{margin:0 4px 0 2px;font-size:10px;font-weight:800;color:#0b0f1a;background:#fff;border-radius:999px;padding:4px 9px;letter-spacing:0.3px;flex-shrink:0;}
+.np-t{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:1;}
+.np-s{font-size:13px;font-weight:700;color:#fff;line-height:1.25;white-space:normal;overflow-wrap:anywhere;}
+.np-a{font-size:11px;color:var(--m);margin-top:2px;white-space:normal;}
+.np-p{margin:0;font-size:10px;font-weight:800;color:#0b0f1a;background:#fff;border-radius:999px;padding:4px 9px;letter-spacing:0.3px;flex-shrink:0;}
 @media(prefers-reduced-motion:reduce){.np-disc{animation:none}}
 
 /* Racha */
@@ -457,6 +457,49 @@ body{
 .xt-danger{background:rgba(255,93,108,0.12) !important;border:1px solid rgba(255,93,108,0.35) !important;color:#ff9aa4 !important;box-shadow:none !important;}
 textarea.if{resize:none;line-height:1.5;}
 </style>
+<style id="hm-css">
+/* Inicio · racha y running, ordenado */
+.hm-card{margin:8px 16px;background:linear-gradient(135deg,rgba(249,115,22,0.10),rgba(245,158,11,0.04));border:1px solid rgba(249,115,22,0.26);overflow:hidden}
+.hm-body{padding:18px 16px 16px !important}
+.hm-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:16px}
+.hm-ttl{min-width:0;flex:1}
+.hm-t{font-size:14px;font-weight:800;color:var(--o);letter-spacing:.1px}
+.hm-s{font-size:11px;line-height:1.45;color:var(--m);margin-top:5px;max-width:210px}
+.hm-num{text-align:right;flex-shrink:0}
+#h-streak{font-size:52px !important;line-height:.95 !important;letter-spacing:-2px}
+.hm-numl{font-size:10px;color:var(--m);margin-top:6px;letter-spacing:.3px}
+.hm-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:12px}
+.hm-day{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 6px;border-radius:12px;background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.06)}
+.hm-day span{font-size:9px;font-weight:700;color:var(--m);letter-spacing:.4px}
+.hm-day b{font-size:13px;font-weight:700;color:var(--t,#e8ecf8)}
+.hm-gym{background:rgba(52,211,153,0.18);border-color:rgba(52,211,153,0.45)}
+.hm-run{background:rgba(96,165,250,0.18);border-color:rgba(96,165,250,0.45)}
+.hm-both{background:linear-gradient(135deg,rgba(52,211,153,0.28),rgba(96,165,250,0.28));border-color:rgba(130,200,220,0.5)}
+.hm-today{box-shadow:0 0 0 1.5px rgba(255,176,103,0.9)}
+.hm-fut{opacity:.55}
+#h-streak-week.hm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0;border:0;background:none;border-radius:0;margin-bottom:16px;font-size:11px}
+.hm-stat{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07)}
+.hm-stat span{font-size:10px;color:var(--m);letter-spacing:.2px}
+.hm-stat b{font-size:17px;font-weight:800;color:var(--t,#e8ecf8)}
+.hm-stat b i{font-style:normal;font-size:12px;font-weight:600;color:var(--m)}
+.hm-ok{background:rgba(52,211,153,0.12);border-color:rgba(52,211,153,0.4)}
+.hm-bad{background:rgba(248,113,113,0.12);border-color:rgba(248,113,113,0.4)}
+.hm-wide{grid-column:1/-1}
+#h-run-progress{margin-top:0 !important;padding-top:16px !important;border-top:1px solid rgba(255,255,255,0.08)}
+.hm-rh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.hm-rt{font-size:13px;font-weight:800;color:var(--g)}
+.hm-rw{font-size:11px;color:var(--m)}
+.hm-track{position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,0.1);margin:0 0 12px}
+.hm-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--g),var(--a));transition:width .6s}
+.hm-node{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:#2a3042;border:2px solid #3a4258;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#0b0f1a;box-sizing:border-box}
+.hm-node.hm-r{background:var(--g);border-color:var(--g)}
+.hm-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;text-align:center}
+.hm-lb{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.hm-lb em{font-style:normal;font-size:15px;line-height:1.1}
+.hm-lb span{font-size:10px;font-weight:600;color:var(--m);line-height:1.2}
+.hm-lb small{font-size:9px;color:var(--m);opacity:.8}
+.hm-lb.hm-r span{color:var(--g)}
+</style>
 </head>
 <body>
 
@@ -521,27 +564,27 @@ textarea.if{resize:none;line-height:1.5;}
 
   
   <!-- RACHA CONSISTENCIA + RUNNING PROGRESS -->
-  <div class="card" style="margin:8px 16px;background:linear-gradient(135deg,rgba(249,115,22,0.08),rgba(245,158,11,0.05));border:1px solid rgba(249,115,22,0.25)">
-    <div class="cb" style="padding:14px 16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div>
-          <div style="font-size:13px;font-weight:700;color:var(--o)">🔥 Racha de consistencia</div>
-          <div style="font-size:11px;color:var(--m);margin-top:2px">Cumples los mínimos de la semana (gym ≥ 4 y running ≥ 2) y todos sus días cuentan</div>
+  <div class="card hm-card">
+    <div class="cb hm-body">
+      <div class="hm-top">
+        <div class="hm-ttl">
+          <div class="hm-t">🔥 Racha de consistencia</div>
+          <div class="hm-s">Cumples los mínimos de cada semana y todos sus días cuentan</div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:46px;font-weight:800;color:var(--o);line-height:1" id="h-streak">0</div>
-          <div style="font-size:10px;color:var(--m)">días seguidos</div>
+        <div class="hm-num">
+          <div id="h-streak">0</div>
+          <div class="hm-numl">días seguidos</div>
         </div>
       </div>
-      <canvas id="h-streak-chart" height="40" style="width:100%;display:block;margin-bottom:10px"></canvas>
-      <div id="h-streak-week" style="font-size:11px;color:var(--m);margin-bottom:10px"></div>
+      <div id="h-week-strip" class="hm-strip"></div>
+      <div id="h-streak-week" class="hm-stats"></div>
       <div id="h-run-progress"></div>
     </div>
   </div>
 
   
   <!-- COMIDA DEL MOMENTO -->
-  <div class="card" style="margin:8px 16px;background:linear-gradient(135deg,rgba(79,142,247,0.06),rgba(99,102,241,0.03));border:1px solid rgba(79,142,247,0.2)">
+  <div class="card" style="display:none;margin:8px 16px;background:linear-gradient(135deg,rgba(79,142,247,0.06),rgba(99,102,241,0.03));border:1px solid rgba(79,142,247,0.2)">
     <div class="ch">
       <span class="ci" id="h-meal-emoji">🍽️</span>
       <span class="ct" id="h-meal-title" style="color:var(--a)">Cargando...</span>
@@ -572,7 +615,7 @@ textarea.if{resize:none;line-height:1.5;}
   </div>
 
   <!-- RETO COUNTDOWN -->
-  <div id="h-reto-card" style="margin:8px 16px"></div>
+  <div id="h-reto-card" style="display:none;margin:8px 16px"></div>
   <div id="xt-home"></div>
 
   <div id="hab-confirm" style="display:none;font-size:12px;color:var(--g);text-align:center;padding:10px 16px 4px;font-weight:500"></div>
@@ -2358,18 +2401,15 @@ function drawHomeChart(ws){
 
 
 
-// Racha por mínimos semanales: una semana (lunes-domingo) cumple si tiene >=4 días de gym y >=2 sesiones de running.
+// Racha por mínimos semanales: una semana (lunes-domingo) cumple si tiene >=4 días de gym y >=3 de running (hasta el 8/11 el running pedía 2).
 // Todos los días de una semana cumplida cuentan para la racha; la semana en curso cuenta mientras siga siendo alcanzable.
-var STREAK_MIN_GYM=4, STREAK_MIN_RUN=2;
+var STREAK_MIN_GYM=4, STREAK_MIN_RUN=3, STREAK_RUN3_FROM='2026-11-09'; // desde la semana del 9/11 el running exige 3 días (antes 2)
 // Pausa médica (cirugía del 22/10): esas semanas cuentan como cumplidas y la racha se mantiene.
-// Semanas de vuelta (9/11 y 16/11): mínimos reducidos a 3 de gym y 2 de running.
 var STREAK_PAUSE_WEEKS=['2026-10-19','2026-10-26','2026-11-02'];
-var STREAK_REDUCED_WEEKS=['2026-11-09','2026-11-16'];
 function _weekMins(monday){
   var k=monday.getFullYear()+'-'+String(monday.getMonth()+1).padStart(2,'0')+'-'+String(monday.getDate()).padStart(2,'0');
   if(STREAK_PAUSE_WEEKS.indexOf(k)>=0) return {g:0,r:0,pause:true};
-  if(STREAK_REDUCED_WEEKS.indexOf(k)>=0) return {g:3,r:STREAK_MIN_RUN,pause:false};
-  return {g:STREAK_MIN_GYM,r:STREAK_MIN_RUN,pause:false};
+  return {g:STREAK_MIN_GYM,r:(k>=STREAK_RUN3_FROM?STREAK_MIN_RUN:2),pause:false};
 }
 function _dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function _weekStats(monday){
@@ -2413,10 +2453,30 @@ function getConsistencyStreak(){return getStreakInfo().days;}
 function _refreshStreakBtns(){
   var st=document.getElementById('h-streak'); if(st) st.textContent=getConsistencyStreak();
   var wk=document.getElementById('h-streak-week');
+  var i=getStreakInfo();
   if(wk){
-    var i=getStreakInfo();
-    wk.textContent=i.pause?'Esta semana: 🩹 pausa médica · la racha se mantiene':'Esta semana: gym '+i.gym+'/'+i.mg+' · running '+i.run+'/'+i.mr+(i.met?' · ✅ mínimos cumplidos':(i.ok?'':' · ⚠️ ya no llegas a los mínimos'));
+    if(i.pause) wk.innerHTML='<div class="hm-stat hm-wide"><span>🩹 Pausa médica</span><b>la racha se mantiene</b></div>';
+    else wk.innerHTML='<div class="hm-stat"><span>Gym</span><b>'+i.gym+'<i>/'+i.mg+'</i></b></div>'
+      +'<div class="hm-stat"><span>Running</span><b>'+i.run+'<i>/'+i.mr+'</i></b></div>'
+      +'<div class="hm-stat '+(i.met?'hm-ok':(i.ok?'':'hm-bad'))+'"><span>Mínimos</span><b>'+(i.met?'✅':(i.ok?'⏳':'⚠️'))+'</b></div>';
   }
+  _renderWeekStrip();
+}
+// Tira de la semana (L–D): verde = gym, azul = running, ambos = degradado, borde = hoy
+function _renderWeekStrip(){
+  var el=document.getElementById('h-week-strip'); if(!el) return;
+  var t=new Date(today()+'T12:00:00');
+  var mon=new Date(t.getFullYear(),t.getMonth(),t.getDate()-((t.getDay()+6)%7),12);
+  var runDates={}; ld('run_hist',[]).forEach(function(s){if(s.date) runDates[s.date]=1;});
+  var L=['L','M','X','J','V','S','D'],h='';
+  for(var k=0;k<7;k++){
+    var d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+k,12);
+    var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    var g=!!ld('gym_done_'+ds,false), r=!!runDates[ds];
+    var cls='hm-day'+(g&&r?' hm-both':g?' hm-gym':r?' hm-run':'')+(ds===today()?' hm-today':'')+(ds>today()?' hm-fut':'');
+    h+='<div class="'+cls+'"><span>'+L[k]+'</span><b>'+d.getDate()+'</b></div>';
+  }
+  el.innerHTML=h;
 }
 
 function renderRunProgress(){
@@ -2424,35 +2484,29 @@ function renderRunProgress(){
   if(!el) return;
   var week=getCurrentRunWeek();
   var totalWeeks=RUN_WEEKS.length;
-  var pct=Math.round((week-1)/totalWeeks*100);
-  // Hitos
+  var dw=_runWeekForDate(today());
+  var shown=Math.min(week,dw||week);
   var hitos=[
-    {w:3,label:'Reinicio',emoji:'🚀'},
-    {w:5,label:'3 min trote',emoji:'🏃'},
-    {w:8,label:'Test 3km',emoji:'⭐'},
-    {w:10,label:'San Silvestre',emoji:'🔥'},
-    {w:11,label:'31 dic',emoji:'🏆'},
+    {w:3,emoji:'🚀',label:'Reinicio',sub:'9 nov'},
+    {w:5,emoji:'🏃',label:'3 min trote',sub:'sem. 5'},
+    {w:8,emoji:'⭐',label:'Test 3 km',sub:'12 dic'},
+    {w:10,emoji:'🔥',label:'Ensayo',sub:'27 dic'},
+    {w:11,emoji:'🏆',label:'San Silvestre',sub:'31 dic'}
   ];
-  var h='<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">';
-  h+='<div style="font-size:12px;font-weight:700;color:var(--g)">🏃 Running · Semana '+week+'/'+totalWeeks+' ('+runWeekRange(week)+')</div>';
-  h+='<div style="font-size:11px;color:var(--m)">3 ene 2027</div></div>';
-  // Progress bar with hitos
-  h+='<div style="position:relative;height:6px;background:var(--b);border-radius:3px;margin-bottom:16px">';
-  h+='<div style="height:6px;border-radius:3px;background:linear-gradient(90deg,var(--g),var(--a));width:'+pct+'%;transition:width 0.6s"></div>';
-  // Hito markers
-  hitos.forEach(function(h_){
-    var hPct=Math.round((h_.w-1)/totalWeeks*100);
-    var reached=week>=h_.w;
-    h+='<div style="position:absolute;top:-4px;left:'+hPct+'%;transform:translateX(-50%)">';
-    h+='<div style="width:14px;height:14px;border-radius:50%;background:'+(reached?'var(--g)':'var(--b)')+';border:2px solid '+(reached?'var(--g)':'var(--b)')+';display:flex;align-items:center;justify-content:center;font-size:8px">'+(reached?'✓':'')+'</div>';
-    h+='</div>';
+  var n=hitos.length, pos=function(i){return (i+0.5)/n*100;}, x;
+  if(week<=hitos[0].w) x=pos(0)*Math.max(0,(week-1))/(hitos[0].w-1);
+  else if(week>=hitos[n-1].w) x=pos(n-1);
+  else{for(var i=0;i<n-1;i++){if(week>=hitos[i].w&&week<=hitos[i+1].w){x=pos(i)+(pos(i+1)-pos(i))*(week-hitos[i].w)/(hitos[i+1].w-hitos[i].w);break;}}}
+  var h='<div class="hm-rh"><div class="hm-rt">🏃 Running</div><div class="hm-rw">Semana '+shown+' de '+totalWeeks+' · '+runWeekRange(shown)+'</div></div>';
+  h+='<div class="hm-track"><div class="hm-fill" style="width:'+x.toFixed(1)+'%"></div>';
+  hitos.forEach(function(o,i){
+    var reached=week>=o.w;
+    h+='<div class="hm-node'+(reached?' hm-r':'')+'" style="left:'+pos(i).toFixed(1)+'%">'+(reached?'✓':'')+'</div>';
   });
-  h+='</div>';
-  // Hito labels
-  h+='<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--m);margin-top:2px">';
-  hitos.forEach(function(h_){
-    var reached=week>=h_.w;
-    h+='<div style="text-align:center;color:'+(reached?'var(--g)':'var(--m)')+'">'+h_.emoji+'<br>'+h_.label+'</div>';
+  h+='</div><div class="hm-labels">';
+  hitos.forEach(function(o){
+    var reached=week>=o.w;
+    h+='<div class="hm-lb'+(reached?' hm-r':'')+'"><em>'+o.emoji+'</em><span>'+o.label+'</span><small>'+o.sub+'</small></div>';
   });
   h+='</div>';
   el.innerHTML=h;
@@ -2570,7 +2624,7 @@ function renderHome(){
   var _au=document.getElementById('h-quote-author');
   if(_au){
     var _yt='https://music.apple.com/es/search?term='+encodeURIComponent(q.a+' '+q.s.replace(/\s*\(Remix\)/,''));
-    _au.innerHTML='<a class="np" href="'+_yt+'" target="_blank" rel="noopener"><span class="np-disc"></span><span class="np-t"><span class="np-s">'+q.s+'</span><span class="np-a">'+q.a+'</span></span><span class="np-p">▶ APPLE MUSIC</span></a>';
+    _au.innerHTML='<a class="np" href="'+_yt+'" target="_blank" rel="noopener"><span class="np-disc"></span><span class="np-t"><span class="np-s">'+q.s+'</span><span class="np-a">'+q.a+'</span></span><span class="np-p">▶ Escuchar</span></a>';
   }
 
   // Weight progress
