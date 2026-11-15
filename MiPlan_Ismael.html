@@ -140,6 +140,12 @@ select.if{cursor:pointer;}
 .rwt{font-size:14px;font-weight:600;color:var(--t);}
 .rws{font-size:12px;color:var(--m);margin-top:2px;}
 .rwb{padding:13px 16px;}
+.rw.rw-done,.rw.rw-slim{margin-top:3px;margin-bottom:3px;border-radius:12px}
+.rw.rw-done{opacity:.82}
+.rw.rw-done .rwh,.rw.rw-slim .rwh{padding:7px 14px;border-bottom:none;gap:10px}
+.rw.rw-done .rwn,.rw.rw-slim .rwn{font-size:15px;min-width:22px}
+.rw.rw-done .rwt,.rw.rw-slim .rwt{font-size:12px}
+.rw.rw-done .rws,.rw.rw-slim .rws{font-size:10px}
 .today-card{border-radius:16px;margin:8px 16px;padding:14px 16px;}
 .tc-gym{background:linear-gradient(135deg,rgba(79,142,247,0.12),rgba(124,92,191,0.12));border:1px solid rgba(79,142,247,0.25);}
 .tc-run{background:linear-gradient(135deg,rgba(61,214,140,0.1),rgba(6,182,212,0.1));border:1px solid rgba(61,214,140,0.25);}
@@ -514,16 +520,8 @@ textarea.if{resize:none;line-height:1.5;}
   <button class="nb" onclick="nav('run')" id="nb-run">
     <svg viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="M7 22l2-7-2-3h6l2 3-3 7"/><path d="M11 12l-2-5 3-2 2 4"/></svg>Running
   </button>
-  <button class="nb" onclick="nav('food')" id="nb-food">
-    <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3v7"/></svg>Comida
-  </button>
   <button class="nb" onclick="nav('weight')" id="nb-weight">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M6.7 8.5C3.5 9.6 2 12.3 2 15c0 3.9 4.5 7 10 7s10-3.1 10-7c0-2.7-1.5-5.4-4.7-6.5"/><path d="M12 12v4"/></svg>Peso
-  </button>
-  <button class="nb" onclick="nav('health')" id="nb-health">
-    <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><path d="M9 12l2 2 4-4"/></svg>Salud</button>
-  <button class="nb" onclick="nav('shop')" id="nb-shop" style="display:none">
-    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Compra
   </button>
 </nav>
 
@@ -624,13 +622,12 @@ textarea.if{resize:none;line-height:1.5;}
 <div class="page" id="pg-gym">
   <div class="ph"><div class="pt">💪 Entrenamiento</div></div>
   <div style="display:flex;gap:8px;padding:8px 16px 0">
-    <button id="mode-gym-btn" class="btn bth btn-sm" style="flex:1" onclick="setTrainingMode('gym')">🏋️ Gym</button>
-    <button id="mode-casa-btn" class="btn btg btn-sm" style="flex:1" onclick="setTrainingMode('casa')">🏠 Casa</button>
+    <button id="mode-gym-btn" class="btn btg btn-sm" style="flex:1" onclick="setTrainingMode('gym')">🏋️ Gym</button>
+    <button id="mode-casa-btn" class="btn bth btn-sm" style="flex:1" onclick="setTrainingMode('casa')">🏠 Casa</button>
   </div>
   <div id="gym-tabs-row" class="tr" style="display:none">
     <button class="tb active" onclick="gymTab('session')">Hoy</button>
     <button class="tb" onclick="gymTab('plan')">Plan</button>
-    <button class="tb" onclick="gymTab('pesos')">⚖️ Pesos</button>
     <button class="tb" onclick="gymTab('history')">Historial</button>
   </div>
   <!-- Date selector for gym — static in DOM like weight page -->
@@ -653,7 +650,7 @@ textarea.if{resize:none;line-height:1.5;}
           <option value="cardioA">🚴 Cardio suave + glúteo + core</option>
           <option value="cardioB">🧘 Cardio suave + movilidad</option>
           <option value="sabado">🏃 Movilidad post-carrera</option>
-          <option value="domingo">🧘 Movilidad 40 min</option>
+          <option value="domingo">🧘 Descanso · movilidad opcional</option>
         </select>
       </div>
       <button class="btn bth btn-sm" id="gym-date-today-btn" onclick="resetGymDate()" style="display:none;margin-top:18px">Hoy</button>
@@ -661,11 +658,10 @@ textarea.if{resize:none;line-height:1.5;}
     <div id="gym-session-content"></div>
   </div>
   <div id="gt-plan" style="display:none" style="display:none">
-    <div class="tr" id="plan-day-tabs" style="padding-top:10px"></div>
-    <div style="padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--p)">📈 Progresión 12 semanas</div>
+    <div class="tr" id="plan-day-tabs" style="display:none"></div>
+    <div style="padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--p)">📈 Progresión</div>
     <div id="gym-progression-content" style="padding:0 16px 8px"></div>
-    <div style="border-top:1px solid var(--b);padding:10px 16px 4px;font-size:12px;font-weight:700;color:var(--t)">📋 Sesión del día</div>
-    <div id="gym-plan-content" style="padding:0 0 12px"></div>
+    <div id="gym-plan-content" style="display:none"></div>
   </div>
   <div id="gt-pesos" style="display:none"></div>
   <div id="gt-history" style="display:none"><div id="gym-history-content" style="padding:12px 16px"></div></div>
@@ -673,7 +669,7 @@ textarea.if{resize:none;line-height:1.5;}
 
 <!-- RUNNING -->
 <div class="page" id="pg-run">
-  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">Plan 11 semanas · San Silvestre 27 y 31 dic</div></div>
+  <div class="ph"><div class="pt">🏃 Running</div><div class="ps" id="run-subtitle">Plan de 39 semanas · hasta el 15 ago 2027</div></div>
   <div class="tr">
     <button class="tb active" id="run-tab-today" onclick="runTab('today')">📋 Sesión</button>
     <button class="tb" id="run-tab-zones" onclick="runTab('zones')">🫁 Zonas</button>
@@ -774,7 +770,7 @@ textarea.if{resize:none;line-height:1.5;}
 
 <!-- WEIGHT -->
 <div class="page" id="pg-weight">
-  <div class="ph"><div class="pt">⚖️ Peso · Salud</div><div class="ps">Objetivo: 80-82 kg · Recomposición corporal</div></div>
+  <div class="ph"><div class="pt">⚖️ Peso · Salud</div><div class="ps">Reto 24/12: 82-84 kg · Recomposición</div></div>
   <div class="tr">
     <button class="tb active" onclick="weightTab('peso')">⚖️ Peso</button>
     <button class="tb" onclick="weightTab('medidas')">📏 Medidas</button>
@@ -1062,10 +1058,10 @@ const MOB_GENERAL=[
 ];
 
 const RUN_WEEKS=[
-  {num:1,title:"30s trote / 90s caminata",sub:"Semana 1 · Fase Adaptación",
+  {num:1,title:"30s trote / 90s caminata",sub:"Arranque 1 · Fase Adaptación",
    work:"8 × [ 30s trote + 90s caminata ] · Total ~20 min",
    zone:"Zona 2",bpmLo:116,bpmHi:135,pace:"6:45-7:00 min/km",
-   workDetail:"OBJETIVO DE ESTA SEMANA: que el cuerpo entienda el patrón trote-caminata sin estrés. El ritmo no importa. Acabar importa.\n\n🏃 TROTE (30s):\nRitmo de casi caminar rápido. RESPIRACIÓN: sigue exactamente el patrón de la tarjeta 'Laboratorio de técnica'. La prueba de ritmo: si puedes decir una frase corta entera sin cortarte → perfecto. Si no puedes → vas demasiado rápido, baja el ritmo. Mi Band: 116-135 bpm.\n\n🚶 CAMINATA (90s):\nPaso lento. Recupera completamente antes del siguiente trote. Si al llegar a 90s todavía tienes la respiración agitada, añade 30s más. No hay penalización.\n\n⚠️ Error típico de la semana 1: salir demasiado rápido en el primer trote y llegar agotado al 4º. Empieza más lento de lo que crees necesario.",
+   workDetail:"OBJETIVO DE ESTA SEMANA: que el cuerpo entienda el patrón trote-caminata sin estrés. El ritmo no importa. Acabar importa.\n\n🏃 TROTE (30s):\nRitmo de casi caminar rápido. RESPIRACIÓN: sigue exactamente el patrón de la tarjeta 'Laboratorio de técnica'. La prueba de ritmo: si puedes decir una frase corta entera sin cortarte → perfecto. Si no puedes → vas demasiado rápido, baja el ritmo. Pulso: 116-135 bpm.\n\n🚶 CAMINATA (90s):\nPaso lento. Recupera completamente antes del siguiente trote. Si al llegar a 90s todavía tienes la respiración agitada, añade 30s más. No hay penalización.\n\n⚠️ Error típico de la semana 1: salir demasiado rápido en el primer trote y llegar agotado al 4º. Empieza más lento de lo que crees necesario.",
    tip:"Sigue el patrón de respiración de la tarjeta, sin cambiarlo. Si puedes decir una frase entera mientras trotas, vas en Zona 2 — ese es el objetivo de toda la semana.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
@@ -1091,10 +1087,10 @@ const RUN_WEEKS=[
     ],
    startDate:"2026-09-21"},
 
-  {num:2,title:"45s trote / 90s caminata",sub:"Semana 2 · Fase Adaptación",
+  {num:2,title:"45s trote / 90s caminata",sub:"Arranque 2 · Fase Adaptación",
    work:"8 × [ 45s trote + 90s caminata ] · Total ~24 min",
    zone:"Zona 2",bpmLo:116,bpmHi:135,pace:"6:30-7:00 min/km",
-   workDetail:"OBJETIVO: 15s más de trote que la semana pasada. Parece poco. Es lo correcto.\n\n🏃 TROTE (45s):\nMismo ritmo que la semana 1. Si la semana 1 fue bien, estos 45s deberían sentirse iguales. Respiración: sigue el patrón de la tarjeta 'Laboratorio de técnica'. Si antes del segundo 30 no puedes decir una frase corta, vas demasiado rápido.\n\n🚶 CAMINATA (90s):\nMantén el mismo tiempo de recuperación que la semana 1. El cuerpo necesita el mismo descanso aunque el trote sea solo 15s más largo.\n\n📱 Mi Band: al acabar la sesión mira el resumen de FC. El promedio debería estar entre 120-130 bpm. Si fue más alto, la semana 3 empieza más lento.",
+   workDetail:"OBJETIVO: 15s más de trote que la semana pasada. Parece poco. Es lo correcto.\n\n🏃 TROTE (45s):\nMismo ritmo que la semana 1. Si la semana 1 fue bien, estos 45s deberían sentirse iguales. Respiración: sigue el patrón de la tarjeta 'Laboratorio de técnica'. Si antes del segundo 30 no puedes decir una frase corta, vas demasiado rápido.\n\n🚶 CAMINATA (90s):\nMantén el mismo tiempo de recuperación que la semana 1. El cuerpo necesita el mismo descanso aunque el trote sea solo 15s más largo.\n\n📱 Al acabar la sesión mira el resumen de FC. El promedio debería estar entre 120-130 bpm. Si fue más alto, la semana 3 empieza más lento.",
    tip:"El progreso no se siente entre semana 1 y 2. Se siente entre semana 1 y semana 5. Confía en el proceso.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
@@ -1120,7 +1116,7 @@ const RUN_WEEKS=[
     ],
    startDate:"2026-09-21"},
 
-  {num:3,title:"60s trote / 60s caminata",sub:"Semana 3 · Fase Adaptación",
+  {num:3,title:"60s trote / 60s caminata",sub:"Arranque 3 · Fase Adaptación",
    work:"10 × [ 60s trote + 60s caminata ] · Total ~25 min",
    zone:"Zona 2",bpmLo:116,bpmHi:138,pace:"6:15-6:45 min/km",
    workDetail:"OBJETIVO: primera vez que el trote y la caminata son iguales. El cuerpo ya sabe qué es esto.\n\n🏃 TROTE (60s):\nEl primer minuto corriendo de tu vida sin necesitar más caminata. Sigue el patrón de respiración de la tarjeta los primeros 40s. Los últimos 20s pueden empezar a ser difícil — es normal en la semana 3.\n\n🚶 CAMINATA (60s):\nAquí empieza el reto real: solo 60s para recuperar. Camina MUY lento para bajar pulsaciones al máximo en ese tiempo.\n\nSi en la repetición 7-8 ya no puedes hablar una frase corta → reduce el ritmo del trote (más lento, no más pausas). El ritmo es secundario, la respiración es el indicador real.",
@@ -1149,11 +1145,11 @@ const RUN_WEEKS=[
     ],
    startDate:"2026-09-28"},
 
-  {num:4,title:"2 min trote / 1 min caminata",sub:"Semana 4 · Fase Base aeróbica",
-   work:"7 × [ 2 min trote + 1 min caminata ] · Total ~21 min",
-   zone:"Zona 2",bpmLo:118,bpmHi:140,pace:"6:00-6:30 min/km",
-   workDetail:"SALTO DE SEMANA 3 A 4: aquí muchos runners sienten que no pueden. Pueden. El cuerpo ha estado construyendo la base aunque no lo notaras.\n\n🏃 TROTE (2 min):\nEl primer minuto es fácil. El segundo es donde empieza el trabajo real. Estrategia: en el segundo 60 no aceleres, mantén exactamente el mismo ritmo. Mantén el patrón de respiración hasta el final. Si te falta aire, baja el ritmo, no cambies el patrón.\n\n🚶 CAMINATA (1 min):\n60s solo. Camina MUY activamente para bajar las pulsaciones. El objetivo es llegar al siguiente bloque por debajo de 130 bpm.\n\nEsta es la semana de 'enganche' aeróbico — el corazón empieza a adaptarse de verdad.",
-   tip:"El progreso semanal del plan empieza a hacerse visible aquí. Si completas esta semana, las San Silvestre son alcanzables.",
+  {num:4,title:"2 min trote / 1 min caminata",sub:"Semana 1 · Fase Base aeróbica",
+   work:"3 sesiones (mar 17, jue 19, sáb 21 nov): 5 min andando + 7 × [ 2 min trote + 1 min caminata ] + 5 min andando · ~31 min",
+   zone:"Zona 2",bpmLo:118,bpmHi:140,pace:"Trote 7:15-7:45 min/km",
+   workDetail:"SALTO DE LA SEMANA DE ARRANQUE A LA SEMANA 1: aquí muchos runners sienten que no pueden. Pueden. El cuerpo ha estado construyendo la base aunque no lo notaras.\n\n🏃 TROTE (2 min):\nEl primer minuto es fácil. El segundo es donde empieza el trabajo real. Estrategia: en el segundo 60 no aceleres, mantén exactamente el mismo ritmo. Mantén el patrón de respiración hasta el final. Si te falta aire, baja el ritmo, no cambies el patrón.\n\n🚶 CAMINATA (1 min):\n60s solo. Camina MUY activamente para bajar las pulsaciones. El objetivo es llegar al siguiente bloque por debajo de 130 bpm.\n\nEsta es la semana de 'enganche' aeróbico — el corazón empieza a adaptarse de verdad.",
+   tip:"No busques ritmo: busca terminar los 7 bloques con el pulso bajo control. Pulso: media < 140 y máxima < 160. Si se dispara, baja el ritmo o alarga la caminata.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -1176,13 +1172,13 @@ const RUN_WEEKS=[
       pos:"Rodilla trasera en el suelo.",
       exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
     ],
-   startDate:"2026-10-05"},
+   startDate:"2026-11-16"},
 
-  {num:5,title:"3 min trote / 1 min caminata",sub:"Semana 5 · Fase Base aeróbica",
-   work:"6 × [ 3 min trote + 1 min caminata ] · Total ~24 min",
-   zone:"Zona 2",bpmLo:120,bpmHi:142,pace:"5:50-6:15 min/km",
+  {num:5,title:"3 min trote / 1 min caminata",sub:"Semana 2 · Fase Base aeróbica",
+   work:"3 sesiones (mar 24, jue 26, sáb 28 nov): 5 min andando + 6 × [ 3 min trote + 1 min caminata ] + 5 min andando · ~34 min",
+   zone:"Zona 2",bpmLo:120,bpmHi:142,pace:"Trote 7:15-7:45 min/km",
    workDetail:"3 MINUTOS CONTINUOS: el primer hito real. La mayoría de la gente que llega aquí acaba el plan.\n\n🏃 TROTE (3 min):\nMinuto 1: ritmo cómodo, patrón de respiración de la tarjeta.\nMinuto 2: mantén, resiste las ganas de acelerar.\nMinuto 3: el más difícil. Fija la mirada 10 metros adelante. Respira con el patrón 3 zancadas inhala / 2 exhala.\n\n🚶 CAMINATA (1 min):\nUsa estos 60s activamente. Sacude las piernas. Baja la FC a <130 antes del siguiente bloque.\n\nPatrón de respiración para el minuto difícil:\n- 3 zancadas: inhala por nariz\n- 2 zancadas: exhala por boca\n- Repite. Este patrón desincroniza el impacto y el flato desaparece.",
-   tip:"Si el flato aparece: no pares. Baja a Zona 1 andando, presiona donde duele, espira fuerte 3 veces. Desaparece en 30s.",
+   tip:"Sube 1 min por bloque, no el ritmo. Pulso: media < 140 y máxima < 160. Si se dispara, baja el ritmo o alarga la caminata.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -1205,42 +1201,13 @@ const RUN_WEEKS=[
       pos:"Rodilla trasera en el suelo.",
       exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
     ],
-   startDate:"2026-10-12"},
+   startDate:"2026-11-23"},
 
-    {num:6,title:"5-10 min trote / 1 min caminata",sub:"Semana 6 · Fase Series largas",
-   work:"Martes: 4 × [ 5 min trote + 1 min caminata ] (~24 min) · Jueves: 3 × [ 7 min trote + 1 min caminata ] (~24 min) · Sábado: 2 × [ 10 min trote + 1 min caminata ] (~22 min)",
-   zone:"Zona 2",bpmLo:120,bpmHi:145,pace:"6:00-6:30 min/km",
+    {num:6,title:"5-10 min trote / 1 min caminata",sub:"Semana 3 · Fase Series largas",
+   work:"Martes 1 dic: 4 × [ 5 min trote + 1 min caminata ] · Jueves 3: 3 × [ 7 min trote + 1 min caminata ] · Sábado 5: 2 × [ 10 min trote + 1 min caminata ] · todo a 7:15-7:45 min/km",
+   zone:"Zona 2",bpmLo:120,bpmHi:145,pace:"Trote 7:15-7:45 min/km",
    workDetail:"SERIES LARGAS EN ZONA 2. Sigues corriendo en series, pero cada trote dura más y la caminata es de solo 1 minuto.\n\n🏃 TROTE: ritmo cómodo, test del habla (una frase corta entera). Si el pulso pasa de 145, baja el ritmo.\n🚶 CAMINATA (1 min): activa, baja el pulso a <130 antes del siguiente bloque.\n\nSi una sesión no sale bien, repites la semana. No avanzas por calendario.",
-   tip:"Los 10 minutos del sábado son el hito de la semana: es casi un 5K en dos bloques.",
-   warmup:[
-     {name:"Foam roller gemelos e isquios",dur:"3 minutos",
-      pos:"Sentado en el suelo.",
-      exec:"🟤 Rolo bajo el gemelo derecho. Cruza el pie izquierdo encima para más presión. Rueda de tobillo a detrás de rodilla MUY LENTO. Para 15-20s donde notes tensión. Respira. Repite con la izquierda.\n\n🟤 Luego bajo los isquios: rolo bajo el muslo trasero. 45s por pierna. El tejido frío se lesiona — esto lo previene."},
-     {name:"Caminata de activación",dur:"3 minutos",
-      pos:"De pie, postura natural.",
-      exec:"🚶 Paso normal tirando a lento. Mueve los brazos. El objetivo es que cuando empieces a trotar el cuerpo ya esté tibio. En los últimos 30s puedes acelerar ligeramente el paso."}
-    ],
-   cooldown:[
-     {name:"Caminata de vuelta a la calma",dur:"3 minutos",
-      pos:"Caminando.",
-      exec:"🚶 Paso MUY LENTO. Más lento de lo que normalmente caminarías. Deja que la frecuencia cardíaca baje por sí sola. No pares de golpe — el corazón necesita esta transición para no retener sangre en las piernas."},
-     {name:"Estiramiento gemelos y sóleo",dur:"45s/pierna",
-      pos:"De pie frente a una pared.",
-      exec:"🦵 Mano en la pared. Pierna trasera estirada, talón pegado al suelo. Inclínate hasta sentir el gemelo. 30s. Luego dobla ligeramente la rodilla trasera para llegar al sóleo. 15s más. Los gemelos absorben impacto en cada zancada — estirarlos previene contracturas."},
-     {name:"Estiramiento isquios en suelo",dur:"45s/pierna",
-      pos:"Tumbado boca arriba.",
-      exec:"🦵 Lleva una pierna hacia arriba con las manos o una toalla en el pie. Rodilla ligeramente doblada. Mantén 45s sin rebotes. El running acorta los isquios — si no los estiras, acaban generando dolor lumbar."},
-     {name:"Psoas en zancada",dur:"30s/lado",
-      pos:"Rodilla trasera en el suelo.",
-      exec:"🦿 Empuja la cadera hacia abajo y adelante hasta sentir el estiramiento profundo en la ingle. El psoas se activa con cada zancada y se contrae. Soltarlo post-running mejora la postura y el sueño."}
-    ],
-      startDate:"2026-11-23"},
-
-  {num:7,title:"8-10 min trote / 1 min caminata",sub:"Semana 7 · Fase Series largas",
-   work:"Martes: 3 × [ 8 min trote + 1 min caminata ] (~27 min) · Jueves: 3 × [ 10 min trote + 1 min caminata ] (~33 min) · Sábado: ~3 km en series de 10 min + 1 min de caminata (6:45-7:00 min/km)",
-   zone:"Zona 2",bpmLo:120,bpmHi:145,pace:"6:30-7:00 min/km",
-   workDetail:"OBJETIVO: 3 km en series largas. Todo suave. La prueba de ritmo llega la semana siguiente.\n\n🏃 TROTE (8-10 min): mismo ritmo que la semana 6. Respira con el patrón de la tarjeta.\n🚶 CAMINATA (1 min): activa.\n\nSábado: cuenta los km con el reloj. Si llegas a 3 km, es el hito de la semana.",
-   tip:"No aceleres para acabar antes: ritmo de Zona 2 hasta el final.",
+   tip:"Los 10 min del sábado son el hito de la semana: casi un 5K en dos bloques. Pulso: media < 140 y máxima < 160. Si se dispara, baja el ritmo o alarga la caminata.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -1265,11 +1232,11 @@ const RUN_WEEKS=[
     ],
       startDate:"2026-11-30"},
 
-  {num:8,title:"Series de ritmo + prueba de 3 km",sub:"Semana 8 · Fase Ritmo",
-   work:"Martes: 3 km suaves en series de 10 min + 30 s de caminata · Jueves: 4 × [ 3 min a 6:15 min/km + 2 min suaves ] · Sábado 12/12: PRUEBA de 3 km a tope (objetivo por debajo de 17:30, es decir 5:50/km)",
-   zone:"Zona 2-3",bpmLo:120,bpmHi:160,pace:"6:15-6:45 min/km (prueba: ~5:50)",
-   workDetail:"Primera semana con ritmo. El martes, suave. El jueves, 4 series de 3 min a 6:15/km con 2 min suaves entre medias (calentamiento de 8-10 min antes). El sábado 12/12, prueba de 3 km a tope: si sale por debajo de 17:30, vas bien para correr a 6:00/km el 27/12.",
-   tip:"La prueba se hace descansado: el viernes, nada de esfuerzo.",
+  {num:7,title:"20 min seguidos + test de 3 km",sub:"Semana 4 · Fase Ritmo",
+   work:"Martes 8 dic: 20 min seguidos, muy suave (~2,7 km a 7:15-7:30/km) · Jueves 10: 3 km suaves (7:15-7:30/km) · SÁBADO 12: TEST de 3 km, objetivo 20:30-21:30 (6:50-7:10/km)",
+   zone:"Zona 2-3",bpmLo:120,bpmHi:160,pace:"Suave 7:15-7:30 min/km · test 6:50-7:10 min/km",
+   workDetail:"SEMANA DE PRIMER TRAMO CONTINUO. El martes es la primera vez que corres 20 minutos sin andar: ritmo de hablar, pulso bajo, no mires el reloj. El jueves, 3 km suaves. El sábado 12, test de 3 km: sal a ~7:10/km los primeros 1.000 m, mantén y, si vas bien, aprieta el último km. El objetivo es medirte, no destrozarte: apunta 20:30-21:30.\n\nPulso: media < 140 y máxima < 160. Si se dispara, baja el ritmo o alarga la caminata.",
+   tip:"El test mide dónde estás hoy; no lo conviertas en una carrera. La semana que viene hay una tirada de 5 km seguidos.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -1294,11 +1261,11 @@ const RUN_WEEKS=[
     ],
       startDate:"2026-12-07"},
 
-  {num:9,title:"Series a 6:00/km",sub:"Semana 9 · Fase Ritmo",
-   work:"Martes: 4 km suaves en series de 10 min + 30 s de caminata · Jueves: 5 × [ 3 min a 6:00 min/km + 2 min suaves ] · Sábado: 5 km suaves (~34 min) en series de 10-12 min + 30 s de caminata",
-   zone:"Zona 2-3",bpmLo:120,bpmHi:160,pace:"6:00-6:40 min/km",
-   workDetail:"Semana clave: te acostumbras al ritmo de 6:00/km. El jueves cuesta, pero tiene que poder terminarse con el mismo ritmo en la última serie. El sábado, los 5 km suaves: es tu primera vez en esa distancia.",
-   tip:"Si el jueves en la última serie vas muy por detrás de 6:00/km, el ritmo era demasiado fuerte: baja un poco.",
+  {num:8,title:"Tirada larga de 5 km seguidos",sub:"Semana 5 · Fase Ritmo",
+   work:"Martes 15 dic: 4 km seguidos suaves (~29 min, 7:15-7:30/km) · Jueves 17: 20 min suaves (~2,7 km) · SÁBADO 19: 5 km seguidos muy suaves (~36 min, 7:15-7:30/km), la sesión clave",
+   zone:"Zona 2-3",bpmLo:120,bpmHi:160,pace:"Suave 7:15-7:30 min/km",
+   workDetail:"LA SESIÓN CLAVE DE TODO EL BLOQUE: 5 km seguidos el sábado 19. Si los terminas sin parar, el 27/12 sale. Ritmo muy suave y pulso bajo: es una prueba de resistencia, no de velocidad. Si te hundes, para 1 minuto como mucho, respira y sigue.\n\nPulso: media < 140 y máxima < 160. Si se dispara, baja el ritmo o alarga la caminata.",
+   tip:"Come 2-2,5 h antes, o algo ligero 1 h antes. Que el estómago no te estropee la sesión clave.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -1323,11 +1290,11 @@ const RUN_WEEKS=[
     ],
       startDate:"2026-12-14"},
 
-  {num:10,title:"Semana de carrera 1",sub:"Semana 10 · Carrera del 27/12",
-   work:"Martes 22: 3 km suaves + 4 rectas de 20 s · Jueves 24: 20 min muy suaves · Viernes y sábado: descanso · DOMINGO 27: CARRERA 1 (6 km), objetivo 6:00 min/km. Si pasas el km 5 en menos de 30 min, tienes tu objetivo de 5 km",
-   zone:"Zona 2-4",bpmLo:120,bpmHi:170,pace:"6:00 min/km (carrera)",
-   workDetail:"Semana de afinar. Poco volumen y mucho descanso. En carrera: sal a 6:15/km los primeros 2 km, 6:00/km del 3 al 5 y lo que tengas en el último. Puedes hacer pausas cortas de caminata si lo necesitas, sin ir a morir.",
-   tip:"Nada nuevo en la semana de carrera: ni calzado, ni comida, ni entrenos.",
+  {num:9,title:"Semana de carrera 1",sub:"Semana 6 · Carrera del 27/12",
+   work:"Martes 22: 3 km suaves (~22 min) · Jueves 24: 20 min muy suaves · Viernes y sábado: descanso · DOMINGO 27: CARRERA 6,6 km (2 vueltas de 3,3 km, salida 11:30), ritmo 7:10-7:20 min/km, objetivo: correrla sin parar (si hace falta, 1 min)",
+   zone:"Zona 2-4",bpmLo:120,bpmHi:170,pace:"Carrera 7:10-7:20 min/km",
+   workDetail:"Semana de afinar: poco volumen y descanso. En carrera (6,6 km, 2 vueltas de 3,3 km): sal muy suave la primera vuelta y el primer tramo de la segunda, mantén cómodo y termina como puedas. Si te hundes, para como mucho 1 minuto y vuelve a trotar. Es el ensayo del 31: prueba comida, ropa y sensaciones.\n\nPulso: media < 140 y máxima < 160. Si se dispara, baja el ritmo o alarga la caminata.",
+   tip:"Nada nuevo en semana de carrera: ni calzado, ni comida, ni entrenos.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -1352,11 +1319,11 @@ const RUN_WEEKS=[
     ],
       startDate:"2026-12-21"},
 
-  {num:11,title:"Semana de carrera 2",sub:"Semana 11 · San Silvestre 31/12",
-   work:"Martes 29: 3 km muy suaves (20-22 min) · Miércoles: descanso · JUEVES 31: SAN SILVESTRE (6 km), ritmo 6:00-6:20 min/km · Sábado 2/1: 20-30 min suaves",
-   zone:"Zona 2-3",bpmLo:120,bpmHi:165,pace:"6:00-6:20 min/km (carrera)",
-   workDetail:"Cuatro días después de la primera carrera. Corre con la cabeza: sin pelear el tiempo. Si las piernas no están, 6:15-6:30/km y a disfrutar.",
-   tip:"Disfruta de la carrera.",
+  {num:10,title:"Semana de carrera 2",sub:"Semana 7 · San Silvestre 31/12",
+   work:"Martes 29: 3 km muy suaves (20-22 min) · Miércoles: descanso · JUEVES 31: SAN SILVESTRE (~6 km), ritmo 6:40-7:00 min/km (40-42 min) · después, pausa de vacaciones hasta el 7 de enero",
+   zone:"Zona 2-3",bpmLo:120,bpmHi:165,pace:"Carrera 6:40-7:00 min/km",
+   workDetail:"Segunda carrera: unos 6 km. Sal a ~7:00/km los primeros 2 km, mantén 6:50 y, si vas bien, aprieta el último km. Tu objetivo realista es 40-42 min. Después del 31, pausa completa hasta el 7 de enero.\n\nPulso: media < 140 y máxima < 160. Si se dispara, baja el ritmo o alarga la caminata.",
+   tip:"Duerme bien el 30 y cena como siempre. Si el 27 fue bien, el 31 sale con margen.",
    warmup:[
      {name:"Foam roller gemelos e isquios",dur:"3 minutos",
       pos:"Sentado en el suelo.",
@@ -1382,6 +1349,10 @@ const RUN_WEEKS=[
       startDate:"2026-12-28"},
 
 ];
+// ── Semanas 11-42 (generadas): pausa de vacaciones y fases 1-6 hasta el reto del 1/8/2027 ──
+RUN_WEEKS.push.apply(RUN_WEEKS,[{"num": 11, "title": "Pausa de vacaciones", "sub": "Semana 8 · Pausa de vacaciones", "work": "Sin entreno: pausa completa de gym y running del 31/12 al 7/1. El gym vuelve el viernes 8 de enero y el running el martes 12.", "zone": "Zona 2", "bpmLo": 120, "bpmHi": 150, "pace": "—", "workDetail": "Semana de descanso total. Los excesos del 1 y del 6 de enero no son un problema: son parte del plan. Lunes 11 de enero: pesaje en ayunas y se vuelve a empezar.\n\nPuedes salir a andar si te apetece, pero sin correr.", "tip": "Descansar también es entrenar. Vuelves el martes 12.", "totalMin": 0}, {"num": 12, "title": "Reentrada y base", "sub": "Semana 9 · Fase 1 · Reentrada y base", "work": "Martes 12 ene: 4 km suaves · Jueves 14 ene: 4 km suaves · Sábado 16 ene: 5 km suaves (primera semana: al 80 %, sin forzar)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:10-7:25 min/km", "workDetail": "FASE 1: reentrada y base. Vuelves tras la pausa de vacaciones: las dos primeras semanas al 80 % y a ritmo de hablar. Desde la tercera entran las progresivas y el fartlek (tramos rápidos de 1 min) para llegar al test de 3 km del 20 de febrero con piernas.\n\nLunes 11 de enero: pesaje en ayunas.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Vuelves tras la pausa. Si algún día vas muy cansado, baja a 3 km pero no te saltes la sesión.", "totalMin": 38}, {"num": 13, "title": "Reentrada y base", "sub": "Semana 10 · Fase 1 · Reentrada y base", "work": "Martes 19 ene: 5 km suaves · Jueves 21 ene: 5 km suaves + 6 × 20 s de progresivos · Sábado 23 ene: 6 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:10-7:25 min/km", "workDetail": "FASE 1: reentrada y base. Vuelves tras la pausa de vacaciones: las dos primeras semanas al 80 % y a ritmo de hablar. Desde la tercera entran las progresivas y el fartlek (tramos rápidos de 1 min) para llegar al test de 3 km del 20 de febrero con piernas.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Todavía sin series. Mete los progresivos con calma: son 20 s ligeros, no sprints.", "totalMin": 44}, {"num": 14, "title": "Reentrada y base", "sub": "Semana 11 · Fase 1 · Reentrada y base", "work": "Martes 26 ene: 5 km suaves · Jueves 28 ene: fartlek: 10 min suaves + 6 × (1 min a 6:20/km + 1 min suave) + 10 min suaves · Sábado 30 ene: 7 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:05-7:20 min/km", "workDetail": "FASE 1: reentrada y base. Vuelves tras la pausa de vacaciones: las dos primeras semanas al 80 % y a ritmo de hablar. Desde la tercera entran las progresivas y el fartlek (tramos rápidos de 1 min) para llegar al test de 3 km del 20 de febrero con piernas.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Primer día con ritmo. Los tramos rápidos son cómodos, no esfuerzo máximo.", "totalMin": 50}, {"num": 15, "title": "Reentrada y base", "sub": "Semana 12 · Fase 1 · Reentrada y base", "work": "Martes 2 feb: 5,5 km suaves · Jueves 4 feb: fartlek: 10 min suaves + 8 × (1 min a 6:15/km + 1 min suave) + 10 min suaves · Sábado 6 feb: 8 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:05-7:20 min/km", "workDetail": "FASE 1: reentrada y base. Vuelves tras la pausa de vacaciones: las dos primeras semanas al 80 % y a ritmo de hablar. Desde la tercera entran las progresivas y el fartlek (tramos rápidos de 1 min) para llegar al test de 3 km del 20 de febrero con piernas.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Dos tramos más que la semana pasada. Eso es progresar.", "totalMin": 58}, {"num": 16, "title": "Reentrada y base · descarga", "sub": "Semana 13 · Fase 1 · Reentrada y base · descarga", "work": "Martes 9 feb: 4 km suaves · Jueves 11 feb: 4 km suaves + 6 × 20 s · Sábado 13 feb: 6 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:05-7:20 min/km", "workDetail": "FASE 1: reentrada y base. Vuelves tras la pausa de vacaciones: las dos primeras semanas al 80 % y a ritmo de hablar. Desde la tercera entran las progresivas y el fartlek (tramos rápidos de 1 min) para llegar al test de 3 km del 20 de febrero con piernas.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de descarga antes del test de 3 km del 20 de febrero.", "totalMin": 42}, {"num": 17, "title": "Base y tempo", "sub": "Semana 14 · Fase 2 · Base y tempo", "work": "Martes 16 feb: 5 km suaves · Jueves 18 feb: 5 km suaves + 6 × 20 s de progresivos · SÁBADO 20 feb: TEST de 3 km, objetivo ≤ 19:30 (6:30/km)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:05-7:20 min/km", "workDetail": "FASE 2: base y tempo. Los rodajes son a ritmo de hablar. El jueves entra el tempo: ritmo cómodamente duro, de los que puedes decir 3-4 palabras seguidas pero no una frase. Es la sesión que sube tu ritmo de 10 km.\n\nTest 3 km: calienta 10 min suaves + 4 progresivos. Los objetivos de los siguientes meses se recalculan con tu tiempo real del test del 12/12 y de este.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de test: hoy el ritmo importa. Sal a ~6:40/km el primer km, mantén 6:30 y exprime el último.", "totalMin": 35}, {"num": 18, "title": "Base y tempo", "sub": "Semana 15 · Fase 2 · Base y tempo", "work": "Martes 23 feb: 5 km suaves · Jueves 25 feb: 5 km suaves + 6 × 20 s de progresivos · Sábado 27 feb: tirada larga de 7 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:05-7:20 min/km", "workDetail": "FASE 2: base y tempo. Los rodajes son a ritmo de hablar. El jueves entra el tempo: ritmo cómodamente duro, de los que puedes decir 3-4 palabras seguidas pero no una frase. Es la sesión que sube tu ritmo de 10 km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Aumenta kilómetros, no ritmo. La tirada del sábado es la sesión importante.", "totalMin": 50}, {"num": 19, "title": "Base y tempo", "sub": "Semana 16 · Fase 2 · Base y tempo", "work": "Martes 2 mar: 5,5 km suaves · Jueves 4 mar: tempo: 10 min suaves + 2 × 8 min a 6:10-6:20/km (2 min trotando entre series) + 10 min suaves · Sábado 6 mar: tirada larga de 8 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:00-7:15 min/km", "workDetail": "FASE 2: base y tempo. Los rodajes son a ritmo de hablar. El jueves entra el tempo: ritmo cómodamente duro, de los que puedes decir 3-4 palabras seguidas pero no una frase. Es la sesión que sube tu ritmo de 10 km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Primer tempo: tiene que costarte pero acabar controlado. Si no, 6:25/km.", "totalMin": 58}, {"num": 20, "title": "Base y tempo", "sub": "Semana 17 · Fase 2 · Base y tempo · descarga", "work": "Martes 9 mar: 4 km suaves · Jueves 11 mar: 4 km suaves + 6 × 20 s · Sábado 13 mar: 6 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 7:00-7:15 min/km", "workDetail": "FASE 2: base y tempo. Los rodajes son a ritmo de hablar. El jueves entra el tempo: ritmo cómodamente duro, de los que puedes decir 3-4 palabras seguidas pero no una frase. Es la sesión que sube tu ritmo de 10 km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de descarga: el cuerpo se adapta cuando descansa. No añadas nada.", "totalMin": 42}, {"num": 21, "title": "Base y tempo", "sub": "Semana 18 · Fase 2 · Base y tempo", "work": "Martes 16 mar: 6 km suaves · Jueves 18 mar: tempo: 10 min suaves + 2 × 10 min a 6:05-6:15/km (2 min trotando entre series) + 10 min suaves · Sábado 20 mar: tirada larga de 9 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:50-7:05 min/km", "workDetail": "FASE 2: base y tempo. Los rodajes son a ritmo de hablar. El jueves entra el tempo: ritmo cómodamente duro, de los que puedes decir 3-4 palabras seguidas pero no una frase. Es la sesión que sube tu ritmo de 10 km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Mismo ritmo de tempo que antes durante más tiempo. Eso es progresar.", "totalMin": 65}, {"num": 22, "title": "Base y tempo", "sub": "Semana 19 · Fase 2 · Base y tempo", "work": "Martes 23 mar: 6 km suaves · Jueves 25 mar: tempo: 10 min suaves + 3 × 8 min a 6:00-6:10/km (2 min trotando entre series) + 10 min suaves · Sábado 27 mar: tirada larga de 10 km suaves (primer 10 km)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:50-7:05 min/km", "workDetail": "FASE 2: base y tempo. Los rodajes son a ritmo de hablar. El jueves entra el tempo: ritmo cómodamente duro, de los que puedes decir 3-4 palabras seguidas pero no una frase. Es la sesión que sube tu ritmo de 10 km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Tu primer 10 km seguido. Ritmo lento, no tiene que ser rápido.", "totalMin": 72}, {"num": 23, "title": "Base y tempo", "sub": "Semana 20 · Fase 2 · Base y tempo", "work": "Martes 30 mar: 4 km suaves · Jueves 1 abr: 4 km suaves + 4 × 20 s · SÁBADO 3 abr: TEST de 5 km, objetivo ≤ 30:00 (6:00/km)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:50-7:05 min/km", "workDetail": "FASE 2: base y tempo. Los rodajes son a ritmo de hablar. El jueves entra el tempo: ritmo cómodamente duro, de los que puedes decir 3-4 palabras seguidas pero no una frase. Es la sesión que sube tu ritmo de 10 km.\n\nTest 5 km: salida a ~6:10/km los 2 primeros km, 6:00 los siguientes y todo lo que tengas en el último km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de test: duerme y come bien. Empieza a 6:10 y baja al final.", "totalMin": 32}, {"num": 24, "title": "Intervalos", "sub": "Semana 21 · Fase 3 · Intervalos · descarga", "work": "Martes 6 abr: 5 km suaves · Jueves 8 abr: 5 km suaves + 6 × 20 s · Sábado 10 abr: 8 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:45-7:00 min/km", "workDetail": "FASE 3: intervalos. Series de 800-1000 m a un ritmo más rápido que el de carrera. Recupera trotando suave 90 s-2 min. Calienta 10 min y vuelta a la calma 10 min. Es el trabajo que te baja de 5:30/km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana suave tras el test. Aprovecha para recuperar.", "totalMin": 55}, {"num": 25, "title": "Intervalos", "sub": "Semana 22 · Fase 3 · Intervalos", "work": "Martes 13 abr: 6 km suaves · Jueves 15 abr: intervalos: 2 km suaves + 5 × 800 m a 5:35-5:45/km (400 m trotando entre series) + 2 km suaves · Sábado 17 abr: tirada larga de 11 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:45-7:00 min/km", "workDetail": "FASE 3: intervalos. Series de 800-1000 m a un ritmo más rápido que el de carrera. Recupera trotando suave 90 s-2 min. Calienta 10 min y vuelta a la calma 10 min. Es el trabajo que te baja de 5:30/km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Las series son cortas y rápidas. Acaba con la sensación de que podrías hacer una más.", "totalMin": 75}, {"num": 26, "title": "Intervalos", "sub": "Semana 23 · Fase 3 · Intervalos", "work": "Martes 20 abr: 6 km suaves · Jueves 22 abr: intervalos: 2 km suaves + 6 × 800 m a 5:30-5:40/km (400 m trotando entre series) + 2 km suaves · Sábado 24 abr: tirada larga de 12 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:40-6:55 min/km", "workDetail": "FASE 3: intervalos. Series de 800-1000 m a un ritmo más rápido que el de carrera. Recupera trotando suave 90 s-2 min. Calienta 10 min y vuelta a la calma 10 min. Es el trabajo que te baja de 5:30/km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Una serie más que la semana pasada, al mismo ritmo.", "totalMin": 82}, {"num": 27, "title": "Intervalos", "sub": "Semana 24 · Fase 3 · Intervalos", "work": "Martes 27 abr: 7 km suaves · Jueves 29 abr: intervalos: 2 km suaves + 5 × 1000 m a 5:30-5:40/km (2 min trotando entre series) + 2 km suaves · Sábado 1 may: tirada larga de 12 km: los 2 últimos a 6:15/km", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:40-6:55 min/km", "workDetail": "FASE 3: intervalos. Series de 800-1000 m a un ritmo más rápido que el de carrera. Recupera trotando suave 90 s-2 min. Calienta 10 min y vuelta a la calma 10 min. Es el trabajo que te baja de 5:30/km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Los 2 últimos km rápidos de la tirada enseñan a correr con fatiga.", "totalMin": 82}, {"num": 28, "title": "Intervalos", "sub": "Semana 25 · Fase 3 · Intervalos · descarga", "work": "Martes 4 may: 5 km suaves · Jueves 6 may: intervalos: 2 km suaves + 4 × 800 m a 5:35/km + 2 km suaves · Sábado 8 may: 9 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:40-6:55 min/km", "workDetail": "FASE 3: intervalos. Series de 800-1000 m a un ritmo más rápido que el de carrera. Recupera trotando suave 90 s-2 min. Calienta 10 min y vuelta a la calma 10 min. Es el trabajo que te baja de 5:30/km.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de descarga. Antes del test del 15 de mayo.", "totalMin": 60}, {"num": 29, "title": "Intervalos", "sub": "Semana 26 · Fase 3 · Intervalos", "work": "Martes 11 may: 5 km suaves · Jueves 13 may: 4 km suaves + 4 × 20 s · SÁBADO 15 may: TEST de 5 km, objetivo ≤ 26:30 (5:18/km)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:30-6:45 min/km", "workDetail": "FASE 3: intervalos. Series de 800-1000 m a un ritmo más rápido que el de carrera. Recupera trotando suave 90 s-2 min. Calienta 10 min y vuelta a la calma 10 min. Es el trabajo que te baja de 5:30/km.\n\nTest 5 km: 5:25/km los 2 primeros km, 5:18 los 2 siguientes y todo en el último.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de test: llegas con el volumen más alto hecho. Sal a 5:25/km, mantén 5:18 y exprime el último km.", "totalMin": 30}, {"num": 30, "title": "Ritmo de 10 km", "sub": "Semana 27 · Fase 4 · Ritmo de 10 km", "work": "Martes 18 may: 6 km suaves · Jueves 20 may: intervalos: 2 km suaves + 5 × 1000 m a 5:15-5:25/km (2 min trotando entre series) + 2 km suaves · Sábado 22 may: tirada larga de 13 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:30-6:45 min/km", "workDetail": "FASE 4: ritmo de 10 km. Series largas (1000-2000 m) cerca del ritmo de carrera y tiradas largas cada vez más largas. Aquí se construye el 10 km de verdad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Pasas de 800 a 1000 m con ritmo más rápido. Si el último se hunde, baja 5 s/km.", "totalMin": 88}, {"num": 31, "title": "Ritmo de 10 km", "sub": "Semana 28 · Fase 4 · Ritmo de 10 km", "work": "Martes 25 may: 7 km suaves · Jueves 27 may: intervalos: 2 km suaves + 3 × 2000 m a 5:20-5:30/km (2 min trotando entre series) + 2 km suaves · Sábado 29 may: tirada larga de 14 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:30-6:45 min/km", "workDetail": "FASE 4: ritmo de 10 km. Series largas (1000-2000 m) cerca del ritmo de carrera y tiradas largas cada vez más largas. Aquí se construye el 10 km de verdad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "2000 m son series de ritmo de carrera: aprendes a sostener el 10 km.", "totalMin": 95}, {"num": 32, "title": "Ritmo de 10 km", "sub": "Semana 29 · Fase 4 · Ritmo de 10 km · descarga", "work": "Martes 1 jun: 5 km suaves · Jueves 3 jun: intervalos: 2 km suaves + 4 × 1000 m a 5:20/km + 2 km suaves · Sábado 5 jun: 10 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:25-6:40 min/km", "workDetail": "FASE 4: ritmo de 10 km. Series largas (1000-2000 m) cerca del ritmo de carrera y tiradas largas cada vez más largas. Aquí se construye el 10 km de verdad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de descarga antes del test de 6 km.", "totalMin": 65}, {"num": 33, "title": "Ritmo de 10 km", "sub": "Semana 30 · Fase 4 · Ritmo de 10 km", "work": "Martes 8 jun: 5 km suaves · Jueves 10 jun: 4 km suaves + 4 × 20 s · SÁBADO 12 jun: TEST de 6 km, objetivo ≤ 32:00 (5:20/km)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:25-6:40 min/km", "workDetail": "FASE 4: ritmo de 10 km. Series largas (1000-2000 m) cerca del ritmo de carrera y tiradas largas cada vez más largas. Aquí se construye el 10 km de verdad.\n\nTest 6 km: sal a 5:30 el primer km, mantén 5:20 y exprime el último.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Test del reto: 6 km a 5:20/km. En agosto tienes que bajar de 5:00.", "totalMin": 35}, {"num": 34, "title": "Ritmo de 10 km", "sub": "Semana 31 · Fase 4 · Ritmo de 10 km", "work": "Martes 15 jun: 7 km suaves · Jueves 17 jun: intervalos: 2 km suaves + 6 × 1000 m a 5:10-5:20/km (90 s trotando entre series) + 2 km suaves · Sábado 19 jun: tirada larga de 14 km: los 3 últimos a 5:50/km", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:25-6:40 min/km", "workDetail": "FASE 4: ritmo de 10 km. Series largas (1000-2000 m) cerca del ritmo de carrera y tiradas largas cada vez más largas. Aquí se construye el 10 km de verdad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Tu tirada más larga hasta ahora. Come y bebe antes: no la hagas en ayunas.", "totalMin": 95}, {"num": 35, "title": "Ritmo de 10 km", "sub": "Semana 32 · Fase 4 · Ritmo de 10 km", "work": "Martes 22 jun: 6 km suaves · Jueves 24 jun: 4 km suaves + 4 × 20 s · Sábado 26 jun: tirada larga de 12 km: los 4 últimos a 5:40/km (ensayo de ritmo de carrera)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:20-6:35 min/km", "workDetail": "FASE 4: ritmo de 10 km. Series largas (1000-2000 m) cerca del ritmo de carrera y tiradas largas cada vez más largas. Aquí se construye el 10 km de verdad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Tirada larga con final rápido: se entrena igual que una carrera, sin dorsal.", "totalMin": 85}, {"num": 36, "title": "Ritmo de 10 km", "sub": "Semana 33 · Fase 4 · Ritmo de 10 km · descarga", "work": "Martes 29 jun: 5 km suaves · Jueves 1 jul: intervalos: 2 km suaves + 4 × 1000 m a 5:10/km + 2 km suaves · Sábado 3 jul: 10 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:20-6:35 min/km", "workDetail": "FASE 4: ritmo de 10 km. Series largas (1000-2000 m) cerca del ritmo de carrera y tiradas largas cada vez más largas. Aquí se construye el 10 km de verdad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana de descarga tras la carrera: recupera.", "totalMin": 68}, {"num": 37, "title": "Específico y reto", "sub": "Semana 34 · Fase 5 · Específico y reto", "work": "Martes 6 jul: 7 km suaves · Jueves 8 jul: intervalos: 2 km suaves + 3 × 2000 m a 5:05-5:15/km (2 min trotando entre series) + 2 km suaves · Sábado 10 jul: tirada larga de 14 km: los 4 últimos a 5:30/km", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:20-6:35 min/km", "workDetail": "FASE 5: específico y reto. Series a ritmo objetivo (5:00/km) para que el cuerpo lo reconozca, y la tirada larga con final rápido. Baja el volumen la semana del reto, no la intensidad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "El ritmo de 10 km ya no te asusta. Ahora lo repetimos.", "totalMin": 90}, {"num": 38, "title": "Específico y reto", "sub": "Semana 35 · Fase 5 · Específico y reto", "work": "Martes 13 jul: 5 km suaves · Jueves 15 jul: 4 km suaves + 4 × 20 s · SÁBADO 17 jul: TEST de 10 km, objetivo ≤ 52:00 (5:12/km)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:15-6:30 min/km", "workDetail": "FASE 5: específico y reto. Series a ritmo objetivo (5:00/km) para que el cuerpo lo reconozca, y la tirada larga con final rápido. Baja el volumen la semana del reto, no la intensidad.\n\nTest 10 km: 5:20 los primeros 3 km, 5:12 hasta el km 8 y todo lo que puedas en los 2 últimos.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Ensayo general: si haces 52:00, el 50:00 es creíble.", "totalMin": 55}, {"num": 39, "title": "Específico y reto", "sub": "Semana 36 · Fase 5 · Específico y reto", "work": "Martes 20 jul: 6 km suaves · Jueves 22 jul: intervalos: 2 km suaves + 5 × 1000 m a 4:55-5:00/km (2 min trotando entre series) + 2 km suaves · Sábado 24 jul: 8 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:15-6:30 min/km", "workDetail": "FASE 5: específico y reto. Series a ritmo objetivo (5:00/km) para que el cuerpo lo reconozca, y la tirada larga con final rápido. Baja el volumen la semana del reto, no la intensidad.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Series al ritmo del reto. Si te salen, estás listo; si no, se ajusta a 5:05.", "totalMin": 55}, {"num": 40, "title": "Reto de running: 1 de agosto", "sub": "Semana 37 · Fase 5 · Específico y reto", "work": "Martes 27 jul: RETO: 6 km por debajo de 30:00 (<5:00/km) · Jueves 29 jul: 4 km muy suaves + 4 × 20 s · SÁBADO 31 jul: RETO de 10 km en 50:00 o menos (5:00/km) · 1 ago: reto de peso (80-82 kg)", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:15-6:30 min/km", "workDetail": "FASE 5: específico y reto. Series a ritmo objetivo (5:00/km) para que el cuerpo lo reconozca, y la tirada larga con final rápido. Baja el volumen la semana del reto, no la intensidad.\n\nReto de 6 km: sal a 5:05, mantén 5:00. Reto de 10 km: 5:03 los primeros 5 km y 4:58 los últimos. Calienta 10 min y 4 progresivos.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Semana del reto: baja el volumen, mantén el ritmo. 10 km el sábado.", "totalMin": 50}, {"num": 41, "title": "Después del reto", "sub": "Semana 38 · Fase 6 · Después del reto", "work": "Martes 3 ago: 4 km suaves · Jueves 5 ago: 30 min suaves · Sábado 7 ago: 5 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:30-6:45 min/km", "workDetail": "FASE 6: recuperación. Vuelve a rodajes suaves y elige el siguiente objetivo.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Descansa antes de decidir el siguiente reto.", "totalMin": 35}, {"num": 42, "title": "Cierre del plan", "sub": "Semana 39 · Fase 6 · Después del reto", "work": "Martes 10 ago: 5 km suaves · Jueves 12 ago: 5 km suaves + 4 × 20 s · Sábado 14 ago: 6 km suaves", "zone": "Zona 2-4", "bpmLo": 120, "bpmHi": 170, "pace": "Suave 6:30-6:45 min/km", "workDetail": "FASE 6: recuperación. Vuelve a rodajes suaves y elige el siguiente objetivo.\n\nSi cumples el reto, hablamos del siguiente. Si no, ajustamos la ruta.\n\nPulso: en los rodajes media < 140 y máxima < 160. En las series sube, es normal; recupera hasta bajar de 130 antes de la siguiente.", "tip": "Has llegado hasta aquí. Elige un nuevo reto: 10 km por debajo de 48:00 o media maratón.", "totalMin": 40}]);
+RUN_WEEKS.forEach(function(w){if(w.num>=11&&w.num!==undefined){w.warmup=RUN_WEEKS[5].warmup;w.cooldown=RUN_WEEKS[5].cooldown;w.startDate=(function(n){var d=new Date(2026,10,9+7*(n-3));return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");})(w.num);}});
+
 
 ;(function _seedData(){
   var FLAG='miplan_seeded_v7';
@@ -1790,7 +1761,7 @@ var DAILY_SCHEDULE={
     {id:'ducha',time:'09:30',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'pregym',time:'10:00',emoji:'💪',label:'Pre-gym (~300 kcal · P30 H40 G3)'},
     {id:'estudio1',time:'10:30',emoji:'🔧',label:'TFG — 1h (Ball & Beam: montaje, código y memoria)'},
-    {id:'entreno',time:'11:30',emoji:'🏋️',label:'Gym 11:30-13:00 + movilidad post-gym'},
+    {id:'entreno',time:'11:30',emoji:'🏋️',label:'Gym 11:30-12:50 (máx. 13:00) + estiramientos'},
     {id:'postgym',time:'13:15',emoji:'🌅',label:'Post-gym (~550 kcal · P40 H60 G18) + creatina + D3'},
     {id:'estudio2',time:'13:45',emoji:'🔧',label:'TFG — 2h (Ball & Beam: montaje, código y memoria)'},
     {id:'comida',time:'16:00',emoji:'🍽️',label:'Comida'},
@@ -1807,7 +1778,7 @@ var DAILY_SCHEDULE={
     {id:'ducha',time:'09:30',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'pregym',time:'10:00',emoji:'💪',label:'Pre-gym (~300 kcal · P30 H40 G3)'},
     {id:'estudio1',time:'10:30',emoji:'🔧',label:'TFG — 1h (Ball & Beam: montaje, código y memoria)'},
-    {id:'entreno',time:'11:30',emoji:'🏋️',label:'Gym 11:30-13:00 + movilidad post-gym'},
+    {id:'entreno',time:'11:30',emoji:'🏋️',label:'Gym 11:30-12:50 (máx. 13:00) + estiramientos'},
     {id:'postgym',time:'13:15',emoji:'🌅',label:'Post-gym (~550 kcal · P40 H60 G18) + creatina + D3'},
     {id:'estudio2',time:'13:45',emoji:'🔧',label:'TFG — 2h (Ball & Beam: montaje, código y memoria)'},
     {id:'comida',time:'16:00',emoji:'🍽️',label:'Comida con hidratos'},
@@ -1836,13 +1807,13 @@ var DAILY_SCHEDULE={
   domingo:[
     {id:'ducha',time:'09:30',emoji:'🚿',label:'Levantarse + ducha'},
     {id:'desayuno',time:'10:00',emoji:'🌅',label:'Desayuno'},
-    {id:'movilidad40',time:'11:00',emoji:'🧘',label:'Movilidad completa — 40 min'},
+    {id:'movilidad40',time:'11:00',emoji:'🧘',label:'Movilidad (opcional, solo si la necesitas)'},
     {id:'comida',time:'14:30',emoji:'🍽️',label:'Comida (~750 kcal · P40 H90 G25)'},
     {id:'libre',time:'15:30',emoji:'🛋️',label:'Tarde libre'},
     {id:'merienda',time:'18:00',emoji:'🥛',label:'Merienda proteica'},
     {id:'cena',time:'21:30',emoji:'🌙',label:'Cena'},
     {id:'dj',time:'23:00',emoji:'🎧',label:'DJ — 1h (practicar mezclas y preparar sets)'},
-    {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad antes de dormir (obligatoria)'},
+    {id:'movilidad',time:'00:00',emoji:'🧘',label:'Movilidad antes de dormir (opcional)'},
     {id:'lectura',time:'00:15',emoji:'📚',label:'Lectura — 30 min'},
     {id:'dormir',time:'01:00',emoji:'🛏️',label:'Dormir'},
   ],
@@ -1860,7 +1831,7 @@ function getDaySchedule(){
   if(dow===6&&dk!=='sabado'&&!_isr) list=DAILY_SCHEDULE.base;
   return list.map(function(it){
     var o={id:it.id,time:it.time,emoji:it.emoji,label:it.label};
-    if(o.id==='entreno'&&typeof GYM_PLAN!=='undefined'&&GYM_PLAN[dk]) o.label='Gym 11:30 · '+GYM_PLAN[dk].n+' + movilidad';
+    if(o.id==='entreno'&&typeof GYM_PLAN!=='undefined'&&GYM_PLAN[dk]) o.label='Gym 11:30 · '+GYM_PLAN[dk].n+' + estiramientos';
     return o;
   });
 }
@@ -2273,6 +2244,7 @@ function todayDow(){return new Date().getDay();}
 
 // NAV
 function nav(id){
+  if(id==='food'||id==='health'||id==='shop') id='home'; // pestañas Comida, Salud y Compra eliminadas: los macros por comida están en Inicio
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active');});
   document.getElementById('pg-'+id).classList.add('active');
@@ -2280,8 +2252,7 @@ function nav(id){
   if(nb) nb.classList.add('active');
   if(id==='home') renderHome();
   if(id==='gym'){
-    var mode=ld('training_mode','casa');
-    setTrainingMode(mode);
+    setTrainingMode('gym'); // siempre se abre en Gym (Casa solo si lo pulsas)
   }
   if(id==='run'){runTab('today');renderRunToday();}
   if(id==='food'){foodTab('today');renderFoodToday();}
@@ -2320,7 +2291,7 @@ var NUTRI_DAYS={
     {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'Atún o sardinas con tortitas, o skyr con fruta. Ligero antes de correr.'},
     {id:'cena',time:'22:00',icon:'🌙',name:'Cena',kcal:700,p:50,c:55,f:32,tip:'Cocinas el mismo día, ≤15 min. Proteína grande + verdura.'}
   ]},
-  rest:{label:'Domingo · movilidad',days:'Domingo sin running',icon:'🧘',meals:[
+  rest:{label:'Domingo · descanso',days:'Domingo sin running',icon:'🧘',meals:[
     {id:'desayuno',time:'11:30',icon:'🌅',name:'Desayuno (sin cocinar)',kcal:450,p:45,c:50,f:8,tip:'Whey con agua + skyr natural + fruta + tortitas de arroz.'},
     {id:'comida',time:'15:00',icon:'🍽️',name:'Comida',kcal:800,p:50,c:70,f:36,tip:'La comida fuerte del domingo. Mide el aceite (10-12 g).'},
     {id:'merienda',time:'19:00',icon:'🥫',name:'Merienda (sin cocinar)',kcal:200,p:20,c:20,f:4,tip:'Atún o sardinas con tortitas, o skyr con fruta.'},
@@ -2405,10 +2376,12 @@ function drawHomeChart(ws){
 // Todos los días de una semana cumplida cuentan para la racha; la semana en curso cuenta mientras siga siendo alcanzable.
 var STREAK_MIN_GYM=4, STREAK_MIN_RUN=3, STREAK_RUN3_FROM='2026-11-09'; // desde la semana del 9/11 el running exige 3 días (antes 2)
 // Pausa médica (cirugía del 22/10): esas semanas cuentan como cumplidas y la racha se mantiene.
-var STREAK_PAUSE_WEEKS=['2026-10-19','2026-10-26','2026-11-02'];
+var STREAK_PAUSE_WEEKS=['2026-10-19','2026-10-26','2026-11-02','2027-01-04']; // 4/1: vacaciones (gym y running parados del 31/12 al 7/1)
+var STREAK_REDUCED_WEEKS=['2026-12-28']; // semana de la San Silvestre: gym 3 y running 2 (la carrera cuenta)
 function _weekMins(monday){
   var k=monday.getFullYear()+'-'+String(monday.getMonth()+1).padStart(2,'0')+'-'+String(monday.getDate()).padStart(2,'0');
   if(STREAK_PAUSE_WEEKS.indexOf(k)>=0) return {g:0,r:0,pause:true};
+  if(STREAK_REDUCED_WEEKS.indexOf(k)>=0) return {g:3,r:2,pause:false};
   return {g:STREAK_MIN_GYM,r:(k>=STREAK_RUN3_FROM?STREAK_MIN_RUN:2),pause:false};
 }
 function _dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -2450,6 +2423,27 @@ function getStreakInfo(){
   return info;
 }
 function getConsistencyStreak(){return getStreakInfo().days;}
+// Enlace directo a la canción: busca en la API pública de iTunes el id real y lo guarda (si falla, queda la búsqueda en Apple Music)
+function _resolveSongUrl(q,ck){
+  try{
+    var norm=function(s){return String(s).toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z0-9]+/g,' ').trim();};
+    var wantSong=norm(q.s), wantArt=norm(q.a).split(' ')[0], wantRemix=/remix/i.test(q.s);
+    var url='https://itunes.apple.com/search?media=music&entity=song&limit=15&country=ES&term='+encodeURIComponent(q.a+' '+q.s.replace(/\s*\(Remix\)/i,''));
+    fetch(url).then(function(r){return r.json();}).then(function(d){
+      var best=null,bs=-1;
+      (d.results||[]).forEach(function(t){
+        if(!t.trackViewUrl||norm(t.artistName).indexOf(wantArt)<0) return;
+        var tn=norm(t.trackName); if(tn.indexOf(wantSong)<0) return;
+        var s=(t.trackName.toLowerCase()===q.s.toLowerCase()?3:0)+(tn===wantSong?2:0)+((/remix/i.test(t.trackName)===wantRemix)?1:0)-(/live|karaoke|instrumental|acoustic|cover|tribute|demo/i.test(t.trackName)?5:0);
+        if(s>bs){bs=s;best=t;}
+      });
+      if(best){
+        sd(ck,best.trackViewUrl);
+        var a=document.getElementById('np-link'); if(a) a.href=best.trackViewUrl;
+      }
+    }).catch(function(){});
+  }catch(e){}
+}
 function _refreshStreakBtns(){
   var st=document.getElementById('h-streak'); if(st) st.textContent=getConsistencyStreak();
   var wk=document.getElementById('h-streak-week');
@@ -2487,23 +2481,24 @@ function renderRunProgress(){
   var dw=_runWeekForDate(today());
   var shown=Math.min(week,dw||week);
   var hitos=[
-    {w:3,emoji:'🚀',label:'Reinicio',sub:'9 nov'},
-    {w:5,emoji:'🏃',label:'3 min trote',sub:'sem. 5'},
-    {w:8,emoji:'⭐',label:'Test 3 km',sub:'12 dic'},
-    {w:10,emoji:'🔥',label:'Ensayo',sub:'27 dic'},
-    {w:11,emoji:'🏆',label:'San Silvestre',sub:'31 dic'}
+    {w:7,emoji:'⭐',label:'Test 3 km',sub:'12 dic'},
+    {w:9,emoji:'🔥',label:'Ensayo',sub:'27 dic'},
+    {w:10,emoji:'🏆',label:'San Silvestre',sub:'31 dic'},
+    {w:23,emoji:'📈',label:'Test 5 km',sub:'3 abr'},
+    {w:29,emoji:'🎯',label:'5 km <26:30',sub:'15 may'},
+    {w:40,emoji:'🏁',label:'Reto 10 km',sub:'31 jul'}
   ];
   var n=hitos.length, pos=function(i){return (i+0.5)/n*100;}, x;
   if(week<=hitos[0].w) x=pos(0)*Math.max(0,(week-1))/(hitos[0].w-1);
   else if(week>=hitos[n-1].w) x=pos(n-1);
   else{for(var i=0;i<n-1;i++){if(week>=hitos[i].w&&week<=hitos[i+1].w){x=pos(i)+(pos(i+1)-pos(i))*(week-hitos[i].w)/(hitos[i+1].w-hitos[i].w);break;}}}
-  var h='<div class="hm-rh"><div class="hm-rt">🏃 Running</div><div class="hm-rw">Semana '+shown+' de '+totalWeeks+' · '+runWeekRange(shown)+'</div></div>';
+  var h='<div class="hm-rh"><div class="hm-rt">🏃 Running</div><div class="hm-rw">'+_wLbl(shown)+(shown>3?' de '+(totalWeeks-3):'')+' · '+runWeekRange(shown)+'</div></div>';
   h+='<div class="hm-track"><div class="hm-fill" style="width:'+x.toFixed(1)+'%"></div>';
   hitos.forEach(function(o,i){
     var reached=week>=o.w;
     h+='<div class="hm-node'+(reached?' hm-r':'')+'" style="left:'+pos(i).toFixed(1)+'%">'+(reached?'✓':'')+'</div>';
   });
-  h+='</div><div class="hm-labels">';
+  h+='</div><div class="hm-labels" style="grid-template-columns:repeat('+n+',1fr)">';
   hitos.forEach(function(o){
     var reached=week>=o.w;
     h+='<div class="hm-lb'+(reached?' hm-r':'')+'"><em>'+o.emoji+'</em><span>'+o.label+'</span><small>'+o.sub+'</small></div>';
@@ -2605,9 +2600,9 @@ function renderHome(){
     if(isSat){
       var rnW=getCurrentRunWeek();
       var rnEl=document.getElementById('h-run-reminder-week');
-      if(rnEl) rnEl.textContent='Semana '+rnW+'/'+RUN_WEEKS.length+' ('+runWeekRange(rnW)+') · Sábado · 20:00';
+      if(rnEl) rnEl.textContent=_wLbl(rnW)+(rnW>3?'/'+(RUN_WEEKS.length-3):'')+' ('+runWeekRange(rnW)+') · Sábado · 20:00';
       var rnD=document.getElementById('h-run-reminder-detail');
-      if(rnD&&rnW>0&&rnW<=7){
+      if(rnD&&rnW>0&&rnW<=RUN_WEEKS.length){
         var rw=typeof RUN_WEEKS!=='undefined'?RUN_WEEKS[rnW-1]:null;
         if(rnD) rnD.textContent=rw?rw.work:'Sal a correr hoy a las 20:00';
       }
@@ -2624,7 +2619,9 @@ function renderHome(){
   var _au=document.getElementById('h-quote-author');
   if(_au){
     var _yt='https://music.apple.com/es/search?term='+encodeURIComponent(q.a+' '+q.s.replace(/\s*\(Remix\)/,''));
-    _au.innerHTML='<a class="np" href="'+_yt+'" target="_blank" rel="noopener"><span class="np-disc"></span><span class="np-t"><span class="np-s">'+q.s+'</span><span class="np-a">'+q.a+'</span></span><span class="np-p">▶ Escuchar</span></a>';
+    var _ck='np_url_'+q.a+'|'+q.s, _cu=ld(_ck,null);
+    _au.innerHTML='<a class="np" id="np-link" href="'+(_cu||_yt)+'" target="_blank" rel="noopener"><span class="np-disc"></span><span class="np-t"><span class="np-s">'+q.s+'</span><span class="np-a">'+q.a+'</span></span><span class="np-p">▶ Escuchar</span></a>';
+    if(!_cu) _resolveSongUrl(q,_ck);
   }
 
   // Weight progress
@@ -2705,7 +2702,7 @@ function renderHome(){
       var _rb=document.getElementById('h-run-badge');if(_rb)_rb.textContent='Post-fiesta';
       var _rd=document.getElementById('h-run-detail');if(_rd)_rd.innerHTML='<div class="al alr" style="margin:0 0 6px"><span class="ali">⛔</span><span>No corras hoy por protocolo post-fiesta.'+(compSat?' Compensa el sábado.':'')+'</span></div>';
     } else {
-      var _rb=document.getElementById('h-run-badge');if(_rb)_rb.textContent='Semana '+wn+' · '+runWeekRange(wn);
+      var _rb=document.getElementById('h-run-badge');if(_rb)_rb.textContent=_wLbl(wn)+' · '+runWeekRange(wn);
       var _rd=document.getElementById('h-run-detail');if(_rd)_rd.innerHTML='<div style="margin-bottom:4px">'+rw.work+'</div><div style="font-size:11px;color:var(--m)">'+rw.tip+'</div>';
     }
   } else {
@@ -2779,6 +2776,7 @@ var _MESC=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','di
 function _wkFmt(a,b){return a.getDate()+(a.getMonth()!==b.getMonth()?' '+_MESC[a.getMonth()]:'')+' – '+b.getDate()+' '+_MESC[b.getMonth()];}
 function calWeekRange(ds){var r=ds?new Date(ds+'T12:00:00'):new Date();var m=new Date(r.getFullYear(),r.getMonth(),r.getDate()-((r.getDay()+6)%7));return _wkFmt(m,new Date(m.getFullYear(),m.getMonth(),m.getDate()+6));}
 // semana N del plan de running: S1 5/10, S2 12/10; tras la pausa por la operación S3 empieza el 9/11
+function _wLbl(n){return n>3?'Semana '+(n-3):'Arranque '+n;}
 function runWeekRange(n){var s=n<=2?new Date(2026,9,5+(n-1)*7):new Date(2026,10,9+(n-3)*7);return _wkFmt(s,new Date(s.getFullYear(),s.getMonth(),s.getDate()+6));}
 function getRunStartDate(){
   var saved=ld('run_start_date',null);
@@ -2808,6 +2806,7 @@ function getCurrentRunWeek(){
   if(_restart) startDate=new Date(2026,9,26); // tras la pausa por la operación: el 9/11 se retoma la semana 3 del plan
   var diff=Math.floor((nowDate-startDate)/86400000);
   var calWeek=Math.min(Math.floor(diff/7)+1,RUN_WEEKS.length);
+  if(_restart) return Math.max(3,calWeek); // desde el 9/11 el plan va por calendario (semana 1 = 16/11)
   var runHist=ld('run_hist',[]);
 
   // Find highest week with >=MIN_RUN sessions
@@ -2876,12 +2875,12 @@ function getWeatherData(lat,lon){
 
 // GYM
 function gymTab(t){
-  ['session','plan','pesos','history'].forEach(function(x){
+  ['session','plan','history'].forEach(function(x){
     var el=document.getElementById('gt-'+x);
     if(el) el.style.display=x===t?'block':'none';
   });
   document.querySelectorAll('#gym-tabs-row .tb').forEach(function(b,i){
-    b.classList.toggle('active',['session','plan','pesos','history'][i]===t);
+    b.classList.toggle('active',['session','plan','history'][i]===t);
   });
   if(t==='plan'){renderPlanTabs();planDay(_gymDkOnDate(today()),today());renderGymProgression();}
   if(t==='history') renderGymHistory();
@@ -2891,8 +2890,9 @@ function gymTab(t){
 function getGymDayData(dk){
   return _baseFromPlan(dk);
 }
-var RUN_OVERRIDE={'2026-10-22':false,'2026-10-23':true,'2026-10-24':false,'2026-10-25':true,'2026-10-27':true,'2026-10-29':true,'2026-10-30':false,'2026-10-31':true,'2026-11-06':false,'2026-12-26':false,'2026-12-27':true};
-function _isRunDate(ds){if(RUN_OVERRIDE.hasOwnProperty(ds)) return RUN_OVERRIDE[ds];var d=new Date(ds+'T12:00:00').getDay();return d===2||d===4||d===6;}
+var RUN_OVERRIDE={'2026-10-22':false,'2026-10-23':true,'2026-10-24':false,'2026-10-25':true,'2026-10-27':true,'2026-10-29':true,'2026-10-30':false,'2026-10-31':true,'2026-11-06':false,'2026-12-26':false,'2026-12-27':true,'2027-08-14':false,'2027-08-15':true};
+function _isRunDate(ds){if(RUN_OVERRIDE.hasOwnProperty(ds)) return RUN_OVERRIDE[ds];if(ds>='2027-01-01'&&ds<='2027-01-11') return false; // pausa de vacaciones (el running vuelve el 12/1)
+  var d=new Date(ds+'T12:00:00').getDay();return d===2||d===4||d===6;}
 var GYM_DOW=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
 // Semana 2 desplazada un día: el lunes 12/10/2026 fue festivo (gym cerrado), la rutina empieza el martes 13/10/2026.
 // Semana 3: sin gym el lunes 19/10; martes Push A, miércoles Pull A, jueves Piernas, viernes Push B; sábado 24/10 solo running.
@@ -3552,7 +3552,7 @@ function renderRunHistory(){
     var checks=s.checks||{};
     var doneCount=[checks.warmup,checks.work,checks.cooldown].filter(Boolean).length;
     return '<div class="card" style="margin:0 0 8px">'+
-      '<div class="ch"><span class="ci">🏃</span><span class="ct">Semana '+s.week+(s.title?' · '+s.title:'')+'</span><span class="cbadge bg">'+fmtDate(s.date)+'</span></div>'+
+      '<div class="ch"><span class="ci">🏃</span><span class="ct">'+_wLbl(s.week)+(s.title?' · '+s.title:'')+'</span><span class="cbadge bg">'+fmtDate(s.date)+'</span></div>'+
       '<div class="cb">'+
       '<div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px">'+(s.work||'Sesión completada')+'</div>'+
       '<div style="display:flex;align-items:center;justify-content:space-between">'+
@@ -3571,7 +3571,7 @@ function openRunDetail(idx){
   var title=document.getElementById('run-detail-title');
   var body=document.getElementById('run-detail-body');
   if(!modal) return;
-  title.textContent='Semana '+s.week+' — '+fmtDate(s.date);
+  title.textContent=_wLbl(s.week)+' — '+fmtDate(s.date);
   var html='';
 
   // Bloque de trabajo
@@ -3632,11 +3632,12 @@ function _runWeekCardHTML(refDs){
   function k(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   var a=k(mon),b=k(sun);
   var sess=ld('run_hist',[]).filter(function(x){return x.date&&x.date>=a&&x.date<=b;}).map(function(x){return x.date;}).sort();
-  var n=sess.length, MIN=2, TOT=3;
+  var _wm=_weekMins(mon); if(_wm.pause) return '';
+  var n=sess.length, MIN=_wm.r, TOT=3;
   var h='<div style="padding:12px 16px 0"><div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 12px">';
   h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
-  h+='<div><div style="font-size:12px;font-weight:600;color:var(--a)">🏃 Semana '+wn+' de running'+(rw.title?' · '+rw.title:'')+'</div>';
-  h+='<div style="font-size:10px;color:var(--m);margin-top:2px">Esta semana ('+a.slice(8,10)+'/'+a.slice(5,7)+' - '+b.slice(8,10)+'/'+b.slice(5,7)+'): objetivo '+TOT+' sesiones, mínimo '+MIN+' para pasar de semana.</div></div>';
+  h+='<div><div style="font-size:12px;font-weight:600;color:var(--a)">🏃 '+_wLbl(wn)+' de running'+(rw.title?' · '+rw.title:'')+'</div>';
+  h+='<div style="font-size:10px;color:var(--m);margin-top:2px">Esta semana ('+a.slice(8,10)+'/'+a.slice(5,7)+' - '+b.slice(8,10)+'/'+b.slice(5,7)+'): objetivo '+TOT+' sesiones, mínimo '+MIN+' para cumplir la semana.</div></div>';
   h+='<div style="font-size:11px;color:var(--m);white-space:nowrap">'+(n>=MIN?'✅ Semana OK':n+'/'+MIN+' mínimo')+'</div></div>';
   h+='<div style="display:flex;gap:6px">';
   for(var i=0;i<TOT;i++){
@@ -3665,7 +3666,7 @@ function _renderRunTodayBase(){
     var sDate=getRunStartDate();
     var months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     var sDateObj=new Date(sDate.getTime());
-    subEl.textContent='Plan '+RUN_WEEKS.length+' semanas · San Silvestre 27 y 31 dic';
+    subEl.textContent='Plan de '+(RUN_WEEKS.length-3)+' semanas · hasta el 15 ago 2027';
   }
   // Update static date input
   var rInp=document.getElementById('run-log-date'); if(rInp) rInp.value=logDateStr;
@@ -3708,7 +3709,7 @@ function _renderRunTodayBase(){
 
   var rw=RUN_WEEKS[wn-1];
   var html=toggleHtml+'<div style="padding:12px 16px">';
-  html+='<div class="al alg"><span class="ali">🏃</span><span><strong>Semana '+wn+' ('+runWeekRange(wn)+') · '+rw.title+'</strong></span></div>';
+  html+='<div class="al alg"><span class="ali">🏃</span><span><strong>'+_wLbl(wn)+' ('+runWeekRange(wn)+') · '+rw.title+'</strong></span></div>';
   var _rdn=RUN_DAY_NOTE[_gymDkOnDate(logDateStr)];
   if(_rdn) html+='<div class="al alb" style="margin:8px 0"><span class="ali">📅</span><span><strong>'+['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][dow]+' · 20:45.</strong> '+_rdn+'</span></div>';
 
@@ -3781,7 +3782,7 @@ function runTab(tab){
 
 var RUN_TECH={
   1:{b:'🏃 <b>TROTE</b> (cuenta cada pisada): <b>pasos 1-2 → el aire ENTRA por la NARIZ</b>. <b>Pasos 3-4 → el aire SALE por la BOCA</b>. Repite sin parar: 1-2 entra, 3-4 sale.<br>🚶 <b>CAMINATA</b>: <b>3 pasos ENTRA por la NARIZ</b> (1-2-3), <b>4 pasos SALE por la BOCA</b> (1-2-3-4). La barriga se hincha al entrar el aire.<br>Respira siempre con la barriga, no con los hombros. Este patrón no se cambia. Si te falta el aire, baja el ritmo del trote, no cambies el patrón.',f:'Solo observar, sin cambiar nada. Hombros bajos y relajados, manos sueltas (como si llevaras una patata frita sin romperla), mirada 10-15 m al frente. Grábate 10 s de lado con el móvil.'},
-  2:{b:'🏃 <b>TROTE</b> (cuenta cada pisada): <b>pasos 1-2 → el aire ENTRA por la NARIZ</b>. <b>Pasos 3-4 → el aire SALE por la BOCA</b>. Repite sin parar: 1-2 entra, 3-4 sale.<br>🚶 <b>CAMINATA</b>: <b>3 pasos ENTRA por la NARIZ</b> (1-2-3), <b>4 pasos SALE por la BOCA</b> (1-2-3-4). La barriga se hincha al entrar el aire.<br>Respira siempre con la barriga, no con los hombros. Este patrón no se cambia. Si te falta el aire, baja el ritmo del trote, no cambies el patrón.',f:'Mismo foco: hombros y manos relajados. Cuenta tu cadencia: pasos en 30 s × 2 (o con la Mi Band). Solo apúntala.'},
+  2:{b:'🏃 <b>TROTE</b> (cuenta cada pisada): <b>pasos 1-2 → el aire ENTRA por la NARIZ</b>. <b>Pasos 3-4 → el aire SALE por la BOCA</b>. Repite sin parar: 1-2 entra, 3-4 sale.<br>🚶 <b>CAMINATA</b>: <b>3 pasos ENTRA por la NARIZ</b> (1-2-3), <b>4 pasos SALE por la BOCA</b> (1-2-3-4). La barriga se hincha al entrar el aire.<br>Respira siempre con la barriga, no con los hombros. Este patrón no se cambia. Si te falta el aire, baja el ritmo del trote, no cambies el patrón.',f:'Mismo foco: hombros y manos relajados. Cuenta tu cadencia: pasos en 30 s × 2 (o con el reloj). Solo apúntala.'},
   3:{b:'🏃 <b>TROTE</b> (cuenta cada pisada): <b>pasos 1-2-3 → el aire ENTRA por la NARIZ</b>. <b>Pasos 4-5 → el aire SALE por la BOCA</b>. Repite sin parar: 1-2-3 entra, 4-5 sale.<br>🚶 <b>CAMINATA</b>: <b>3 pasos ENTRA por la NARIZ</b> (1-2-3), <b>4 pasos SALE por la BOCA</b> (1-2-3-4). La barriga se hincha al entrar el aire.<br>Respira siempre con la barriga, no con los hombros. Este patrón no se cambia. Si te falta el aire, baja el ritmo del trote, no cambies el patrón.',f:'UN solo cambio: aterriza bajo tu cuerpo, no con el pie lejos por delante (overstriding). Truco: pasos más cortos y ligeros, ~5% más de cadencia que tu número natural. No cambies cómo apoyas el pie (talón o mediopié): la evidencia no dice que uno sea mejor.'},
   4:{b:'🏃 <b>TROTE</b> (cuenta cada pisada): <b>pasos 1-2-3 → el aire ENTRA por la NARIZ</b>. <b>Pasos 4-5 → el aire SALE por la BOCA</b>. Repite sin parar: 1-2-3 entra, 4-5 sale.<br>🚶 <b>CAMINATA</b>: <b>3 pasos ENTRA por la NARIZ</b> (1-2-3), <b>4 pasos SALE por la BOCA</b> (1-2-3-4). La barriga se hincha al entrar el aire.<br>Respira siempre con la barriga, no con los hombros. Este patrón no se cambia. Si te falta el aire, baja el ritmo del trote, no cambies el patrón.',f:'Mantén el cambio de la semana 3 (pasos cortos y ligeros). Sin añadir nada nuevo.'},
   5:{b:'🏃 <b>TROTE</b> (cuenta cada pisada): <b>pasos 1-2-3 → el aire ENTRA por la NARIZ</b>. <b>Pasos 4-5 → el aire SALE por la BOCA</b>. Repite sin parar: 1-2-3 entra, 4-5 sale.<br>🚶 <b>CAMINATA</b>: <b>3 pasos ENTRA por la NARIZ</b> (1-2-3), <b>4 pasos SALE por la BOCA</b> (1-2-3-4). La barriga se hincha al entrar el aire.<br>Respira siempre con la barriga, no con los hombros. Este patrón no se cambia. Si te falta el aire, baja el ritmo del trote, no cambies el patrón.',f:'Añade una inclinación mínima del cuerpo desde los tobillos (no desde la cintura) y braceo adelante-atrás a ~90°, sin cruzar el pecho.'},
@@ -3789,9 +3790,10 @@ var RUN_TECH={
   7:{b:'🏃 <b>RODAJE Y RECUPERACIÓN</b> (Zona 1-2): <b>pasos 1-2-3 → ENTRA por la NARIZ</b>. <b>Pasos 4-5 → SALE por la BOCA</b>.<br>🔥 <b>BLOQUES FUERTES</b> (Zona 4): <b>pasos 1-2 → ENTRA por la BOCA</b>. <b>Paso 3 → SALE por la BOCA</b>. Repite: 1-2 entra, 3 sale.<br>Respira siempre con la barriga, no con los hombros. Si te falta el aire, baja el ritmo del trote, no cambies el patrón.',f:'Al subir el ritmo, mantén la misma forma: no alargues el paso, aumenta la cadencia.'}
 };
 function renderRunTech(wk){
-  var t=RUN_TECH[wk]||RUN_TECH[7];
+  var _k=wk<=5?wk:(wk===6?5:((wk===9||wk===10)?7:6));
+  var t=RUN_TECH[_k]||RUN_TECH[7];
   var h='<div style="background:rgba(155,89,255,0.08);border:1px solid rgba(155,89,255,0.3);border-radius:12px;padding:14px;margin:10px 0">';
-  h+='<div style="font-size:11px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🔬 Laboratorio de técnica · semana '+wk+'</div>';
+  h+='<div style="font-size:11px;font-weight:600;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🔬 Laboratorio de técnica · '+_wLbl(wk).toLowerCase()+'</div>';
   h+='<div style="font-size:12px;color:var(--m);line-height:1.6;margin-bottom:6px"><strong style="color:var(--t)">🫁 Respiración:</strong><br>'+t.b+'</div>';
   h+='<div style="font-size:12px;color:var(--m);line-height:1.6;margin-bottom:8px"><strong style="color:var(--t)">🦶 Forma:</strong> '+t.f+'</div>';
   h+='</div>';
@@ -3853,18 +3855,6 @@ function renderRunZones(){
   });
   h+='</div>';
 
-  // Mi Band section
-  h+='<div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:12px 14px;margin-bottom:12px">';
-  h+='<div style="font-size:12px;font-weight:700;color:var(--o);margin-bottom:8px">📱 Xiaomi Mi Band 10 — Cómo usarla</div>';
-  h+='<div style="font-size:11px;color:var(--m);line-height:1.8">';
-  h+='<div>⚙️ Antes de salir: activa pantalla de FC en tiempo real</div>';
-  h+='<div>👀 Mira la FC cada 3-4 min, no constantemente</div>';
-  h+='<div>📊 Al acabar: revisa el resumen de zonas — si más del 50% fue Z3+, ibas muy rápido</div>';
-  h+='<div>📈 El VO2max estimado te sirve como tendencia: si sube semana a semana → mejoras</div>';
-  h+='<div>😴 SpO2 por la mañana en ayunas: debe ser ≥95%. Si baja → recuperación insuficiente</div>';
-  h+='<div>⚠️ Sem 1-6: si superas 140 bpm → baja el ritmo inmediatamente</div>';
-  h+='</div></div>';
-
   // Flat problem section
   h+='<div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:12px 14px">';
   h+='<div style="font-size:12px;font-weight:700;color:var(--p);margin-bottom:8px">⚡ Si te entra el flato</div>';
@@ -3884,13 +3874,12 @@ function renderRunPlan(){
   var html='<div style="padding:0 16px 8px"><button class="btn bth btn-sm" onclick="resetRunPlan()">🔄 Reiniciar plan (volver a Semana 1)</button></div>';
   html+=RUN_WEEKS.map(function(rw){
     var isActive=rw.num===wn;var isDone=rw.num<wn;
-    return '<div class="rw" style="'+(isActive?'border-color:var(--g)':'')+'" onclick="openRunWeekDetail('+rw.num+')">'+
-      '<div class="rwh"><div class="rwn" style="color:'+(isDone?'var(--g)':isActive?'var(--g)':'var(--m)')+'">'+
-      (isDone?'✓':rw.num)+'</div>'+
+    if(isDone) return '<div class="rw rw-done" onclick="openRunWeekDetail('+rw.num+')"><div class="rwh"><div class="rwn" style="color:var(--g)">✓</div>'+
+      '<div class="rwi"><div class="rwt">'+rw.title+'</div><div class="rws">'+rw.sub+' · '+runWeekRange(rw.num)+'</div></div>'+
+      '<span style="font-size:12px;color:var(--m);margin-left:auto;padding-left:8px">›</span></div></div>';
+    return '<div class="rw rw-slim" style="'+(isActive?'border-color:var(--g)':'')+'" onclick="openRunWeekDetail('+rw.num+')"><div class="rwh"><div class="rwn" style="color:'+(isActive?'var(--g)':'var(--m)')+'">'+(rw.num>3?rw.num-3:'A'+rw.num)+'</div>'+
       '<div class="rwi"><div class="rwt">'+rw.title+'</div><div class="rws">'+rw.sub+' · '+runWeekRange(rw.num)+(isActive?' · <span style="color:var(--g)">🟢 Esta semana</span>':'')+'</div></div>'+
-      '<span style="font-size:12px;color:var(--m);margin-left:auto;padding-left:8px">›</span></div>'+
-      '<div class="rwb"><div style="background:var(--s2);border-radius:8px;padding:10px 12px;margin-bottom:8px"><div style="font-size:14px;font-weight:600;color:var(--t)">'+rw.work+'</div></div>'+
-      '<div style="font-size:12px;color:var(--m);font-style:italic">💡 '+rw.tip+'</div></div></div>';
+      '<span style="font-size:12px;color:var(--m);margin-left:auto;padding-left:8px">›</span></div></div>';
   }).join('');
   document.getElementById('run-plan-content').innerHTML=html;
 }
@@ -3901,7 +3890,7 @@ function openRunWeekDetail(weekNum){
   var modal=document.getElementById('run-detail-modal');
   var title=document.getElementById('run-detail-title');
   var body=document.getElementById('run-detail-body');
-  title.textContent='Semana '+rw.num+' ('+runWeekRange(rw.num)+') — '+rw.title;
+  title.textContent=_wLbl(rw.num)+' ('+runWeekRange(rw.num)+') — '+rw.title;
   var html='';
 
   // Bloque trabajo
@@ -5120,11 +5109,14 @@ function getGymProgression(){
 
 function gymToggleSec(id){
   var b=document.getElementById(id);
-  if(b) b.style.display=b.style.display==='none'?'block':'none';
+  if(!b) return;
+  var open=b.style.display==='none';
+  b.style.display=open?'block':'none';
+  var ar=document.getElementById('ar'+id); if(ar) ar.style.transform=open?'rotate(90deg)':'none';
 }
 
 var _gymSec=0;
-function _gymSection(title,color,content){
+function _gymSection(title,color,content,open){
   _gymSec++;
   var id="gs"+_gymSec;
   var h="";
@@ -5134,10 +5126,10 @@ function _gymSection(title,color,content){
   h+='\')">';
   h+='<div style="font-size:12px;font-weight:700;color:';
   h+=color;
-  h+='">'+title+'</div><span style="color:var(--m);font-size:16px">›</span></div>';
+  h+='">'+title+'</div><span id="ar'+id+'" style="color:var(--m);font-size:16px;transition:transform .2s;'+(open?'transform:rotate(90deg)':'')+'">›</span></div>';
   h+='<div id="';
   h+=id;
-  h+='" style="padding:10px 12px;display:block">';
+  h+='" style="padding:10px 12px;display:'+(open?'block':'none')+'">';
   h+=content;
   h+='</div></div>';
   return h;
@@ -5147,11 +5139,11 @@ function _gymCalHTML(items){
   var h='';
   items.forEach(function(item,i){
     h+='<div style="margin-bottom:6px;border:1px solid var(--b);border-radius:8px;overflow:hidden">';
-    h+='<div style="padding:8px 10px;background:var(--s2)">';
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">';
+    h+='<div style="padding:8px 10px;background:var(--s2);cursor:pointer" onclick="var d=this.querySelector(\'.gdesc\');d.style.display=d.style.display===\'none\'?\'block\':\'none\'">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center">';
     h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+(i+1)+'. '+item.n+'</div>';
     h+='<div style="font-size:11px;color:var(--y);font-weight:700">'+item.dur+'</div></div>';
-    h+='<div style="font-size:11px;color:var(--m);line-height:1.5">'+item.desc+'</div>';
+    h+='<div class="gdesc" style="display:none;font-size:11px;color:var(--m);line-height:1.5;margin-top:4px">'+item.desc+'</div>';
     h+='</div></div>';
   });
   return h;
@@ -5160,7 +5152,7 @@ function _gymCalHTML(items){
 function _gymExerHTML(items,prog,dk,readOnly){
   dk=dk||_gymCurDk;
   var logDate=getLogDate();
-  var ramp=getCurrentGymWeek()<=2;
+  var ramp=false,_ph=_gymPhase(logDate),_light=(dk==='martes')&&!!_gymRaceWeek(logDate);
   var h='';
   items.forEach(function(item,i){
     var histKey=_gymHistKey(dk,i,item.n);
@@ -5177,11 +5169,15 @@ function _gymExerHTML(items,prog,dk,readOnly){
       else if(/^\d+×/.test(setsTxt)&&!/^2×/.test(setsTxt)){setsTxt=setsTxt.replace(/^\d+×/,'2×');changed=true;}
       if(!isNordic&&/^RIR/.test(rirTxt)){rirTxt='RIR 3-4';}
     }
+    if(!ramp&&item.kind&&item.kind!=='core'){
+      if((_ph.deload||_light)&&/^\d+×/.test(setsTxt)){var _n0=parseInt(setsTxt);if(_n0>2){setsTxt=setsTxt.replace(/^\d+/,String(_n0-1));changed=true;}}
+      if(_ph.rir&&/^RIR/.test(rirTxt)) rirTxt=_light?'RIR 3':_ph.rir;
+    }
     h+='<div style="margin-bottom:8px;border:1px solid '+(hasTodayEntry?'rgba(61,214,140,0.4)':'rgba(79,142,247,0.3)')+';border-radius:10px;overflow:hidden">';
     h+='<div style="padding:10px 12px;background:'+(hasTodayEntry?'rgba(61,214,140,0.04)':'rgba(79,142,247,0.06)')+'">';
     h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">';
     h+='<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t)">'+(i+1)+'. '+item.n+'</div>';
-    h+='<div style="font-size:10px;color:var(--p);margin-top:2px">'+item.muscle+'</div></div>';
+    h+='<div style="font-size:10px;color:var(--p);margin-top:2px">'+item.muscle+'</div>'+_gymMetaHTML(item,_ph,_light)+'</div>';
     h+='<div style="text-align:right;flex-shrink:0;margin-left:8px">';
     h+='<div style="font-size:13px;font-weight:800;color:var(--a)">'+setsTxt+'</div>';
     if(changed) h+='<div style="font-size:9px;color:var(--m)">plan: '+item.sets+'</div>';
@@ -5323,11 +5319,11 @@ function _gymMobHTML(items){
   var h='';
   items.forEach(function(item,i){
     h+='<div style="margin-bottom:6px;border:1px solid rgba(61,214,140,0.2);border-radius:8px;overflow:hidden">';
-    h+='<div style="padding:8px 10px;background:rgba(61,214,140,0.04)">';
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">';
+    h+='<div style="padding:8px 10px;background:rgba(61,214,140,0.04);cursor:pointer" onclick="var d=this.querySelector(\'.gdesc\');d.style.display=d.style.display===\'none\'?\'block\':\'none\'">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center">';
     h+='<div style="font-size:12px;font-weight:600;color:var(--t)">'+(i+1)+'. '+item.n+'</div>';
     h+='<div style="font-size:11px;color:var(--g);font-weight:700">'+item.dur+'</div></div>';
-    h+='<div style="font-size:11px;color:var(--m);line-height:1.5">'+item.desc+'</div>';
+    h+='<div class="gdesc" style="display:none;font-size:11px;color:var(--m);line-height:1.5;margin-top:4px">'+item.desc+'</div>';
     h+='</div></div>';
   });
   return h;
@@ -5374,8 +5370,8 @@ function renderGymPage(targetId,dkOverride,readOnly){
   if(!readOnly){
     h+='<div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px">';
     h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
-    h+='<div><div style="font-size:12px;font-weight:600;color:var(--a)">📊 Semana '+gymWeekNum+' · '+prog.label+'</div><div style="font-size:10px;color:var(--m);margin-top:2px">Esta semana: '+calWeekRange()+'</div>';
-    h+='<div style="font-size:10px;color:var(--m);margin-top:2px">'+prog.setsNote+'</div></div>';
+    h+='<div><div style="font-size:12px;font-weight:600;color:var(--a)">📊 '+(gymWeekNum>0?'Semana '+gymWeekNum+' · ':'')+prog.label+'</div><div style="font-size:10px;color:var(--m);margin-top:2px">Esta semana: '+calWeekRange()+'</div>';
+    h+='<div style="font-size:10px;color:var(--m);margin-top:2px">'+prog.setsNote+'</div><div style="font-size:10px;color:var(--m);margin-top:3px;line-height:1.4;max-width:230px">'+prog.phaseNote+'</div></div>';
     h+='<div style="font-size:11px;color:var(--m)">'+(weekDone>=4?'✅ Semana OK':''+weekDone+'/4 mínimo')+'</div></div>';
     h+='<div style="display:flex;gap:6px">';
     ['L','M','X','J','V'].forEach(function(d,i){
@@ -5392,41 +5388,39 @@ function renderGymPage(targetId,dkOverride,readOnly){
   h+='<div style="background:var(--s2);border-radius:12px;padding:12px 14px;margin-bottom:10px">';
   h+='<div style="font-size:20px;margin-bottom:4px">'+plan.emoji+' <strong style="font-size:15px;color:var(--t)">'+plan.n+'</strong></div>';
   h+='<div style="font-size:11px;color:var(--o)">🎯 '+plan.obj+'</div>';
-  var timing={lunes:'🕦 Gym 11:30-13:00',martes:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:45',miercoles:'🕦 Gym 11:30-13:00',jueves:'🕦 Gym 11:30-13:00 · 🏃 Carrera 20:45',viernes:'🕦 Gym 11:30-13:00',sabado:'🏃 Carrera 20:45 · movilidad al volver',domingo:'🧘 Movilidad 40 min (cuando quieras, mejor por la mañana)'}[dk];
+  var timing={lunes:'🕦 Gym 11:30-12:50 (máx. 13:00)',martes:'🕦 Gym 11:30-12:50 (máx. 13:00) · 🏃 Carrera 20:45',miercoles:'🕦 Gym 11:30-12:50 (máx. 13:00)',jueves:'🕦 Gym 11:30-12:50 (máx. 13:00) · 🏃 Carrera 20:45',viernes:'🕦 Gym 11:30-12:50 (máx. 13:00)',sabado:'🏃 Carrera 20:45 · movilidad al volver',domingo:'😴 Descanso · movilidad solo si la necesitas'}[dk];
   if(logDate==='2026-10-17') timing='🕘 Gym 09:30-10:30 · 🏃 Carrera 20:45';
   if(timing) h+='<div style="font-size:11px;color:var(--m);margin-top:4px">'+timing+' · 🌙 Movilidad antes de dormir</div>';
   h+='</div>';
   if(logDate==='2026-10-17'&&!isMob) h+='<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--t);line-height:1.5">⏱️ <strong>Sábado 17/10 · gym de 1 h en total (09:30-10:30):</strong> calentamiento 5 min, 5 ejercicios en ~40 min (salta el pull over), descansa 60-75 s entre series, core ~10 min y estiramientos ~5 min. Por la noche, running a las 20:45.</div>';
-  if(!isMob&&gymWeekNum<=2){
+  if(false){
     h+='<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--t);line-height:1.5">🐣 <strong>Semanas 1-2 · arranque suave:</strong> 2 series por ejercicio (ya está ajustado abajo), RIR 3-4 y sin Nordic curl. Vienes de estar sedentario: el objetivo es aprender la técnica sin agujetas que te arruinen las carreras.</div>';
   }
   var nutriTitle=isMob?'🍎 Nutrición del día':'🍎 PRE — Nutrición';
-  if(!isMob) h+=_gymSection('⚡ CALENTAMIENTO (~10 min) · Foam roller + activación específica','var(--y)',_gymCalHTML(plan.cal));
+  if(!isMob) h+=_gymSection('⚡ CALENTAMIENTO (~7 min) · Foam roller + activación específica','var(--y)',_gymCalHTML(plan.cal),true);
   if(!isMob){
-    var week=gymWeekNum;
-    var restSeries=week<=3?'90 seg':week<=6?'2 min':'2-3 min';
-    var restEjerc=week<=6?'2-3 min':'3 min';
-    h+=_gymSection('💪 EJERCICIOS PRINCIPALES','var(--a)',
-      '<div style="display:flex;gap:8px;margin-bottom:10px">'+
-      '<div style="flex:1;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:7px 10px;text-align:center">'+
-      '<div style="font-size:10px;color:var(--m);margin-bottom:2px">⏱ Entre series</div>'+
-      '<div style="font-size:14px;font-weight:800;color:var(--a)">'+restSeries+'</div>'+
-      '</div>'+
-      '<div style="flex:1;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:8px;padding:7px 10px;text-align:center">'+
-      '<div style="font-size:10px;color:var(--m);margin-bottom:2px">⏱ Entre ejercicios</div>'+
-      '<div style="font-size:14px;font-weight:800;color:#f87171">'+restEjerc+'</div>'+
-      '</div></div>'+
-      _gymExerHTML(plan.exer,prog,dk,readOnly));
+    var _ph=prog.ph||{},_est=_gymEstMin(plan,_ph,dk,logDate),_bud='',_lt=(dk==='martes')&&!!_gymRaceWeek(logDate);
+    if(_est){
+      var _over=_est.tot>90;
+      _bud='<div style="background:'+(_over?'rgba(248,113,113,0.08)':'rgba(99,102,241,0.08)')+';border:1px solid '+(_over?'rgba(248,113,113,0.3)':'rgba(99,102,241,0.2)')+';border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:var(--m);line-height:1.5">'+
+        '⏱ <strong style="color:var(--t)">Tiempo total: ~'+_est.tot+' min</strong> (objetivo 1 h 15 · tope 1 h 30). Calentamiento '+_est.w+' · pesas '+_est.f+' · core '+_est.c+' · estiramientos '+_est.s+'.<br>'+
+        'Todo en series sueltas. Descansos: básicos 2-2,5 min, resto 60-90 s. Si te pasas de 1 h 30, quita el último aislamiento, nunca el calentamiento.'+
+        (_lt?'<br>🏁 <strong style="color:var(--o)">Semana de carrera:</strong> hoy piernas ligeras (una serie menos, RIR 3, sin técnicas).':'')+
+        '</div>';
+    }
+    h+=_gymSection('💪 EJERCICIOS PRINCIPALES + CORE','var(--a)',
+      _bud+
+      _gymExerHTML(plan.exer,prog,dk,readOnly),true);
   }
   var _cardioTxt=plan.cardio||(logDate==='2026-10-21'?CARDIO_TXT+' (Prueba de esta semana: pruébalo hoy y anota cómo te sientes.)':'');
-  if(_cardioTxt&&(!isMob||plan.cardio)) h+=_gymSection('🚴 CARDIO SUAVE · 20 min · Zona 2','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+_cardioTxt+'</p>');
-  var mobTitle=dk==='sabado'?'🧘 MOVILIDAD POST-CARRERA (~20 min) · En casa con foam roller y banda':dk==='domingo'?'🧘 MOVILIDAD COMPLETA (~40 min)':'🧘 POST-GYM — Movilidad con foam roller (~10 min) · Específica del día';
+  if(_cardioTxt&&(!isMob||plan.cardio)) h+=_gymSection('🚴 CARDIO (OPCIONAL) · Zona 2','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0">'+_cardioTxt+'</p>');
+  var mobTitle=dk==='sabado'?'🧘 MOVILIDAD POST-CARRERA (~20 min) · En casa con foam roller y banda':dk==='domingo'?'🧘 MOVILIDAD OPCIONAL · completa 40 min, o solo lo que te moleste (10 min)':'🧘 POST-GYM — Estiramientos (~6 min) · Específicos del día';
   h+=_gymSection(mobTitle,'var(--g)',_gymMobHTML(plan.postMob));
   var _dwRun=new Date(logDate+'T12:00:00').getDay();
   if(_isRunDate(logDate)){
     var rwk=_runWeekForDate(logDate);
     var rwd=(typeof RUN_WEEKS!=='undefined'&&rwk>0)?RUN_WEEKS[Math.min(rwk,RUN_WEEKS.length)-1]:null;
-    var rtxt=rwd?('<strong>Semana '+rwk+' de running:</strong> '+rwd.work):'El plan de running empieza el '+_fmtLongDate(getRunStartDate())+'.';
+    var rtxt=rwd?('<strong>'+_wLbl(rwk)+' de running:</strong> '+rwd.work):'El plan de running empieza el '+_fmtLongDate(getRunStartDate())+'.';
     h+=_gymSection('🏃 CARRERA 20:45-21:30','var(--g)','<p style="font-size:12px;color:var(--m);line-height:1.6;margin:0 0 8px">'+rtxt+'<br>'+(RUN_DAY_NOTE[dk]||'')+'</p><button class="btn bth btn-sm" onclick="nav(\'run\')">Abrir sesión de running →</button>');
   }
   if(!readOnly&&!isMob){
@@ -5468,7 +5462,7 @@ var RUN_DAY_NOTE={
   tinfB:'Corres unas 8 h después de piernas ligeras: las agujetas aún no han llegado (aparecen a partir de las 24 h). Comida de las 15:00 con hidratos, merienda ligera a las 19:00. Zona 2 estricta; si las piernas pesan, alarga las caminatas y no acortes la sesión. Corre con la mano izquierda suelta y la herida cubierta y seca.',
   cardioA:'Hoy el gym es suave (cardio, glúteo ligero y core): llegas con las piernas frescas. Zona 2 estricta y sin agarrar nada con la mano izquierda. Herida cubierta y seca.',
   cardioB:'Hoy solo cardio suave y movilidad por la mañana: llegas fresco. Zona 2 estricta; corre con la mano izquierda suelta y la herida cubierta y seca.',
-  domingo:'Hoy es día de movilidad y sin gym: llegas fresco. Zona 2 estricta; corre con la mano izquierda suelta y la herida cubierta y seca.'
+  domingo:'Hoy es descanso y sin gym: llegas fresco. Zona 2 estricta; corre con la mano izquierda suelta y la herida cubierta y seca.'
 };
 function _runWeekForDate(ds){
   var start=getRunStartDate();
@@ -6465,14 +6459,14 @@ function renderMedidas(){
 }
 
 // ═══════════════════════════════════════
-// COUNTDOWN RETO — 25 diciembre 2026
+// COUNTDOWN RETO — 24 diciembre 2026
 // ═══════════════════════════════════════
 function renderRetoCountdown(){
   try{
     var el=document.getElementById('h-reto-card');
     if(!el) return;
     var now=new Date();
-    var meta=new Date(2026,11,25);
+    var meta=new Date(2026,11,24);
     var start=new Date(2026,10,9);
     var daysLeft=Math.max(0,Math.ceil((meta-now)/86400000));
     var totalDays=Math.ceil((meta-start)/86400000);
@@ -6488,14 +6482,14 @@ function renderRetoCountdown(){
       h='<div style="background:linear-gradient(135deg,rgba(61,214,140,0.15),rgba(79,142,247,0.1));border:1px solid rgba(61,214,140,0.4);border-radius:14px;padding:18px;text-align:center">';
       h+='<div style="font-size:48px;margin-bottom:6px">🏆</div>';
       h+='<div style="font-size:20px;font-weight:800;color:var(--g);margin-bottom:4px">RETO COMPLETADO</div>';
-      h+='<div style="font-size:12px;color:var(--m)">San Silvestre 27 y 31 dic · ~82 kg · 25/12</div>';
+      h+='<div style="font-size:12px;color:var(--m)">San Silvestre 27 y 31 dic · 82-84 kg · 24/12</div>';
       h+='</div>';
     } else {
       h='<div style="background:linear-gradient(135deg,rgba(79,142,247,0.1),rgba(99,102,241,0.06));border:1px solid rgba(79,142,247,0.3);border-radius:14px;padding:14px 16px">';
       // Header
       h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">';
       h+='<div>';
-      h+='<div style="font-size:11px;font-weight:700;color:var(--a);letter-spacing:0.5px;text-transform:uppercase">🎯 Reto 25 Diciembre</div>';
+      h+='<div style="font-size:11px;font-weight:700;color:var(--a);letter-spacing:0.5px;text-transform:uppercase">🎯 Reto 24 Diciembre</div>';
       h+='<div style="font-size:10px;color:var(--m);margin-top:2px">5 km &lt; 30\' · San Silvestre · ~82 kg</div>';
       h+='</div>';
       h+='<div style="text-align:right">';
@@ -7617,6 +7611,27 @@ function generateShopListFromPlan(){
     localStorage.setItem('seed_run_nov12_v1','1');
   }catch(err){}
 })();
+
+// Carga única: running del domingo 15/11/2026 (reloj): 3,00 km en 25:34, FC media 136, máx. 165. Era la sesión del sábado, la hizo hoy.
+(function(){
+  try{
+    if(localStorage.getItem('seed_run_nov15_v1')) return;
+    var D='2026-11-15';
+    var rh=ld('run_hist',[]);
+    var e=rh.filter(function(h){return h.date===D;})[0];
+    if(!e){
+      var wk=Math.max(1,Math.min(_runWeekForDate(D)||3,RUN_WEEKS.length)), rw=RUN_WEEKS[wk-1];
+      e={date:D,week:wk,feeling:'',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:{warmup:true,work:true,cooldown:true}};
+      rh.unshift(e);
+      sd('run_checks_'+D,e.checks);
+    }
+    if(!e.dist)e.dist=3.0; if(!e.timeSec)e.timeSec=1534; if(!e.duration)e.duration=26; if(!e.hr)e.hr=136;
+    if(!e.notes) e.notes='Domingo 15/11, ~16:30 (semana 3, 3ª sesión; la del sábado, movida a hoy). Reloj: 3,00 km en 25:34, ritmo medio 8\'32"/km (incluye andar antes y después), FC media 136 y máx. 165, 3.277 pasos, 197 kcal activas. Zonas: ligero 5:17 (andando pre/post), intensivo 1:52, aeróbico 14:33, anaeróbico 3:44.';
+    rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+    sd('run_hist',rh.slice(0,400));
+    localStorage.setItem('seed_run_nov15_v1','1');
+  }catch(err){}
+})();
 </script>
 
 <!-- HISTORICAL ENTRY MODAL -->
@@ -7676,6 +7691,277 @@ function generateShopListFromPlan(){
     <div id="recipe-detail-body"></div>
   </div>
 </div>
+<script id="gym-evo">
+/* ===== Gym: tiempo máximo, progresión por fases con técnicas de fallo, movilidad del domingo opcional ===== */
+(function(){
+  var OLD={};
+  Object.keys(GYM_PLAN).forEach(function(dk){(GYM_PLAN[dk].exer||[]).forEach(function(e){if(!OLD[e.n])OLD[e.n]=e;});});
+  function X(name,o){ // ejercicio ya existente (conserva técnica e historial) con parámetros nuevos
+    var b=OLD[name]; if(!b) throw new Error('gym-evo: falta '+name);
+    var c=JSON.parse(JSON.stringify(b));
+    for(var k in o) c[k]=o[k];
+    return c;
+  }
+  var CORE_TXT='Core en la esterilla. Progresión: cuando completes todas las series con técnica limpia, +5 s o +2 reps la semana siguiente.';
+  var N={
+    remoPolea:{n:'Remo en polea baja con agarre neutro',muscle:'Dorsal · Romboides · Bíceps',sets:'3×10-12',rir:'RIR 2',rest:90,kind:'sec',
+      desc:'POSICIÓN: sentado, pies en el apoyo, rodillas ligeramente flexionadas, espalda recta y pecho alto. Agarre neutro (triángulo). TIRÓN: lleva el agarre al abdomen llevando los codos hacia atrás y pegados al cuerpo; junta las escápulas 1 s. VUELTA: 2-3 s, estira los dorsales sin encorvar la lumbar. NO balancees el torso. Sustituye al remo con mancuerna.'},
+    pajaros:{n:'Pájaros en máquina (pec deck invertido)',muscle:'Deltoides posterior · Romboides',sets:'3×15',rir:'RIR 2',rest:60,kind:'iso',
+      desc:'POSICIÓN: sentado mirando al respaldo, pecho apoyado, asas a la altura de los hombros, codos ligeramente flexionados. MOVIMIENTO: abre los brazos hacia atrás hasta alinear los codos con la espalda, aprieta 1 s y vuelve en 2-3 s. Peso ligero: el deltoides posterior es pequeño y se hace con control, no con inercia. Sustituye al face pull.'},
+    encog:{n:'Encogimientos con mancuernas (trapecio)',muscle:'Trapecio superior',sets:'3×12-15',rir:'RIR 2',rest:60,kind:'iso',
+      desc:'De pie, una mancuerna en cada mano a los lados. Sube los hombros hacia las orejas en vertical (sin rotarlos) y aprieta 1 s arriba; baja en 2-3 s. Cabeza neutra, sin adelantar el cuello. Agarre con correas si el antebrazo se te cansa antes que el trapecio.'},
+    hollow:{n:'Hollow hold (barquita)',muscle:'CORE · Recto abdominal · Transverso (esterilla)',sets:'3×20 s',rir:'RIR 3-4',kind:'core',tsec:30,
+      desc:'Tumbado boca arriba en la esterilla. Lumbar pegada al suelo (si se despega, dobla las rodillas). Brazos estirados sobre la cabeza o pegados al cuerpo, hombros y piernas despegados 20-30 cm del suelo. Aguanta respirando. Para progresar: piernas más estiradas y más bajas.'},
+    reverse:{n:'Reverse crunch (elevación de pelvis)',muscle:'CORE · Abdomen bajo (esterilla)',sets:'3×10',rir:'RIR 3-4',kind:'core',tsec:35,
+      desc:'Tumbado boca arriba, manos junto al cuerpo, rodillas a 90° sobre la cadera. Sube la pelvis 3-5 cm del suelo enrollando la zona lumbar, SIN balancear las piernas, y baja en 3 s. Si te cuesta, aguanta las manos al suelo o a una pata del banco por encima de la cabeza.'},
+    tijeras:{n:'Tijeras lentas (flutter kicks controlados)',muscle:'CORE · Abdomen bajo · Flexores de cadera (esterilla)',sets:'3×12',rir:'RIR 3-4',kind:'core',tsec:35,
+      desc:'Tumbado boca arriba, lumbar pegada al suelo, manos bajo los glúteos. Piernas casi estiradas a 30-40 cm del suelo; cruza una sobre la otra despacio (2 s por pierna). 12 cruces = 1 serie. Si la lumbar se despega, sube las piernas.'},
+    toque:{n:'Plancha con toque de hombro (anti-rotación)',muscle:'CORE · Anti-rotación · Hombro estable (esterilla)',sets:'3×8 por lado',rir:'RIR 3-4',kind:'core',tsec:40,
+      desc:'Posición de plancha alta con los pies algo separados (más anchos que las caderas). Toca el hombro contrario con una mano SIN mover la cadera (imagina un vaso de agua en la espalda baja). Alterna lados a ritmo lento. Si no puedes sin balancearte, apoya las rodillas.'}
+  };
+  function core(name,o){var c=X(name,o||{});c.kind='core';return c;}
+  Object.assign(N,{
+    curlIsq:{n:'Curl de isquios con fitball (o deslizadores)',muscle:'Isquiosurales (flexión de rodilla)',sets:'3×8-12',rir:'RIR 2',rest:75,kind:'sec',
+      desc:'Tumbado boca arriba con los talones sobre el fitball (o los pies sobre una toalla o deslizadores en suelo liso). Eleva la pelvis y, sin dejarla caer, flexiona las rodillas llevando el balón hacia los glúteos; vuelve despacio (3 s). Sustituye al nordic curl: sin máquina de curl femoral, es tu trabajo de isquios con flexión de rodilla. Si no puedes llegar a 8 reps, hazlo con una pierna solo en la bajada.'},
+    gemPrensa:{n:'Gemelos en prensa (punta de pie)',muscle:'Gemelos (gastrocnemio)',sets:'4×15-20',rir:'RIR 2',rest:60,kind:'iso',
+      desc:'En la misma prensa: solo la punta de los pies en el borde inferior de la plataforma, rodillas casi estiradas sin bloquearlas. Baja el talón todo lo que puedas (1 s de estiramiento) y sube al máximo con 1 s de pausa arriba. Mueve solo el tobillo: no empujes con las rodillas.'},
+    hiper:{n:'Hiperextensiones en banco romano',muscle:'Espalda baja · Glúteo · Isquios',sets:'3×12',rir:'RIR 2-3',rest:60,kind:'sec',
+      desc:'Almohadilla a la altura de la cadera y cuerpo recto de cabeza a pies. Baja con la espalda recta hasta unos 90° de cadera (3 s) y sube hasta la línea recta, sin arquear la lumbar al llegar arriba. Para progresar, sujeta un disco al pecho.'},
+    curlInc:{n:'Curl inclinado con mancuernas',muscle:'Bíceps (porción larga)',sets:'3×10-12',rir:'RIR 2',rest:60,kind:'iso',
+      desc:'Banco a 45-60°, espalda apoyada y los brazos colgando detrás del tronco: el bíceps parte estirado. Haz el curl supinando la muñeca, con los codos quietos, y baja hasta el estiramiento completo. Sin balancear los hombros.'},
+    bici:{n:'Bicicleta lenta (abdominales cruzados)',muscle:'CORE · Oblicuos · Recto abdominal (esterilla)',sets:'3×12',rir:'RIR 3-4',kind:'core',tsec:35,
+      desc:'Tumbado boca arriba, manos tras la nuca sin tirar del cuello y lumbar pegada al suelo. Lleva el codo hacia la rodilla contraria rotando el torso (no solo el codo) mientras estiras la otra pierna; 2 s por lado. 12 repeticiones (6 por lado) = 1 serie. Sustituye a las tijeras para trabajar los oblicuos sin plancha lateral.'},
+    jalonNeutro:{n:'Jalón al pecho (agarre neutro o estrecho)',muscle:'Dorsal ancho · Bíceps · Romboides',sets:'4×8-10',rir:'RIR 2',rest:120,kind:'sec',
+      desc:'Sentado con los muslos fijos bajo el rodillo y agarre neutro (en V) o estrecho, distinto al agarre ancho del miércoles. Tira de la barra hacia la parte alta del pecho llevando los codos abajo y atrás, con el pecho alto. Sube en 2-3 s sin balancear el tronco. Sustituye a las dominadas.'},
+    triSobre:{n:'Extensión de tríceps sobre la cabeza con cuerda (polea)',muscle:'Tríceps (cabeza larga)',sets:'3×12-15',rir:'RIR 2',rest:60,kind:'iso',
+      desc:'De espaldas a la polea, cuerda sujeta por encima de la cabeza y codos apuntando hacia delante, fijos. Extiende los brazos al frente y arriba, y vuelve despacio hasta notar el estiramiento del tríceps. Trabaja la cabeza larga, que casi no se carga en los ejercicios de bajar.'}
+  });
+  var PL=GYM_PLAN;
+  var CP=function(o){return JSON.parse(JSON.stringify(o));};
+  // ---- LUNES · Push A
+  PL.lunes.exer=[
+    X('Press banca plano con barra',{sets:'4×8-10',rir:'RIR 2',rest:120,kind:'main'}),
+    X('Press inclinado con mancuernas (30°)',{sets:'3×10-12',rest:90,kind:'sec'}),
+    X('Press militar con mancuernas (hombros)',{sets:'3×10-12',rest:90,kind:'main'}),
+    X('Elevaciones laterales con mancuernas',{sets:'3×15',rest:60,kind:'iso'}),
+    X('Cierres en máquina de pecho (pectoral fly)',{sets:'3×12',rest:75,kind:'iso'}),
+    X('Tríceps en polea, bajar',{sets:'3×12',rest:75,kind:'iso'}),
+    X('Tríceps por detrás de la cabeza',{sets:'3×12',rest:75,kind:'iso'}),
+    core('Dead bug con pausa',{sets:'3×8 por lado',tsec:40}),
+    CP(N.hollow),
+    CP(N.reverse)
+  ];
+  // ---- MARTES · Piernas
+  PL.martes.exer=[
+    X('Sentadilla con barra (Back Squat)',{sets:'4×8-10',rest:150,kind:'main'}),
+    X('Peso muerto rumano (barra o mancuernas)',{sets:'3×10-12',rest:120,kind:'main'}),
+    X('Hip Thrust con barra (o máquina)',{sets:'3×10-12',rest:90,kind:'main'}),
+    X('Prensa de piernas (Leg Press)',{sets:'3×12',rest:90,kind:'sec'}),
+    CP(N.gemPrensa),
+    X('Extensión de cuádriceps en máquina',{sets:'3×12-15',rest:60,kind:'iso'}),
+    CP(N.curlIsq),
+    core('Plancha frontal RKC',{sets:'3×20 s',tsec:30}),
+    core('Dead bug con pausa',{sets:'2×8 por lado',tsec:40}),
+    CP(N.reverse)
+  ];
+  (function(){
+    var cal=PL.martes.cal||(PL.martes.cal=[]);
+    if(!cal.some(function(x){return /Caminata lateral/.test(x.n);}))
+      cal.push({n:'Caminata lateral con banda',dur:'10 pasos por lado',desc:'Banda elástica justo por encima de las rodillas, ligera flexión de cadera y rodillas. Camina de lado manteniendo la tensión de la banda, sin que las rodillas se vayan hacia dentro. Activa el glúteo medio antes de cargar: sustituye al abductor en máquina.'});
+  })();
+  // ---- MIÉRCOLES · Pull A
+  PL.miercoles.exer=[
+    X('Remo con barra (Barbell Row)',{sets:'4×8-10',rest:120,kind:'main'}),
+    X('Jalón en polea (Lat Pulldown)',{sets:'4×10-12',rest:90,kind:'sec'}),
+    CP(N.remoPolea),
+    X('Curl bíceps con barra EZ o recta',{sets:'3×10-12',rest:60,kind:'iso'}),
+    CP(N.pajaros),
+    X('Curl martillo con mancuernas',{sets:'3×10-12',rest:60,kind:'iso'}),
+    CP(N.encog),
+    core('Bird Dog (extensión cruzada)',{sets:'3×8 por lado',tsec:40}),
+    core('McGill Curl-up',{sets:'3×10',tsec:35}),
+    CP(N.bici)
+  ];
+  // ---- JUEVES · Push B
+  PL.jueves.exer=[
+    X('Press militar con mancuernas de pie',{sets:'4×10-12',rest:120,kind:'main'}),
+    X('Press inclinado con mancuernas (30°)',{sets:'3×10-12',rest:90,kind:'sec'}),
+    X('Elevaciones laterales con mancuernas',{sets:'4×15',rest:60,kind:'iso'}),
+    X('Aperturas con mancuernas en banco plano',{sets:'3×12-15',rest:75,kind:'iso'}),
+    X('Press banca agarre cerrado (Close Grip Bench)',{sets:'3×10-12',rest:90,kind:'sec'}),
+    CP(N.triSobre),
+    CP(N.toque),
+    CP(N.hollow),
+    core('McGill Curl-up',{sets:'2×10',tsec:35})
+  ];
+  // ---- VIERNES · Pull B + core
+  var gemF=X('Gemelos de pie en máquina (o con barra)',{sets:'3×15-20',rest:60,kind:'iso'});
+  gemF.muscle='Gemelos · OPCIONAL si te sobran unos 4 min';
+  PL.viernes.exer=[
+    CP(N.jalonNeutro),
+    X('Remo en máquina con agarre neutro',{sets:'3×12',rest:90,kind:'sec'}),
+    X('Pull over con cable o mancuerna',{sets:'3×12',rest:75,kind:'iso'}),
+    CP(N.curlInc),
+    CP(N.pajaros),
+    CP(N.hiper),
+    gemF,
+    core('Dead bug con pausa',{sets:'3×8 por lado',tsec:40}),
+    core('Bird Dog (extensión cruzada)',{sets:'3×8 por lado',tsec:40}),
+    CP(N.tijeras),
+    core('Plancha frontal RKC',{sets:'3×30 s',tsec:35})
+  ];
+  (function(){
+    (PL.viernes.cal||[]).forEach(function(x){
+      if(/Dominadas asistidas/.test(x.n)){x.n='Jalón ligero (8 reps)';x.dur='8 reps';x.desc='Jalón al pecho con agarre neutro al 50 % del peso de trabajo. Activa la conexión dorsal-mano: siente que los dorsales inician el movimiento (no los brazos).';}
+    });
+  })();
+  PL.lunes.cardio=''; PL.jueves.cardio='';
+  // Texto de nutrición: ya no hay pestaña de comida
+  ['lunes','martes','miercoles','jueves','viernes','sabado'].forEach(function(dk){
+    var p=PL[dk]; if(!p||!p.preNut) return;
+    p.preNut=p.preNut.replace('El plan del día completo está en la pestaña Nutrición.','Los macros del día los llevas en Yazio.').replace('El plan del día está en la pestaña Nutrición.','Los macros del día los llevas en Yazio.');
+  });
+  // ---- DOMINGO: descanso, movilidad solo si la necesitas
+  PL.domingo.n='Descanso · Movilidad opcional';
+  PL.domingo.obj='Descanso. La movilidad está aquí por si la necesitas (rigidez, agujetas, semana dura): no es obligatoria.';
+  PL.domingo.preNut='Sin gym ni carrera: descanso. La movilidad de abajo es opcional. Comida fuerte, mide el aceite y proteína ~158 g repartida en el día. Creatina 5 g también hoy.';
+
+  /* ===== Fases (calendario, como el running: la semana del 16/11 es la semana 1) ===== */
+  var D0=new Date(2026,10,16).getTime();
+  function _ds2t(ds){var p=ds.split('-');return new Date(+p[0],+p[1]-1,+p[2]).getTime();}
+  var TECH={
+    fallo:{n:'Fallo técnico',t:'Última serie al fallo técnico (RIR 0): sigue hasta que no puedas hacer otra repetición con buena forma. Sin trampas ni balanceos. Si quieres rematar, 4-5 parciales largas más (mitad baja del recorrido).'},
+    restpause:{n:'Rest-pause',t:'Última serie rest-pause: llega al fallo, descansa 15 s y haz otra tanda hasta el fallo; repite una vez más (3 mini-series en total).'},
+    drop:{n:'Drop set',t:'Última serie con drop set: llega al fallo, baja el peso un 20-25 % y sigue hasta el fallo. Una sola caída.'},
+    myo:{n:'Myo-reps',t:'Última serie myo-reps: 12-15 reps casi al fallo y después 3-4 mini-series de 4-5 reps con 15 s de descanso.'}
+  };
+  var B1=[
+    {from:'2026-11-16',label:'Doble progresión',rir:'RIR 2',tech:'',note:'Sin técnicas: RIR 2 y a subir carga. Cuando completes el tope de reps en todas las series con buena técnica, sube 2,5 kg (tren superior) o 5 kg (pierna).'},
+    {from:'2026-11-23',label:'Fallo técnico',rir:'RIR 1-2',tech:'fallo',note:'Primera semana buscando el fallo, solo en la última serie de los ejercicios de aislamiento y máquina. Barra y mancuernas pesadas: nunca al fallo.'},
+    {from:'2026-11-30',label:'Intensificación · rest-pause',rir:'RIR 1',tech:'restpause',note:'Serie top a RIR 1 en los básicos y resto de series −5-10 % de peso. Rest-pause en la última serie de aislamiento.'},
+    {from:'2026-12-07',label:'Pico · drop sets',rir:'RIR 1',tech:'drop',note:'Semana más dura del bloque. Drop set en la última serie de aislamiento. El día de piernas sale ligero porque el test de 3 km es el sábado 12.'},
+    {from:'2026-12-14',label:'Pico · myo-reps',rir:'RIR 0-1',tech:'myo',note:'Última semana fuerte antes de la carrera. Myo-reps en aislamiento. Duerme y come proteína: si la barra baja, no insistas.'},
+    {from:'2026-12-21',label:'Descarga · semana de carrera',rir:'RIR 3',tech:'',deload:true,note:'Una serie menos por ejercicio, RIR 3 y nada de fallo. El domingo 27 es la San Silvestre: llega fresco.'},
+    {from:'2026-12-28',label:'Última semana antes de vacaciones',rir:'RIR 2',tech:'',note:'Lunes a miércoles normales, sin fallo (el jueves 31 es la carrera). Piernas ligeras el martes.'}
+  ];
+  function _gymPhase(ds){
+    ds=ds||today();
+    var t=_ds2t(ds);
+    if(ds<'2026-11-16') return {num:0,label:'Semana de retorno',rir:'RIR 2-3',tech:'',deload:false,pause:false,note:'Vuelta tras la operación: técnica y cargas conservadoras.',dates:''};
+    if(ds>='2026-12-31'&&ds<='2027-01-07') return {num:Math.floor((t-D0)/(7*86400000))+1,label:'Vacaciones · sin gym',rir:'',tech:'',deload:false,pause:true,note:'Pausa completa del 31/12 al 7/1.',dates:''};
+    if(ds>='2027-01-08'&&ds<'2027-01-18') return {num:Math.floor((t-D0)/(7*86400000))+1,label:'Reentrada tras vacaciones',rir:'RIR 3',tech:'',deload:true,pause:false,note:'Una serie menos por ejercicio y RIR 3 hasta el 17/1: el cuerpo vuelve a coger el ritmo sin agujetas que te estropeen las carreras.',dates:''};
+    var wk=Math.floor((t-D0)/(7*86400000))+1;
+    if(ds<'2027-01-04'){
+      var i=B1.length-1;for(;i>=0;i--) if(ds>=B1[i].from) break;
+      var b=B1[i]; return {num:wk,label:b.label,rir:b.rir,tech:b.tech,deload:!!b.deload,pause:false,note:b.note,dates:''};
+    }
+    // Bloques de 4 semanas desde el lunes 18/1/2027: 3 de carga + 1 de descarga
+    var k=Math.floor((t-new Date(2027,0,18).getTime())/(7*86400000));
+    var blk=Math.floor(k/4),pos=k%4,TK=['fallo','restpause','drop','myo'];
+    var o={num:wk,pause:false,deload:false,dates:'',blk:blk+2};
+    if(pos===0){o.label='Volumen';o.rir='RIR 2';o.tech='';o.note='Doble progresión: más reps y después más peso. Sin técnicas de fallo esta semana.';}
+    else if(pos===1){var a=TK[blk%4];o.label='Intensificación · '+TECH[a].n;o.rir='RIR 1-2';o.tech=a;o.note='Técnica de la semana en la última serie de aislamiento. Serie top a RIR 1 en los básicos.';}
+    else if(pos===2){var c=TK[(blk+1)%4];o.label='Pico · '+TECH[c].n;o.rir='RIR 1';o.tech=c;o.note='Semana más dura del bloque. Serie top a RIR 1 y técnica de la semana en aislamiento.';}
+    else {o.label='Descarga';o.rir='RIR 3';o.tech='';o.deload=true;o.note='Una serie menos por ejercicio, RIR 3 y sin fallo. Es donde se consolida lo ganado: no te la saltes.';}
+    var d0=_ds2t('2027-07-26'),d1=_ds2t('2027-08-02');
+    if(t>=d0&&t<d1){o.label='Descarga · semana del reto del 1 de agosto';o.rir='RIR 3';o.tech='';o.deload=true;o.note='Menos volumen para llegar fresco y definido al 1 de agosto. Fotos y medidas el domingo 1.';}
+    return o;
+  }
+  (function(){try{
+    var oldK='gym_pw_n_'+_gymSlug('Dominadas (Pull-ups) o Jalón al pecho'),newK='gym_pw_n_'+_gymSlug('Jalón al pecho (agarre neutro o estrecho)');
+    var ov=ld(oldK,null),nv=ld(newK,null);
+    if(ov&&ov.length&&(!nv||!nv.length)) sd(newK,ov);
+  }catch(e){}})();
+  window._gymPhase=_gymPhase;
+  window.getCurrentGymWeek=function(){return _gymPhase(today()).num;};
+  window.getGymProgression=function(){
+    var p=_gymPhase(today());
+    var s=p.pause?p.note:(p.rir+' · '+(p.deload?'una serie menos por ejercicio · sin fallo':(p.tech?TECH[p.tech].n+' en la última serie de aislamiento':'sin técnicas de fallo')));
+    return {label:p.label,weeks:'',setsNote:s,phaseNote:p.note,ph:p};
+  };
+  window._gymTechTxt=function(it,p){
+    if(p.pause||p.deload||it.kind==='core') return '';
+    if(it.kind==='iso') return p.tech?TECH[p.tech].t:'';
+    if(it.kind==='sec') return (p.tech||/RIR 1/.test(p.rir))?'Última serie a RIR 0-1 (sin técnicas de caída).':'';
+    if(it.kind==='main') return (p.tech||/RIR 1/.test(p.rir))?'Serie top a RIR 1 la primera tras el calentamiento; el resto de series −5-10 % de peso. Barra: nunca al fallo.':'Si completas el tope de reps en todas las series, sube 2,5 kg (pierna: 5 kg).';
+    return '';
+  };
+
+  window._gymMetaHTML=function(it,p,light){
+    if(!it.kind) return '';
+    var m=[];
+    if(it.kind==='core') m.push('🧘 Esterilla · pasa de uno a otro con 20-30 s de pausa');
+    else if(it.ss){
+      var ok=it.ss.charAt(0),n2=/1$/.test(it.ss);
+      m.push('⚡ Superserie '+it.ss+(n2?' → sin descanso, pasa directo a '+ok+'2':' · descansa '+(it.rest||60)+' s y repite'));
+    } else if(it.rest) m.push('⏱ descanso '+(it.rest>=120?(it.rest/60).toString().replace('.',',')+' min':it.rest+' s'));
+    var h='<div style="font-size:10px;color:var(--m);margin-top:3px">'+m.join(' · ')+'</div>';
+    var t=light?'':_gymTechTxt(it,p);
+    if(t) h+='<div style="font-size:11px;color:var(--o);margin-top:4px;line-height:1.4">🔥 '+t+'</div>';
+    return h;
+  };
+  var _MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  function _fd(t){var d=new Date(t);return d.getDate()+' '+_MES[d.getMonth()];}
+  window.renderGymProgression=function(){
+    var el=document.getElementById('gym-progression-content'); if(!el) return;
+    var td=today(),cur=_gymPhase(td),h='';
+    function card(a,left,title,body,col,done){
+      return '<div style="display:flex;align-items:center;gap:8px;padding:5px 10px;margin-bottom:3px;border-radius:8px;border:1px solid '+(a?'var(--a)':'var(--b)')+';background:'+(a?'rgba(99,102,241,0.08)':'var(--s2)')+';'+(done?'opacity:.8':'')+'"><span style="color:'+(done?'var(--g)':'var(--m)')+';font-weight:800;min-width:12px">'+(done?'✓':'•')+'</span><span style="font-size:11px;color:'+(a?'var(--t)':'var(--m)')+'">'+left.replace(/<br>/g," · ").replace(/<[^>]+>/g,"")+' · '+title+(a?' ◀ ahora':'')+'</span></div>';
+      return '<div style="display:flex;gap:10px;padding:8px 10px;margin-bottom:5px;border-radius:8px;border:1px solid '+(a?'var(--a)':'var(--b)')+';background:'+(a?'rgba(99,102,241,0.08)':'var(--s2)')+'"><div style="font-size:11px;font-weight:800;color:'+(a?'var(--a)':'var(--m)')+';min-width:58px">'+left+'</div><div><div style="font-size:12px;font-weight:700;color:var(--t)">'+title+(a?' ◀ ahora':'')+'</div><div style="font-size:11px;color:var(--m);line-height:1.5">'+body+'</div></div></div>';
+    }
+    h+='<div style="font-size:11px;color:var(--m);margin-bottom:8px;line-height:1.5">Semana 1 = lunes 16 de noviembre.</div>';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin:6px 0">Hasta las vacaciones</div>';
+    for(var i=0;i<B1.length;i++){
+      var s=_ds2t(B1[i].from),e=(i<B1.length-1)?_ds2t(B1[i+1].from)-86400000:_ds2t('2026-12-30');
+      var a=td>=B1[i].from&&td<=(i<B1.length-1?B1[i+1].from:'2026-12-31')&&!(i<B1.length-1&&td>=B1[i+1].from);
+      a=(_gymPhase(td).label===B1[i].label&&td<'2026-12-31');
+      var doneW=td>(i<B1.length-1?new Date(_ds2t(B1[i+1].from)-86400000).toISOString().slice(0,10):'2026-12-30');
+      h+=card(a,'Sem '+(i+1)+'<br><span style="font-weight:600">'+_fd(s)+'</span>',B1[i].label+' · '+B1[i].rir,B1[i].note,null,doneW);
+    }
+    h+=card(td>='2026-12-31'&&td<='2027-01-07','31 dic – 7 ene','Vacaciones · sin gym','Pausa completa de gym y running.',null,td>'2027-01-07');
+    h+=card(td>='2027-01-08'&&td<'2027-01-18','8 – 17 ene','Reentrada · RIR 3','Una serie menos por ejercicio y sin fallo hasta el 17/1.',null,td>='2027-01-18');
+    var TK=['fallo','restpause','drop','myo'],end=_ds2t('2027-08-16'),b=0,st=new Date(2027,0,18).getTime(),bh='',nowB=false;
+    while(st<end){
+      var en=Math.min(st+27*86400000,end-86400000);
+      var actNow=false;try{var q=_gymPhase(td);actNow=(q.blk===b+2);}catch(e){}
+      if(actNow) nowB=true;
+      bh+=card(actNow,'Bloque '+(b+1)+'<br><span style="font-weight:600">'+_fd(st)+'</span>',TECH[TK[b%4]].n+' → '+TECH[TK[(b+1)%4]].n,_fd(st)+' – '+_fd(en)+'. Volumen, intensificación, pico y descarga.',null,td>new Date(en).toISOString().slice(0,10));
+      st+=28*86400000;b++;
+    }
+    h+='<div style="border:1px solid var(--b);border-radius:8px;overflow:hidden;margin-top:6px"><div onclick="var n=this.nextElementSibling;n.style.display=n.style.display===\'none\'?\'block\':\'none\'" style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;cursor:pointer;background:var(--s2)"><span style="font-size:12px;font-weight:700;color:var(--t)">Bloques de 4 semanas (18 ene – 15 ago)</span><span style="color:var(--m)">›</span></div><div style="display:none;padding:8px">'+bh+'</div></div>';
+    el.innerHTML=h;
+  };
+  window._gymRaceWeek=function(ds){
+    try{
+      var t=_ds2t(ds),dw=new Date(t).getDay(),mon=t-((dw+6)%7)*86400000,sun=mon+6*86400000;
+      for(var i=0;i<RACES.length;i++){var rt=_ds2t(RACES[i].d);if(rt>=mon&&rt<=sun&&rt>=t) return RACES[i];}
+    }catch(e){}
+    return null;
+  };
+  // Minutos estimados de un día (calentamiento 7 + fuerza/core + estiramientos 6)
+  window._gymEstMin=function(plan,p,dk,ds){
+    var light=(dk==='martes')&&!!_gymRaceWeek(ds||today());
+    var items=plan.exer||[];if(!items.length) return null;
+    function nS(it){var m=(it.sets||'').match(/^(\d+)×/);var n=m?+m[1]:3;if((p.deload||light)&&it.kind!=='core'&&n>2) n-=1;return n;}
+    var sec=0,coreSec=0,groups=0,i=0;
+    for(;i<items.length;i++){
+      var it=items[i];
+      if(it.kind==='core'){coreSec+=nS(it)*((it.tsec||40)+30);continue;}
+      groups++;
+      var nx=items[i+1];
+      if(it.ss&&/1$/.test(it.ss)&&nx&&nx.ss&&nx.ss.charAt(0)===it.ss.charAt(0)){
+        sec+=Math.max(nS(it),nS(nx))*(40+40+Math.max(it.rest||60,nx.rest||60));i++;
+      } else sec+=nS(it)*(40+(it.rest||75));
+      if(it.kind==='iso'&&p.tech&&!p.deload&&!light) sec+=90; // técnica en la última serie
+      if(it.kind==='main'&&groups===1) sec+=180; // series de aproximación del primer básico
+    }
+    sec+=Math.max(0,groups-1)*60+60;
+    var f=Math.round(sec/60),c=Math.round(coreSec/60);
+    return {w:(dk==='martes'?8:7),f:f,c:c,s:6,tot:(dk==='martes'?8:7)+f+c+6};
+  };
+})();
+</script>
+
 <script id="xt-extras">
 /* ===== MiPlan · EXTRAS v3 =====
    Sugerencias de peso, récords y gráficas, historial editable, ejercicios propios,
@@ -8326,7 +8612,7 @@ window.xtRunRealRender=function(){
     '<div class="xt-out" id="xr-out"></div>'+
     '<button class="btn btg" style="margin-top:10px" onclick="xtSaveRunReal()">💾 Guardar datos de la sesión</button>'+
     (s.dist?'<button class="btn bth" style="margin-top:8px" onclick="xtClearRunReal()">Quitar distancia y tiempo</button>':'')+
-    '<div class="xt-hint">Pon lo que marque tu Mi Band al terminar. Con esto la app calcula ritmo y dibuja tu evolución.</div></div></div>';
+    '<div class="xt-hint">Pon lo que marque tu reloj o app al terminar. Con esto la app calcula ritmo y dibuja tu evolución.</div></div></div>';
   el.innerHTML=h;xtLivePace();
 };
 window.xtSaveRunReal=function(){
@@ -8352,13 +8638,21 @@ window.xtClearRunReal=function(){
 
 /* ---- pestaña Progreso ---- */
 var RACES=[
-  {d:'2026-12-12',n:'Test de 3 km',km:3,goal:'Cerrar el 3 km en menos de 18:00 (6:00/km)',tag:'test'},
-  {d:'2026-12-27',n:'San Silvestre · domingo',km:6,goal:'6 km por debajo de 6:00/km (menos de 36:00)',tag:'race'},
-  {d:'2026-12-31',n:'San Silvestre · jueves',km:6,goal:'6 km por debajo de 6:00/km (menos de 36:00)',tag:'race'}
+  {d:'2026-12-12',n:'Test de 3 km',km:3,goal:'3 km en 20:30-21:30 (6:50-7:10/km)',tag:'test'},
+  {d:'2026-12-27',n:'San Silvestre · domingo (ensayo)',km:6.6,goal:'6,6 km (2 vueltas de 3,3 km), salida 11:30: correrla sin parar (si hace falta, parar 1 minuto)',tag:'race'},
+  {d:'2026-12-31',n:'San Silvestre · jueves',km:6,goal:'6 km a 6:40-7:00/km (40-42 min)',tag:'race'},
+  {d:'2027-02-20',n:'Test de 3 km',km:3,goal:'3 km en 19:30 o menos (6:30/km)',tag:'test'},
+  {d:'2027-04-03',n:'Test de 5 km',km:5,goal:'5 km en 30:00 o menos (6:00/km)',tag:'test'},
+  {d:'2027-05-15',n:'Test de 5 km',km:5,goal:'5 km en 26:30 o menos (5:18/km)',tag:'test'},
+  {d:'2027-06-12',n:'Test de 6 km',km:6,goal:'6 km en 32:00 o menos (5:20/km)',tag:'test'},
+  {d:'2027-07-17',n:'Test de 10 km',km:10,goal:'10 km en 52:00 o menos (5:12/km)',tag:'test'},
+  {d:'2027-07-27',n:'Reto 1 de agosto · 6 km',km:6,goal:'6 km por debajo de 30:00 (<5:00/km)',tag:'test'},
+  {d:'2027-07-31',n:'Reto 1 de agosto · 10 km',km:10,goal:'10 km en 50:00 o menos (5:00/km)',tag:'test'}
 ];
 function raceCardsHTML(){
   var t=today(),h='';
-  RACES.forEach(function(r){
+  RACES.forEach(function(r,i){
+    if(r.d>='2027-01-01'&&i>0&&daysBetween(t,RACES[i-1].d)>=0) return; /* los retos siguientes aparecen cuando acaba el anterior */
     var n=daysBetween(t,r.d),wk=Math.floor(n/7);
     var st=n>0?('<span class="xt-days">'+n+'</span><span class="xt-dl">día'+(n===1?'':'s')+'</span>'):(n===0?'<span class="xt-days">HOY</span>':'<span class="xt-dl">hecha</span>');
     h+='<div class="xt-race '+(n<0?'xt-past':'')+'"><div class="xt-rl"><div class="xt-rn">'+(r.tag==='test'?'🧪 ':'🏁 ')+esc(r.n)+'</div><div class="xt-rd">'+fd(r.d)+(n>0?' · '+wk+' sem y '+(n%7)+' d':'')+'</div><div class="xt-rg">🎯 '+esc(r.goal)+'</div></div><div class="xt-rr">'+st+'</div></div>';
@@ -8414,7 +8708,7 @@ function runListHTML(){
   all.slice(0,60).forEach(function(s){
     var d=s.dist>0&&s.timeSec>0;
     var feel=s.feeling==='bien'?'😊':s.feeling==='regular'?'😐':s.feeling==='mal'?'😓':'';
-    h+='<div class="xt-rrow"><div style="flex:1;min-width:0"><div class="xt-rt">'+fd(s.date)+' · Semana '+(s.week||'?')+' '+feel+'</div>'+
+    h+='<div class="xt-rrow"><div style="flex:1;min-width:0"><div class="xt-rt">'+fd(s.date)+' · '+(s.week?_wLbl(s.week):'Semana ?')+' '+feel+'</div>'+
       '<div class="xt-rs">'+(d?('<b>'+kgTxt(s.dist)+' km</b> en '+fmtTime(s.timeSec)+' · '+fmtPace(s.timeSec/s.dist)+(s.hr?' · ❤️ '+s.hr:'')):esc(s.work||'Sesión'))+'</div></div>'+
       '<button class="btn bth btn-sm" onclick="xtEditRun(\''+s.date+'\')">✏️</button><button class="btn bth btn-sm xt-danger" onclick="xtDelRun(\''+s.date+'\')">🗑</button></div>';
   });
@@ -8458,7 +8752,8 @@ window.xtDelRun=function(date){
 };
 
 /* ================= PESO ================= */
-var GOAL_W=82,GOAL_D='2026-12-25',BASE_D='2026-11-10';
+var GOAL_W=84,GOAL_LOW=82,GOAL_D='2026-12-24',BASE_D='2026-11-10'; // reto de diciembre: 84 firme, 82 de reto
+var AUG_D='2027-08-01',AUG_LO=80,AUG_HI=82; // reto de agosto
 function weights(){var w=ld('weights',_wDef());return Array.isArray(w)?w.filter(function(x){return x&&x.date&&!isNaN(x.val);}).sort(function(a,b){return a.date<b.date?-1:1;}):[];}
 function weightBase(ws){
   var after=ws.filter(function(w){return w.date>=BASE_D;})[0];
@@ -8481,7 +8776,7 @@ window.drawChart=function(ws){
   var cut=addDays(today(),-110);
   var pts=ws.filter(function(w){return w.date>=cut;}); if(pts.length<3) pts=ws.slice(-4);
   var d0=pts[0].date<base.date?pts[0].date:base.date;
-  var vals=pts.map(function(w){return w.val;}).concat([GOAL_W,base.val]);
+  var vals=pts.map(function(w){return w.val;}).concat([GOAL_W,GOAL_LOW,base.val]);
   var mn=Math.floor(Math.min.apply(null,vals)-1),mx=Math.ceil(Math.max.apply(null,vals)+1);
   mx=mn+Math.ceil((mx-mn)/4)*4;
   var pad={l:36,r:14,t:12,b:26},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
@@ -8494,8 +8789,8 @@ window.drawChart=function(ws){
     ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
     ctx.fillStyle='#8e96b3';ctx.textAlign='right';ctx.fillText(v.toFixed(0),pad.l-6,y+3);
   }
-  /* zona objetivo 81-83 */
-  ctx.fillStyle='rgba(52,224,161,0.09)';ctx.fillRect(pad.l,Y(83),cW,Y(81)-Y(83));
+  /* zona objetivo 82-84 */
+  ctx.fillStyle='rgba(52,224,161,0.09)';ctx.fillRect(pad.l,Y(84),cW,Y(82)-Y(84));
   /* trayectoria ideal */
   ctx.strokeStyle='rgba(52,224,161,0.85)';ctx.setLineDash([5,4]);ctx.lineWidth=1.6;
   ctx.beginPath();ctx.moveTo(X(base.date),Y(base.val));ctx.lineTo(X(GOAL_D),Y(GOAL_W));ctx.stroke();ctx.setLineDash([]);
@@ -8505,7 +8800,7 @@ window.drawChart=function(ws){
   pts.forEach(function(w){ctx.fillStyle='#6d8dff';ctx.beginPath();ctx.arc(X(w.date),Y(w.val),3.6,0,Math.PI*2);ctx.fill();});
   /* meta */
   ctx.fillStyle='#34e0a1';ctx.beginPath();ctx.arc(X(GOAL_D),Y(GOAL_W),5,0,Math.PI*2);ctx.fill();
-  ctx.textAlign='right';ctx.font='bold 10px -apple-system,sans-serif';ctx.fillText('82 kg · 25/12',W-pad.r,Y(GOAL_W)-9);
+  ctx.textAlign='right';ctx.font='bold 10px -apple-system,sans-serif';ctx.fillText('82-84 kg · 24/12',W-pad.r,Y(GOAL_W)-9);
   /* hoy */
   var tx=X(today());
   if(tx>pad.l&&tx<W-pad.r){ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(tx,pad.t);ctx.lineTo(tx,pad.t+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#8e96b3';ctx.textAlign='center';ctx.font='9px -apple-system,sans-serif';ctx.fillText('hoy',tx,H-8);}
@@ -8522,16 +8817,26 @@ window.xtWeightGoal=function(){
   var cls,msg;
   if(days<=0){cls='ds';msg=cur.val<=GOAL_W+1?'Objetivo cumplido.':'Fecha límite pasada: toca fijar una nueva meta.';}
   else if(left<=0){cls='dd';msg='Ya estás en el objetivo. Mantén y no sueltes la dieta.';}
-  else if(need>1.2){cls='du';msg='Ritmo necesario '+fmt1(need)+' kg/sem: es demasiado y perderías músculo. Lo realista es acercarte a 83-84 kg; no te frustres, pero no sueltes nada.';}
+  else if(need>1.2){cls='du';msg='Ritmo necesario '+fmt1(need)+' kg/sem: es demasiado y perderías músculo. Lo realista es ~0,6-0,8 kg/sem hasta el 84; no te frustres, pero no sueltes nada.';}
   else if(need>0.8){cls='du';msg='Ritmo exigente ('+fmt1(need)+' kg/sem): lo del plan es ~0,5. Solo sale con cero fallos de dieta y todos los entrenos.';}
   else if(need>0.3){cls='dd';msg='Ritmo razonable ('+fmt1(need)+' kg/sem). Solo falta ejecutarlo cada día.';}
   else{cls='dd';msg='Vas sobrado de ritmo. No bajes el listón.';}
   var status=days<=0?'':!base.real?'Aún no hay pesaje base: el primero del lunes 9/11 fija la línea.':(Math.abs(diff)<0.3?'Vas clavado a la trayectoria.':(diff>0?'Vas '+fmt1(diff)+' kg por encima de la trayectoria. Hay que apretar.':'Vas '+fmt1(-diff)+' kg por debajo de la trayectoria. Bien.'));
-  el.innerHTML='<div class="card"><div class="ch"><span class="ci">🎯</span><span class="ct">Camino a 82 kg · 25/12</span><span class="cbadge '+(left<=0?'bg':'bb')+'">'+(days>0?days+' días':'fin')+'</span></div><div class="cb">'+
+  el.innerHTML='<div class="card"><div class="ch"><span class="ci">🎯</span><span class="ct">Reto 24/12 · 82-84 kg</span><span class="cbadge '+(left<=0?'bg':'bb')+'">'+(days>0?days+' días':'fin')+'</span></div><div class="cb">'+
     '<div class="xt-sum"><div><b>'+fmt1(cur.val)+'</b><span>actual (kg)</span></div><div><b>'+(left>0?fmt1(left):'0,0')+'</b><span>por perder</span></div><div><b>'+(days>0&&left>0?fmt1(need):'—')+'</b><span>kg/semana</span></div></div>'+
     '<div class="xt-goal '+cls+'">'+esc(msg)+'</div>'+
-    '<div class="xt-ct" style="margin-top:8px">'+esc(status)+(base.real?' Línea desde '+fmt1(base.val)+' kg ('+fdShort(base.date)+').':'')+'</div></div></div>';
+    '<div class="xt-ct" style="margin-top:8px">'+esc(status)+(base.real?' Línea desde '+fmt1(base.val)+' kg ('+fdShort(base.date)+').':'')+'</div></div></div>'+(days<=0?_augGoalCard(cur):'');
 };
+function _augGoalCard(cur){
+  var days=daysBetween(today(),AUG_D),wks=Math.max(days/7,0.01),mid=(AUG_LO+AUG_HI)/2;
+  var left=cur.val-AUG_HI,leftMid=Math.max(0,cur.val-mid),rate=days>0?leftMid/wks:0;
+  var ms=[['11 ene','85-86','rebote de fiestas'],['14 feb','84',''],['4 abr','83',''],['30 may','82',''],['25 jul','80,5-81,5','']];
+  var rows=ms.map(function(m){return '<div class="xt-tr"><b>'+m[0]+'</b><span>'+m[1]+' kg'+(m[2]?' · '+m[2]:'')+'</span></div>';}).join('');
+  return '<div class="card" style="margin-top:8px"><div class="ch"><span class="ci">🏁</span><span class="ct">Reto 1 de agosto · 80-82 kg</span><span class="cbadge bb">'+(days>0?days+' días':'fin')+'</span></div><div class="cb">'+
+    '<div class="xt-sum"><div><b>'+fmt1(cur.val)+'</b><span>actual (kg)</span></div><div><b>'+(left>0?fmt1(left):'0,0')+'</b><span>hasta 82</span></div><div><b>'+(days>0&&leftMid>0?fmt1(rate):'—')+'</b><span>kg/semana (a 81)</span></div></div>'+
+    '<div class="xt-goal dd">Poca grasa, fuerza y algo marcado: no es solo el peso. Mide la cintura (a la altura del ombligo) y hazte una foto de frente y otra de lado cada 4 semanas. Si el peso se estanca pero la cintura baja y las cargas suben, vas bien.</div>'+
+    '<div class="xt-ct" style="margin:8px 0 4px">Ruta orientativa (se revisa cada 6 semanas con tus datos):</div>'+rows+'</div></div>';
+}
 (function(){
   var orig=window.renderWeight; if(typeof orig!=='function') return;
   window.renderWeight=function(){orig.apply(this,arguments);try{xtWeightGoal();xtBackupInfo();}catch(e){console.error('xt weight',e);}};
