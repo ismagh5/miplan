@@ -989,13 +989,13 @@ Object.values(RECIPES).forEach(function(arr){
 
 
 const QUOTES=[
-  {t:"Started from the bottom, now we here.",a:"Drake",s:"Started From The Bottom"},
-  {t:"I'm not a businessman, I'm a business, man.",a:"Jay-Z",s:"Diamonds from Sierra Leone (Remix)"},
-  {t:"Can't knock the hustle.",a:"Jay-Z",s:"Can't Knock the Hustle"},
-  {t:"I'm not afraid to take a stand.",a:"Eminem",s:"Not Afraid"},
-  {t:"I got loyalty, got royalty inside my DNA.",a:"Kendrick Lamar",s:"DNA."},
-  {t:"We ain't picture perfect but we worth the picture still.",a:"Kendrick Lamar",s:"Money Trees"},
-  {t:"Life is a wheel of fortune and it's my turn to spin it.",a:"Kanye West",s:"Through the Wire"}
+  {t:"Started from the bottom, now we here.",a:"Drake",s:"Started From The Bottom",u:"https://music.apple.com/es/song/1440829611"},
+  {t:"I'm not a businessman, I'm a business, man.",a:"Jay-Z",s:"Diamonds from Sierra Leone (Remix)",u:"https://music.apple.com/es/song/1445124624"},
+  {t:"Can't knock the hustle.",a:"Jay-Z",s:"Can't Knock the Hustle",u:"https://music.apple.com/es/song/1475940564"},
+  {t:"I'm not afraid to take a stand.",a:"Eminem",s:"Not Afraid",u:"https://music.apple.com/es/song/1440781847"},
+  {t:"I got loyalty, got royalty inside my DNA.",a:"Kendrick Lamar",s:"DNA.",u:"https://music.apple.com/es/song/1440881357"},
+  {t:"We ain't picture perfect but we worth the picture still.",a:"Kendrick Lamar",s:"Money Trees",u:"https://music.apple.com/es/song/1440818969"},
+  {t:"Life is a wheel of fortune and it's my turn to spin it.",a:"Kanye West",s:"Through the Wire",u:"https://music.apple.com/es/song/1437467903"}
 ];
 
 var RECIPE_DETAILS={};
@@ -2620,8 +2620,8 @@ function renderHome(){
   if(_au){
     var _yt='https://music.apple.com/es/search?term='+encodeURIComponent(q.a+' '+q.s.replace(/\s*\(Remix\)/,''));
     var _ck='np_url_'+q.a+'|'+q.s, _cu=ld(_ck,null);
-    _au.innerHTML='<a class="np" id="np-link" href="'+(_cu||_yt)+'" target="_blank" rel="noopener"><span class="np-disc"></span><span class="np-t"><span class="np-s">'+q.s+'</span><span class="np-a">'+q.a+'</span></span><span class="np-p">▶ Escuchar</span></a>';
-    if(!_cu) _resolveSongUrl(q,_ck);
+    _au.innerHTML='<a class="np" id="np-link" href="'+(q.u||_cu||_yt)+'" target="_blank" rel="noopener"><span class="np-disc"></span><span class="np-t"><span class="np-s">'+q.s+'</span><span class="np-a">'+q.a+'</span></span><span class="np-p">▶ Escuchar</span></a>';
+    if(!_cu&&!q.u) _resolveSongUrl(q,_ck);
   }
 
   // Weight progress
@@ -5355,6 +5355,7 @@ function renderGymPage(targetId,dkOverride,readOnly){
   if(!el) return;
   var dk=dkOverride||_gymDkFor();
   if(!readOnly) _gymCurDk=dk;
+  if(targetId==='gt-casa'&&!readOnly&&window.renderCasaDay&&window.GYM_CASA&&GYM_CASA[dk]){window.renderCasaDay(el,dk);return;}
   var plan=GYM_PLAN[dk];
   var logDate=getLogDate();
   var todayKey=today();
@@ -7962,6 +7963,87 @@ function generateShopListFromPlan(){
 })();
 </script>
 
+<script id="casa-mode">
+/* ===== MODO CASA: la misma sesión del día, sin gym (banda elástica, mochila o garrafas, esterilla y una mesa/silla estable) ===== */
+var GYM_CASA={
+ lunes:[
+  {n:'Flexiones con los pies elevados (en una silla)',muscle:'Pectoral · Deltoides ant. · Tríceps',sets:'4×8-15',rir:'RIR 1-2',rest:'90 s',desc:'Manos algo más anchas que los hombros, pies en una silla o sofá. Cuerpo recto de cabeza a talones (aprieta glúteos y abdomen). Baja en 3 s hasta casi tocar el suelo con el pecho, codos a 45°, y sube sin bloquear. Si no llegas a 8 reps, pon los pies en el suelo; si pasas de 15, añade una mochila cargada en la espalda.'},
+  {n:'Flexiones lentas (bajada 4 s, pausa 1 s abajo)',muscle:'Pectoral · Tríceps',sets:'3×8-12',rir:'RIR 1-2',rest:'75 s',desc:'Pies en el suelo, mismo ajuste que arriba pero con tempo lento: es lo que sustituye al peso extra. Para el pecho es más eficaz una flexión lenta y limpia que muchas rápidas.'},
+  {n:'Pike push-up (cadera alta)',muscle:'Deltoides · Tríceps',sets:'3×8-12',rir:'RIR 1-2',rest:'90 s',desc:'Posición de V invertida, manos algo más anchas que los hombros. Baja la cabeza entre las manos con los codos a 45° y empuja hacia arriba. Es tu press militar en casa. Para más dificultad, pon los pies en una silla.'},
+  {n:'Elevaciones laterales con banda (o con garrafas)',muscle:'Deltoides lateral',sets:'3×15-20',rir:'RIR 1-2',rest:'60 s',desc:'Pisa la banda con los pies y sube los brazos a los lados hasta la altura de los hombros, codos ligeramente flexionados. Baja en 2 s. Sin balanceo del tronco. Si usas garrafas de agua, sube las manos con el pulgar algo más bajo que el meñique.'},
+  {n:'Aperturas de pecho con banda',muscle:'Pectoral',sets:'3×12-15',rir:'RIR 1-2',rest:'60 s',desc:'Banda anclada detrás de ti (puerta) a la altura del pecho. Brazos abiertos con codos ligeramente flexionados; junta las manos al frente apretando el pecho 1 s. Vuelve despacio.'},
+  {n:'Fondos de tríceps en silla',muscle:'Tríceps',sets:'3×10-15',rir:'RIR 1-2',rest:'75 s',desc:'Manos en el borde de una silla estable, piernas estiradas o dobladas (más fácil). Baja hasta que los codos queden a 90° sin que los hombros se adelanten, y sube. Si te pasas de 15, pon peso (mochila) en el regazo.'},
+  {n:'Extensión de tríceps sobre la cabeza con banda',muscle:'Tríceps (cabeza larga)',sets:'3×12-15',rir:'RIR 1-2',rest:'60 s',desc:'Pisa la banda con un pie y súbela por detrás de la cabeza agarrándola con las dos manos. Extiende los codos hacia arriba manteniendo los codos pegados a la cabeza.'}
+ ],
+ martes:[
+  {n:'Sentadilla búlgara con mochila',muscle:'Cuádriceps · Glúteo',sets:'4×8-12 por pierna',rir:'RIR 1-2',rest:'90 s',desc:'Pie trasero apoyado en una silla o sofá, mochila cargada pegada al pecho (libros o botellas de agua). Baja en 3 s hasta que el muslo delantero quede paralelo al suelo y sube empujando con el talón. Es tu sentadilla de barra en casa.'},
+  {n:'Sentadilla con mochila y pausa de 2 s abajo',muscle:'Cuádriceps · Glúteo',sets:'3×12-15',rir:'RIR 1-2',rest:'75 s',desc:'Mochila al pecho, pies algo más anchos que los hombros. Baja en 3 s, pausa 2 s abajo con el tronco erguido, y sube sin perder tensión.'},
+  {n:'Hip thrust con mochila (espalda en el sofá)',muscle:'Glúteo',sets:'3×10-15',rir:'RIR 1-2',rest:'75 s',desc:'Parte alta de la espalda apoyada en un sofá o cama, mochila cargada sobre la cadera. Sube la cadera hasta alinear tronco y muslos, aprieta el glúteo 1-2 s arriba y baja controlado. Si te sobra, hazlo a una pierna.'},
+  {n:'Peso muerto rumano a una pierna con mochila',muscle:'Isquios · Glúteo · Espalda baja',sets:'3×10-12 por pierna',rir:'RIR 1-2',rest:'75 s',desc:'De pie sobre una pierna, mochila o garrafa en las manos. Cadera hacia atrás con la espalda neutra, baja hasta sentir el isquio y vuelve apretando el glúteo. Apóyate con una mano en una pared si pierdes el equilibrio.'},
+  {n:'Curl de isquios con deslizadores o toalla',muscle:'Isquiotibiales',sets:'3×8-12',rir:'RIR 1-2',rest:'75 s',desc:'Tumbado boca arriba con los talones sobre toallas en suelo liso (o deslizadores). Sube la cadera y desliza los talones hacia el glúteo, y vuelve controlando la vuelta (3 s).'},
+  {n:'Gemelos a una pierna en un escalón',muscle:'Gemelo · Sóleo',sets:'4×15-20 por pierna',rir:'RIR 1-2',rest:'60 s',desc:'Punta del pie en el borde de un escalón, agarrado a la pared para el equilibrio. Sube lo máximo posible, pausa 1 s arriba y baja hasta el estiramiento completo.'},
+  {n:'Sentadilla isométrica en la pared (40 s)',muscle:'Cuádriceps',sets:'3×40 s',rir:'RIR 1',rest:'60 s',desc:'Espalda contra la pared y muslos paralelos al suelo, rodillas sobre los tobillos. Aguanta 40 s. Sustituye a la extensión de cuádriceps de máquina.'}
+ ],
+ miercoles:[
+  {n:'Remo invertido bajo una mesa estable',muscle:'Dorsal · Romboides · Bíceps',sets:'4×8-12',rir:'RIR 1-2',rest:'90 s',desc:'Túmbate bajo una mesa robusta (comprueba que aguanta tu peso) y agárrate del borde con las manos algo más anchas que los hombros. Cuerpo recto, talones en el suelo. Sube el pecho hasta el borde juntando las escápulas y baja controlado. Para dificultad: pies elevados; para más fácil: rodillas dobladas.'},
+  {n:'Jalón con banda anclada arriba (puerta)',muscle:'Dorsal ancho',sets:'4×12-15',rir:'RIR 1-2',rest:'75 s',desc:'Banda anclada en lo alto de una puerta cerrada, arrodillado o de pie. Tira de la banda hacia el pecho llevando los codos hacia abajo y atrás. Aprieta 1 s abajo y vuelve despacio.'},
+  {n:'Remo sentado con banda (agarre neutro)',muscle:'Dorsal · Romboides',sets:'3×12-15',rir:'RIR 1-2',rest:'75 s',desc:'Sentado en el suelo con la banda alrededor de los pies. Tira hacia el abdomen con las manos en agarre neutro, junta las escápulas 1 s y vuelve controlado.'},
+  {n:'Pájaros con banda (band pull-apart)',muscle:'Deltoides posterior · Romboides',sets:'3×15-20',rir:'RIR 1-2',rest:'60 s',desc:'Banda a la altura del pecho con los brazos estirados. Sepárala hacia los lados juntando las escápulas. Sin encogerte de hombros.'},
+  {n:'Curl de bíceps con banda (pisándola)',muscle:'Bíceps',sets:'3×12-15',rir:'RIR 1-2',rest:'60 s',desc:'Pisa la banda con los dos pies y sube las manos con los codos pegados al cuerpo. Baja en 3 s. Si tienes mochila: curl con la mochila agarrada por las asas.'},
+  {n:'Curl martillo con garrafas o mochila',muscle:'Braquial · Bíceps',sets:'3×10-12',rir:'RIR 1-2',rest:'60 s',desc:'Una garrafa de agua en cada mano, palmas enfrentadas. Sube sin mover los codos y baja en 3 s.'},
+  {n:'Encogimientos con mochila',muscle:'Trapecio',sets:'3×15',rir:'RIR 1-2',rest:'60 s',desc:'De pie con la mochila cargada colgando de las manos. Sube los hombros hacia las orejas, pausa 1 s arriba y baja controlado.'}
+ ],
+ jueves:[
+  {n:'Pike push-up con los pies elevados (en una silla)',muscle:'Deltoides · Tríceps',sets:'4×6-10',rir:'RIR 1-2',rest:'90 s',desc:'Pies en una silla, caderas altas en V invertida. Baja la cabeza entre las manos y empuja. Es la versión difícil: si no llegas a 6 reps, hazlo con los pies en el suelo.'},
+  {n:'Flexiones con agarre cerrado',muscle:'Tríceps · Pectoral',sets:'3×10-15',rir:'RIR 1-2',rest:'75 s',desc:'Manos a la anchura de los hombros o algo más juntas, codos pegados al cuerpo al bajar. Tempo lento (3 s bajada).'},
+  {n:'Press militar con banda de pie',muscle:'Deltoides',sets:'3×12-15',rir:'RIR 1-2',rest:'75 s',desc:'Pisa la banda con los pies y empuja las manos desde los hombros hacia arriba sin arquear la espalda. Baja en 2-3 s.'},
+  {n:'Elevaciones laterales con banda',muscle:'Deltoides lateral',sets:'4×15-20',rir:'RIR 1-2',rest:'60 s',desc:'Misma ejecución que el lunes. Sube hasta los hombros y baja en 2 s sin balanceo.'},
+  {n:'Aperturas con banda',muscle:'Pectoral',sets:'3×12-15',rir:'RIR 1-2',rest:'60 s',desc:'Banda anclada detrás de ti a la altura del pecho. Junta las manos al frente apretando el pecho 1 s.'},
+  {n:'Fondos de tríceps en silla',muscle:'Tríceps',sets:'3×10-15',rir:'RIR 1-2',rest:'75 s',desc:'Manos en el borde de una silla estable, codos a 90° abajo. Si te pasas de 15, pon una mochila en el regazo.'},
+  {n:'Extensión de tríceps sobre la cabeza con banda',muscle:'Tríceps (cabeza larga)',sets:'3×12-15',rir:'RIR 1-2',rest:'60 s',desc:'Pisa la banda y extiende los codos por encima de la cabeza, con los codos pegados a las orejas.'}
+ ],
+ viernes:[
+  {n:'Remo invertido bajo la mesa (agarre supino)',muscle:'Dorsal · Bíceps',sets:'4×8-12',rir:'RIR 1-2',rest:'90 s',desc:'Como el remo invertido del miércoles, pero con las palmas hacia ti (supino). Trabaja más el bíceps y la parte baja del dorsal.'},
+  {n:'Jalón con banda agarre estrecho (puerta)',muscle:'Dorsal',sets:'3×12-15',rir:'RIR 1-2',rest:'75 s',desc:'Agarre estrecho y neutro. Tira hacia el pecho con los codos pegados al cuerpo y aprieta 1 s abajo.'},
+  {n:'Pull over con mochila (tumbado)',muscle:'Dorsal · Serrato · Pectoral',sets:'3×12',rir:'RIR 1-2',rest:'75 s',desc:'Tumbado boca arriba con la mochila cargada en las dos manos sobre el pecho. Llévala por detrás de la cabeza con los brazos casi estirados y vuelve apretando el dorsal.'},
+  {n:'Curl de bíceps con banda sentado',muscle:'Bíceps',sets:'3×10-12',rir:'RIR 1-2',rest:'60 s',desc:'Sentado con la banda bajo los pies. Sube con los codos pegados y baja en 3 s.'},
+  {n:'Pájaros con banda',muscle:'Deltoides posterior · Romboides',sets:'3×15',rir:'RIR 1-2',rest:'60 s',desc:'Banda a la altura del pecho, separa los brazos hacia los lados juntando escápulas.'},
+  {n:'Superman con pausa de 2 s (en el suelo)',muscle:'Lumbar · Glúteo · Espalda',sets:'3×12',rir:'RIR 1-2',rest:'60 s',desc:'Boca abajo, sube a la vez brazos y piernas y aguanta 2 s arriba. Baja controlado. Sustituye a las hiperextensiones.'},
+  {n:'Gemelos a una pierna en un escalón (opcional)',muscle:'Gemelo · Sóleo',sets:'3×15-20 por pierna',rir:'RIR 1-2',rest:'60 s',desc:'Punta del pie en el borde de un escalón; sube al máximo y baja hasta estirar el gemelo.'}
+ ]
+};
+function _casaHist(dk,logDate){var k='casa_ck_'+logDate+'_'+dk;return {k:k,v:ld(k,{})};}
+window.casaToggle=function(dk,i){
+  var d=getLogDate(),h=_casaHist(dk,d);
+  h.v[i]=!h.v[i];sd(h.k,h.v);
+  var el=document.getElementById('gt-casa');if(el) renderCasaDay(el,dk);
+};
+window.renderCasaDay=function(el,dk){
+  var plan=GYM_PLAN[dk],ex=GYM_CASA[dk];if(!plan||!ex){return;}
+  var logDate=getLogDate(),done=ld('gym_done_'+today(),false);
+  var core=plan.exer.filter(function(e){return e.kind==='core';});
+  var all=ex.concat(core);
+  var st=_casaHist(dk,logDate).v;
+  var h='<div style="padding:10px 16px">';
+  h+='<div style="background:var(--s2);border-radius:12px;padding:12px 14px;margin-bottom:10px"><div style="font-size:20px;margin-bottom:4px">🏠 <strong style="font-size:15px;color:var(--t)">'+plan.n+' · versión casa</strong></div><div style="font-size:11px;color:var(--o)">🎯 '+plan.obj+'</div>'+
+    '<div style="font-size:11px;color:var(--m);margin-top:6px;line-height:1.5">Los mismos músculos que en el gym. Material: banda elástica, mochila o garrafas, esterilla y una mesa o silla estable. Progresión: cuando llegues al tope de reps en todas las series con buena técnica, pasa a una variante más difícil (pies elevados, más peso en la mochila, tempo más lento).</div></div>';
+  h+=_gymSection('⚡ CALENTAMIENTO (~7 min)','var(--y)',_gymCalHTML(plan.cal),true);
+  var cards='';
+  all.forEach(function(e,i){
+    var on=!!st[i];
+    cards+='<div style="margin-bottom:8px;border:1px solid '+(on?'rgba(61,214,140,0.4)':'rgba(79,142,247,0.3)')+';border-radius:10px;overflow:hidden"><div style="padding:10px 12px;background:'+(on?'rgba(61,214,140,0.05)':'rgba(79,142,247,0.06)')+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t)">'+(i+1)+'. '+e.n+'</div><div style="font-size:10px;color:var(--p);margin-top:2px">'+e.muscle+'</div></div>'+
+      '<div style="text-align:right;flex-shrink:0"><div style="font-size:13px;font-weight:800;color:var(--a)">'+e.sets+'</div><div style="font-size:10px;color:var(--m)">'+(e.rir||'')+(e.rest?' · '+e.rest:'')+'</div></div></div>'+
+      '<details style="margin-top:6px"><summary style="font-size:11px;color:var(--m);cursor:pointer">Cómo se hace</summary><div style="font-size:12px;color:var(--m);line-height:1.55;margin-top:4px">'+e.desc+'</div></details>'+
+      '<button class="btn '+(on?'bth':'btg')+' btn-sm" style="margin-top:8px;width:100%" onclick="casaToggle(\''+dk+'\','+i+')">'+(on?'↩️ Desmarcar':'✅ Hecho')+'</button></div></div>';
+  });
+  h+=_gymSection('💪 EJERCICIOS EN CASA + CORE','var(--a)',cards,true);
+  h+=_gymSection('🧘 POST — Estiramientos (~6 min)','var(--g)',_gymMobHTML(plan.postMob));
+  h+='<button class="btn '+(done?'bth':'btg')+'" style="margin:10px 0" onclick="gymMarkDone()">'+(done?'↩️ Revertir sesión':'✅ Marcar sesión completada')+'</button>';
+  h+='</div>';
+  el.innerHTML=h;
+};
+</script>
 <script id="xt-extras">
 /* ===== MiPlan · EXTRAS v3 =====
    Sugerencias de peso, récords y gráficas, historial editable, ejercicios propios,
