@@ -2377,10 +2377,12 @@ function drawHomeChart(ws){
 var STREAK_MIN_GYM=4, STREAK_MIN_RUN=3, STREAK_RUN3_FROM='2026-11-09'; // desde la semana del 9/11 el running exige 3 días (antes 2)
 // Pausa médica (cirugía del 22/10): esas semanas cuentan como cumplidas y la racha se mantiene.
 var STREAK_PAUSE_WEEKS=['2026-10-19','2026-10-26','2026-11-02','2027-01-04']; // 4/1: vacaciones (gym y running parados del 31/12 al 7/1)
-var STREAK_REDUCED_WEEKS=['2026-12-28']; // semana de la San Silvestre: gym 3 y running 2 (la carrera cuenta)
+var STREAK_REDUCED_WEEKS=['2026-12-28'];
+var STREAK_CUSTOM_WEEKS={'2026-11-16':{g:2,r:2}}; // semana del 16/11: resfriado (martes a jueves sin entrenar): mínimos 2 de gym y 2 de running, una sola vez // semana de la San Silvestre: gym 3 y running 2 (la carrera cuenta)
 function _weekMins(monday){
   var k=monday.getFullYear()+'-'+String(monday.getMonth()+1).padStart(2,'0')+'-'+String(monday.getDate()).padStart(2,'0');
   if(STREAK_PAUSE_WEEKS.indexOf(k)>=0) return {g:0,r:0,pause:true};
+  if(STREAK_CUSTOM_WEEKS[k]) return {g:STREAK_CUSTOM_WEEKS[k].g,r:STREAK_CUSTOM_WEEKS[k].r,pause:false};
   if(STREAK_REDUCED_WEEKS.indexOf(k)>=0) return {g:3,r:2,pause:false};
   return {g:STREAK_MIN_GYM,r:(k>=STREAK_RUN3_FROM?STREAK_MIN_RUN:2),pause:false};
 }
@@ -5362,6 +5364,7 @@ function renderGymPage(targetId,dkOverride,readOnly){
   var done=ld('gym_done_'+todayKey,false);
   var ws=_weekStart();
   var weekDone=parseInt(ld('gym_week_'+ws,0));
+  var _gMin=4; try{_gMin=_weekMins(new Date(ws+'T12:00:00')).g||4;}catch(e){}
   var gymWeekNum=getCurrentGymWeek();
   var prog=getGymProgression();
   _gymSec=0;
@@ -5373,7 +5376,7 @@ function renderGymPage(targetId,dkOverride,readOnly){
     h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
     h+='<div><div style="font-size:12px;font-weight:600;color:var(--a)">📊 '+(gymWeekNum>0?'Semana '+gymWeekNum+' · ':'')+prog.label+'</div><div style="font-size:10px;color:var(--m);margin-top:2px">Esta semana: '+calWeekRange()+'</div>';
     h+='<div style="font-size:10px;color:var(--m);margin-top:2px">'+prog.setsNote+'</div><div style="font-size:10px;color:var(--m);margin-top:3px;line-height:1.4;max-width:230px">'+prog.phaseNote+'</div></div>';
-    h+='<div style="font-size:11px;color:var(--m)">'+(weekDone>=4?'✅ Semana OK':''+weekDone+'/4 mínimo')+'</div></div>';
+    h+='<div style="font-size:11px;color:var(--m)">'+(weekDone>=_gMin?'✅ Semana OK':''+weekDone+'/'+_gMin+' mínimo')+'</div></div>';
     h+='<div style="display:flex;gap:6px">';
     ['L','M','X','J','V'].forEach(function(d,i){
       h+='<div style="width:32px;height:32px;border-radius:8px;background:'+(i<weekDone?'var(--g)':'var(--b)')+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:'+(i<weekDone?'#0a1a0f':'var(--m)')+'">'+d+'</div>';
@@ -7678,6 +7681,18 @@ function generateShopListFromPlan(){
       sd(xk,ex);
     }
     localStorage.setItem('seed_gym_nov20_v1','1');
+  }catch(err){}
+})();
+
+// Carga única: gym de la semana del 16/11 (lunes 16 Push A y viernes 20 Pull B); el sábado 21 lo marca él cuando lo haga. Semana con mínimos 2+2 por el resfriado.
+(function(){
+  try{
+    if(localStorage.getItem('seed_gym_days_w16nov_v1')) return;
+    ['2026-11-16','2026-11-20'].forEach(function(D){ if(!ld('gym_done_'+D,false)) sd('gym_done_'+D,true); });
+    var n=0; for(var i=0;i<7;i++){ var d=new Date(2026,10,16+i); if(ld('gym_done_'+_dk(d),false)) n++; }
+    var cur=parseInt(ld('gym_week_2026-11-16',0))||0;
+    if(n>cur) sd('gym_week_2026-11-16',n);
+    localStorage.setItem('seed_gym_days_w16nov_v1','1');
   }catch(err){}
 })();
 </script>
