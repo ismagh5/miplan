@@ -7633,6 +7633,53 @@ function generateShopListFromPlan(){
     localStorage.setItem('seed_run_nov15_v1','1');
   }catch(err){}
 })();
+
+// Carga única: running del viernes 20/11/2026 (reloj): 3,46 km en 30:07, FC media 135, máx. 162. Sesión de la semana 1 (la del martes, movida a hoy tras el resfriado).
+(function(){
+  try{
+    if(localStorage.getItem('seed_run_nov20_v1')) return;
+    var D='2026-11-20';
+    var rh=ld('run_hist',[]);
+    var e=rh.filter(function(h){return h.date===D;})[0];
+    if(!e){
+      var wk=Math.max(1,Math.min(_runWeekForDate(D)||4,RUN_WEEKS.length)), rw=RUN_WEEKS[wk-1];
+      e={date:D,week:wk,feeling:'',work:rw.work,workDetail:rw.workDetail,title:rw.title,tip:rw.tip,warmup:rw.warmup||[],cooldown:rw.cooldown||[],checks:{warmup:true,work:true,cooldown:true}};
+      rh.unshift(e);
+      sd('run_checks_'+D,e.checks);
+    }
+    if(!e.dist)e.dist=3.46; if(!e.timeSec)e.timeSec=1807; if(!e.duration)e.duration=30; if(!e.hr)e.hr=135;
+    if(!e.notes) e.notes='Viernes 20/11, salida 20:26 tras Pull B (semana 1, sesión del martes recuperada tras el resfriado). Reloj: 3,46 km en 30:07, ritmo medio 8\'42"/km (incluye andar), FC media 135 y máx. 162, 3.836 pasos, 227 kcal activas. Zonas: ligero 4:57, intensivo 7:20, aeróbico 14:04, anaeróbico 3:28.';
+    rh.sort(function(a,b){return b.date.localeCompare(a.date);});
+    sd('run_hist',rh.slice(0,400));
+    localStorage.setItem('seed_run_nov20_v1','1');
+  }catch(err){}
+})();
+
+// Carga única: gym del viernes 20/11/2026 (Pull B): remo máquina 40 kg ×12, jalón 40 kg ×12, pájaros pec deck 40 kg, curl inclinado 10 kg 3×12 y curl con barra V 7,5 kg por lado 3×12.
+(function(){
+  try{
+    if(localStorage.getItem('seed_gym_nov20_v1')) return;
+    var D='2026-11-20';
+    function put(k,kg,reps){
+      var h=ld(k,[]);
+      if(!h.some(function(e){return e.date===D;})){
+        h.push({date:D,kg:kg,reps:reps});
+        h.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+        sd(k,h.slice(-300));
+      }
+    }
+    put('gym_pw_n_remo_en_maquina_con_agarre_neutro',40,12);
+    put('gym_pw_n_jalon_al_pecho_agarre_neutro_o_estrecho',40,12);
+    put('gym_pw_n_pajaros_en_maquina_pec_deck_invertido',40,'?');
+    put('gym_pw_n_curl_inclinado_con_mancuernas',10,12);
+    var xk='gym_extra_viernes_'+D, ex=ld(xk,[]);
+    if(!ex.some(function(e){return /barra V/i.test(e.n);})){
+      ex.push({n:'Curl con barra V (7,5 kg por lado)',sets:'3×12',kg:15,reps:12,date:D});
+      sd(xk,ex);
+    }
+    localStorage.setItem('seed_gym_nov20_v1','1');
+  }catch(err){}
+})();
 </script>
 
 <!-- HISTORICAL ENTRY MODAL -->
